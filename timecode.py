@@ -1,7 +1,11 @@
+from ProToolsMarkers import ProToolsMarkers
+
 from docx import Document
 from docx.shared import Inches, Pt
 from docx.oxml.shared import OxmlElement,qn
 from docx.enum.section import WD_SECTION, WD_ORIENT
+from docx.oxml.ns import nsdecls
+from docx.oxml import parse_xml
 
 import shutil
 import re
@@ -52,25 +56,31 @@ def set_widths(row):
     row.cells[3].width = Inches(3)
     row.cells[4].width = Inches(3)
 
-def shiftTranslation(old_row, new_row, text: str, document) -> None:
-    new_row.cells[0].text = old_row.cells[0].text
-    new_row.cells[0].paragraphs[0].style = document.styles['Normal']
+def update_text(document, new_row, text: str, style: str, cell, bold: bool):
+    run = new_row.cells[cell].paragraphs[0].add_run(text)
+    new_row.cells[cell].paragraphs[0].style = document.styles[style]
+    run.bold = bold
+    # new_row.cells[cell].paragraphs[0].style.font.bold = bold
 
-    new_row.cells[1].text = text
-    new_row.cells[1].paragraphs[0].style = document.styles['Normal']
+def shiftTranslation(old_row, new_row, text: str, document, bold: bool, style: str = 'Normal') -> None:
+    update_text(document, new_row, old_row.cells[0].text, style, 0, bold)
+    update_text(document, new_row, text, style, 1, bold)
     
     for n in range(1, len(old_row.cells)):
-        new_row.cells[n+1].text = old_row.cells[n].text
-        new_row.cells[n+1].paragraphs[0].style = document.styles['Normal']
+        update_text(document, new_row, old_row.cells[n].text, style, n+1, bold)
 
     set_widths(new_row)
     return
 
-def enhanceScript(filename: str, timecodeFilename: str) -> None:
+def color_cell(cell):
+    shading_elm_1 = parse_xml(r'<w:shd {} w:fill="F6CC9E"/>'.format(nsdecls('w')))
+    cell._tc.get_or_add_tcPr().append(shading_elm_1)
+
+def enhanceScript(filename: str, timecode_filename: str) -> None:
     newFilename = "output.docx"
 
     document = Document(filename)
-    timecodeFile = open(timecodeFilename, "r")
+    markers = ProToolsMarkers(timecode_filename)
 
     style = document.styles['Normal']
     font = style.font
@@ -91,18 +101,23 @@ def enhanceScript(filename: str, timecodeFilename: str) -> None:
     old_rows = old_table.rows
     new_row = new_table.rows[0]
 
-    for _ in range(12):
-        timecodeFile.readline()
-    shiftTranslation(old_rows[0], new_row, "TIMECODE", document)
+    shiftTranslation(old_rows[0], new_row, "TIMECODE", document, True)
+    for cell in new_row.cells:
+        color_cell(cell)
+    timecode_index = 0
 
     for old_row in old_rows[1:]:
-        marker = timecodeFile.readline()
-        # Split the marker data and timestamp
-        _, timestamp, _, _, _, _ = re.split("\s+", marker)
+        marker = markers.get_marker(timecode_index)
+        location = marker.get_timecode_in_frames()
+
         new_row = new_table.add_row()
-        shiftTranslation(old_row, new_row, timestamp, document)
+        shiftTranslation(old_row, new_row, location, document, False)
+
+        timecode_index += 1
 
     prevent_document_break(document)
+
+    removeMetadata(document.tables[0])
 
     document.save(newFilename)
 

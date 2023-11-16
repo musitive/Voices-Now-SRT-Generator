@@ -4,21 +4,13 @@
 # Build executable:
 # py -m PyInstaller -w --onefile "SRT Generator.py"
 
+from ProToolsMarkers import ProToolsMarkers
 from docx import Document
 import re
 import codecs
 
-FRAME_RATE = 24                     # Number of frames per second, as determined by the video file
-ROUNDING_RATE = 0.5                 # Determine whether to round up or down
 MAX_CHARACTER_LEN = 88              # Maximum number of characters allow in an SRT caption
 PRO_TOOLS_MARKER_START = 12         # Line that Pro Tools Marker data starts on
-
-# Helper functions
-def framesToMilliseconds(timestamp: str) -> str:
-    delimiter = ":"
-    _, m, s, f = re.split(delimiter, timestamp)
-    millisec = int((int(f) * 1000) / FRAME_RATE + ROUNDING_RATE)
-    return "00" + delimiter + m + delimiter + s + "," + "%(millisec)03d" % {'millisec': millisec}
 
 def generateSRT(srtID: int, previousTime: str, nextTime: str, translation: str) -> str:
     text = str(srtID) + "\n"
@@ -29,7 +21,7 @@ def generateSRT(srtID: int, previousTime: str, nextTime: str, translation: str) 
 def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) -> None:
     # Open relevant documents
     document = Document(wordFilename)
-    timecode = open(timecodeFilename, "r")
+    markers = ProToolsMarkers(timecodeFilename)
     srtFile = codecs.open(srtFilename, "w+", encoding="utf-8")
 
     # Python-docx set-up
@@ -47,19 +39,12 @@ def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) ->
     currentTimecode = "00:00:00,000"    # timecode for the current loop, defaulted to 0
 
     # Iterate through the timecode file
-    for marker in timecode:
-        # Currently useless metadata from Pro Tools, skip it
-        if timecodeIndex < 12:
-            timecodeIndex += 1
-            continue
-
-        # Split the marker data and timestamp
-        markerId, timestamp, _, _, loopNumber, _ = re.split("\s+", marker)
+    for marker in markers.get_markers():
 
         # First index, since this is a backwards looking algorithm
         if newSection:
             timecodeIndex += 1
-            previousTimecode = framesToMilliseconds(timestamp)
+            previousTimecode = marker.get_timecode_in_ms()
             newSection = False
             continue
 
@@ -67,7 +52,7 @@ def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) ->
         loopText = translation.cells[translationRow].text
 
         # Reformat Timecode
-        currentTimecode = framesToMilliseconds(timestamp)
+        currentTimecode = marker.get_timecode_in_ms()
 
         # Conditional Formatting here
 
@@ -93,15 +78,14 @@ def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) ->
         currentSrtId += 1
 
         # Support for the "x" marker in Pro Tools
-        if loopNumber == 'x':
+        if marker.get_name() == 'x':
             newSection = True
 
     # Close related text files
-    timecode.close()
     srtFile.close()
 
     return
 
 # Test Case
 if __name__ == '__main__':
-    createSrtFile("test.docx", "test.txt", "test.srt")
+    createSrtFile("test.docx", "BMVL_308_Timecode.txt", "refactor.txt")
