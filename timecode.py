@@ -76,9 +76,7 @@ def color_cell(cell):
     shading_elm_1 = parse_xml(r'<w:shd {} w:fill="F6CC9E"/>'.format(nsdecls('w')))
     cell._tc.get_or_add_tcPr().append(shading_elm_1)
 
-def enhanceScript(filename: str, timecode_filename: str) -> None:
-    newFilename = "output.docx"
-
+def enhance_script(filename: str, timecode_filename: str, new_filename: str) -> None:
     document = Document(filename)
     markers = ProToolsMarkers(timecode_filename)
 
@@ -119,10 +117,10 @@ def enhanceScript(filename: str, timecode_filename: str) -> None:
 
     removeMetadata(document.tables[0])
 
-    document.save(newFilename)
+    document.save(new_filename)
 
     return
 
 # Test Case
 if __name__ == '__main__':
-    enhanceScript("test.docx", "BMVL_308_Timecode.txt")
+    enhance_script("test.docx", "BMVL_308_Timecode.txt", "output.docx")
