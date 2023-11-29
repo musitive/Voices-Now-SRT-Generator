@@ -104,8 +104,22 @@ def enhance_script(filename: str, timecode_filename: str, new_filename: str) -> 
         color_cell(cell)
     timecode_index = 0
 
-    for old_row in old_rows[1:]:
+    def get_next_marker():
         marker = markers.get_marker(timecode_index)
+        name = marker.get_name()
+        timecode_index += 1
+
+        while name == 'x' or name == 'w':
+            marker = markers.get_marker(timecode_index)
+            name = marker.get_name()
+            timecode_index += 1
+            continue
+
+        return marker
+
+    for old_row in old_rows[1:]:
+        marker = get_next_marker()
+        
         location = marker.get_timecode_in_frames()
 
         new_row = new_table.add_row()

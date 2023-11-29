@@ -32,7 +32,6 @@ def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) ->
     newSection = True
 
     # Variables and iterators
-    timecodeIndex = 0                   # timecode file iterator, starts at 0
     currentSrtId = 1                    # current SRT number we are on, indexing starts at 1
     translationRow = 1                  # current cell we are on in columns, 0 being the title "TRANSLATION" and 1 being the first translated text
     previousTimecode = "00:00:00,000"   # timecode for the previous loop, defaulted to 0
@@ -40,10 +39,13 @@ def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) ->
 
     # Iterate through the timecode file
     for marker in markers.get_markers():
+        # Support for the "w" marker in Pro Tools
+        if marker.get_name() == 'w':
+            translationRow += 1
+            continue
 
         # First index, since this is a backwards looking algorithm
         if newSection:
-            timecodeIndex += 1
             previousTimecode = marker.get_timecode_in_ms()
             newSection = False
             continue
@@ -59,7 +61,6 @@ def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) ->
         # Skip grunts and efforts
         if loopText == "(R)":
             previousTimecode = currentTimecode
-            timecodeIndex += 1
             translationRow += 1
             continue
 
@@ -73,7 +74,6 @@ def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) ->
 
         # Update iterators
         previousTimecode = currentTimecode
-        timecodeIndex += 1
         translationRow += 1
         currentSrtId += 1
 
