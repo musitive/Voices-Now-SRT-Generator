@@ -105,6 +105,7 @@ def enhance_script(filename: str, timecode_filename: str, new_filename: str) -> 
     timecode_index = 0
 
     def get_next_marker():
+        nonlocal timecode_index
         marker = markers.get_marker(timecode_index)
         name = marker.get_name()
         timecode_index += 1
@@ -124,8 +125,6 @@ def enhance_script(filename: str, timecode_filename: str, new_filename: str) -> 
 
         new_row = new_table.add_row()
         shiftTranslation(old_row, new_row, location, document, False)
-
-        timecode_index += 1
 
     prevent_document_break(document)
 
