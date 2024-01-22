@@ -6,7 +6,6 @@
 
 from ProToolsMarkers import ProToolsMarkers
 from docx import Document
-import re
 import codecs
 
 MAX_CHARACTER_LEN = 88              # Maximum number of characters allow in an SRT caption

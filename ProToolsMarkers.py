@@ -1,8 +1,15 @@
+"""
+Code to extract Pro Tools Markers
+Author: Dallin Frank
+
+Run test cases:
+py -m unittest TestProToolsMarkers
+"""
+
 from Marker import Marker
 import re
 
 class ProToolsMarkers:
-    FRAME_RATE: float = float(24)       # Default frame rate to 24
     markers = []
 
     def __init__(self, filename: str):
@@ -15,13 +22,10 @@ class ProToolsMarkers:
             
             # Extract the framerate from the file
             if timecode_index == 4:
-                try:
-                    _, frame_rate = re.split(r"\t", line)
-                    frame_rate, _ = re.split(r"\s", frame_rate)
-                    self.FRAME_RATE = float(frame_rate)
-                except:
-                    self.FRAME_RATE = float(24)
-                
+                _, frame_rate = re.split(r"\t", line)
+                frame_rate, _ = re.split("\s", frame_rate, 1)
+                self.FRAME_RATE = float(frame_rate)
+
                 timecode_index += 1
                 continue
 
@@ -41,10 +45,9 @@ class ProToolsMarkers:
 
     def get_marker(self, index: int) -> Marker:
         if index < 0 or index >= len(self.markers):
-            return None
-        else:
-            return self.markers[index]
+            raise Exception("The Pro Tools Marker index {0} is out of bounds. Make sure that the number of named markers matches the number of loops.")
+        
+        return self.markers[index]
         
     def get_markers(self):
         return self.markers
-    
