@@ -1,11 +1,13 @@
-# Code to extract translation from an LDS script
-# Author: Dallin Frank
+"""
+Code to extract translation from an LDS script
+Author: Dallin Frank
 
-# Build executable:
-# py -m PyInstaller -w --onefile "SRT Generator.py"
+Build executable:
+py -m PyInstaller -w --onefile "SRT Generator.py"
+"""
 
 from ProToolsMarkers import ProToolsMarkers
-from docx import Document
+from LdsScript import LdsScript
 import codecs
 
 MAX_CHARACTER_LEN = 88              # Maximum number of characters allow in an SRT caption
@@ -19,16 +21,9 @@ def generateSRT(srtID: int, previousTime: str, nextTime: str, translation: str) 
 
 def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) -> None:
     # Open relevant documents
-    document = Document(wordFilename)
     markers = ProToolsMarkers(timecodeFilename)
+    script = LdsScript(wordFilename)
     srtFile = codecs.open(srtFilename, "w+", encoding="utf-8")
-
-    # Python-docx set-up
-    # Most LDS Translations should be in the second table, fourth column
-    tables = document.tables
-    columns = tables[1].columns
-    translation = columns[3]
-    newSection = True
 
     # Variables and iterators
     currentSrtId = 1                    # current SRT number we are on, indexing starts at 1
@@ -44,13 +39,13 @@ def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) ->
             continue
 
         # First index, since this is a backwards looking algorithm
-        if newSection:
+        if script.newSection:
             previousTimecode = marker.get_timecode_in_ms()
-            newSection = False
+            script.newSection = False
             continue
 
         # Get translation from Word Doc
-        loopText = translation.cells[translationRow].text
+        loopText = script.get_translation(translationRow)
 
         # Reformat Timecode
         currentTimecode = marker.get_timecode_in_ms()
@@ -78,7 +73,7 @@ def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) ->
 
         # Support for the "x" marker in Pro Tools
         if marker.get_name() == 'x':
-            newSection = True
+            script.newSection = True
 
     # Close related text files
     srtFile.close()
