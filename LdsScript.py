@@ -9,7 +9,12 @@ class LdsScript:
         # Most LDS Translations should be in the second table, fourth column
         self.tables = self.document.tables
         self.columns = self.tables[1].columns
-        self.translation = self.columns[3]
+        if len(self.columns) == 4:
+            self.translation = self.columns[3]
+        elif len(self.columns) == 5:
+            self.translation = self.columns[4]
+        else:
+            raise Exception("Unable to resolve this LDS Script format.")
         self.newSection = True
 
     def get_translation(self, translationRow: int) -> str:
