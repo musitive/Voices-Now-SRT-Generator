@@ -1,17 +1,6 @@
 from ProToolsMarkers import ProToolsMarkers
 from LdsScript import LdsScript
 
-from docx import Document
-from docx.shared import Inches, Pt
-from docx.oxml.shared import OxmlElement,qn
-from docx.enum.section import WD_SECTION, WD_ORIENT
-from docx.oxml.ns import nsdecls
-from docx.oxml import parse_xml
-
-import shutil
-import re
-import codecs
-
 def enhance_script(filename: str, timecode_filename: str, new_filename: str) -> None:
     script = LdsScript(filename)
     markers = ProToolsMarkers(timecode_filename)
@@ -23,18 +12,31 @@ def enhance_script(filename: str, timecode_filename: str, new_filename: str) -> 
     timecode_index = 0
     translation_index = 1
 
+    marker = markers.get_marker(timecode_index)
+    in_time = marker.get_timecode_in_frames()
     n = len(markers.get_markers())
 
+    def update_indices():
+        nonlocal marker, next_marker, in_time, out_time, timecode_index
+        timecode_index += 1
+        marker = next_marker
+        in_time = out_time
+
+
     for timecode_index in range(n):
-        marker = markers.get_marker(timecode_index)
-        in_time = marker.get_timecode_in_frames()
+        next_marker = markers.get_marker(timecode_index+1)
+        if next_marker == None:
+            break
+        out_time = next_marker.get_timecode_in_frames()
 
         name = marker.get_name()
         if name == 'x' or name == 'END':
-            timecode_index += 1
+            update_indices()
             continue
 
-        script.add_row_to_new_table(translation_index, in_time)
+        script.add_row_to_new_table(translation_index, in_time, out_time)
+
+        update_indices()
         translation_index += 1
 
 
@@ -43,8 +45,7 @@ def enhance_script(filename: str, timecode_filename: str, new_filename: str) -> 
 
     script.save_as_new_script(new_filename)
 
-    return
-
 # Test Case
 if __name__ == '__main__':
     enhance_script("tests/test.docx", "tests/BMVL_308_Timecode.txt", "tests/output.docx")
+    enhance_script("tests/BMVL_501_PD80000808_SCR_IND-INDONESIAN.docx", "tests/BMVL_501_timecode.txt", "tests/output3.docx")

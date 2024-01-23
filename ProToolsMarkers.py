@@ -55,7 +55,8 @@ class ProToolsMarkers:
 
     def get_marker(self, index: int) -> Marker:
         if index < 0 or index >= len(self.markers):
-            raise Exception("The Pro Tools Marker index {0} is out of bounds. Make sure that the number of named markers matches the number of loops.")
+            # raise Exception("The Pro Tools Marker index {0} is out of bounds. Make sure that the number of named markers matches the number of loops.".format(index))
+            return None
         
         return self.markers[index]
         
