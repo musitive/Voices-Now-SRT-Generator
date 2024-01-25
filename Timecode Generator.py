@@ -3,11 +3,11 @@ Code to extract translation from an LDS script
 Author: Dallin Frank
 
 Build executable:
-py -m PyInstaller -w --onefile "SRT Generator.py"
+py -m PyInstaller -w --onefile "Timecode Generator.py"
 """
 
 import PySimpleGUI as sg
-import scriptExtract
+from timecode import enhance_script 
 
 def main() -> None:
     layout = [  [sg.T("")], \
@@ -20,13 +20,13 @@ def main() -> None:
                 [sg.Text("Choose Destination Folder: ")], \
                 [sg.Input(), sg.FolderBrowse(key="dest")], \
                 [sg.T("")], \
-                [sg.Text("Choose SRT File Name: ")], \
-                [sg.Input(key="filename"), sg.Text(".srt")], \
+                [sg.Text("Choose Timecode Word Document Name: ")], \
+                [sg.Input(key="filename"), sg.Text(".docx")], \
                 [sg.T("")], \
                 [sg.Button("Submit")]]
 
     # Create the window
-    window = sg.Window('Voices Now SRT Generator', layout, size=(500,500))
+    window = sg.Window('Voices Now Timecode Generator', layout, size=(500,500))
 
     # Create an event loop
     while True:
@@ -42,7 +42,7 @@ def main() -> None:
                 continue
             else:
                 try:
-                    scriptExtract.createSrtFile(trans, time, dest + "/" + filename + ".txt")
+                    enhance_script(trans, time, dest + "/" + filename + ".docx")
                 except FileNotFoundError:
                     sg.popup_error_with_traceback("File not found")
                 except Exception as e:
