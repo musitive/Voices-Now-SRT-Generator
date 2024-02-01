@@ -13,73 +13,79 @@ import codecs
 MAX_CHARACTER_LEN = 88              # Maximum number of characters allow in an SRT caption
 PRO_TOOLS_MARKER_START = 12         # Line that Pro Tools Marker data starts on
 
-def generateSRT(srtID: int, previousTime: str, nextTime: str, translation: str) -> str:
-    text = str(srtID) + "\n"
-    text += previousTime + " --> " + nextTime + "\n"
+def generate_srt(srt_id: int, in_time: str, out_time: str, translation: str) -> str:
+    text = str(srt_id) + "\n"
+    text += in_time + " --> " + out_time + "\n"
     text += translation + "\n\n"
     return text
 
-def createSrtFile(wordFilename: str, timecodeFilename: str, srtFilename: str) -> None:
+def create_srt_file(word_filename: str, timecode_filename: str, srt_filename: str) -> None:
     # Open relevant documents
-    markers = ProToolsMarkers(timecodeFilename)
-    script = LdsScript(wordFilename)
-    srtFile = codecs.open(srtFilename, "w+", encoding="utf-8")
+    markers = ProToolsMarkers(timecode_filename)                    # Open Pro Tools Marker file
+    script = LdsScript(word_filename)                               # Open Word Document
+    srt_file = codecs.open(srt_filename, "w+", encoding="utf-8")    # Open SRT file
 
     # Variables and iterators
-    currentSrtId = 1                    # current SRT number we are on, indexing starts at 1
-    translationRow = 1                  # current cell we are on in columns, 0 being the title "TRANSLATION" and 1 being the first translated text
-    previousTimecode = "00:00:00,000"   # timecode for the previous loop, defaulted to 0
-    currentTimecode = "00:00:00,000"    # timecode for the current loop, defaulted to 0
+    n = markers.get_number_of_markers() # number of markers in the Pro Tools file
+    srt_id = 1                          # current SRT number we are on, indexing starts at 1
+    translation_index = 1               # current cell we are on in columns, 0 being the title "TRANSLATION" and 1 being the first translated text
+    in_time = "00:00:00,000"            # timecode for the start of the current loop, defaulted to 0
+    out_time = "00:00:00,000"           # timecode for the end of the current loop, defaulted to 0
 
-    # Iterate through the timecode file
-    for marker in markers.get_markers():
-        # Support for the "w" marker in Pro Tools
-        if marker.get_name() == 'w':
-            translationRow += 1
+    # Get the first marker
+    marker = markers.get_marker(0)
+
+    # Modular index update function
+    def update_indices():
+        nonlocal marker, next_marker, in_time, out_time, timecode_index
+        timecode_index += 1
+        marker = next_marker
+        in_time = out_time
+
+    for timecode_index in range(n):
+        next_marker = markers.get_marker(timecode_index+1)
+        if next_marker == None:
+            break
+        out_time = next_marker.get_timecode_in_frames()
+
+        name = marker.get_name()
+
+        # Marker names that are not to be included in the SRT file
+        if name == 'x' or name == 'END':
+            update_indices()
             continue
-
-        # First index, since this is a backwards looking algorithm
-        if script.newSection:
-            previousTimecode = marker.get_timecode_in_ms()
-            script.newSection = False
+        elif name == 'w':
+            update_indices()
+            translation_index += 1
             continue
 
         # Get translation from Word Doc
-        loopText = script.get_translation(translationRow)
-
-        # Reformat Timecode
-        currentTimecode = marker.get_timecode_in_ms()
-
-        # Conditional Formatting here
+        translation = script.get_translation(translation_index)
 
         # Skip grunts and efforts
-        if loopText == "(R)":
-            previousTimecode = currentTimecode
-            translationRow += 1
+        if translation == "(R)":
+            update_indices()
+            translation_index += 1
             continue
 
-        # Generate SRT text
-        srtText = generateSRT(currentSrtId, previousTimecode, currentTimecode, loopText)
+        in_time = marker.get_timecode_in_ms()
+        out_time = next_marker.get_timecode_in_ms()
 
-        # print(srtText)
+        # Generate SRT text
+        srt_text = generate_srt(srt_id, in_time, out_time, translation)
 
         # Add text to file
-        srtFile.write(srtText)
+        srt_file.write(srt_text)
 
-        # Update iterators
-        previousTimecode = currentTimecode
-        translationRow += 1
-        currentSrtId += 1
-
-        # Support for the "x" marker in Pro Tools
-        if marker.get_name() == 'x':
-            script.newSection = True
+        update_indices()
+        translation_index += 1
+        srt_id += 1
 
     # Close related text files
-    srtFile.close()
+    srt_file.close()
 
     return
 
 # Test Case
 if __name__ == '__main__':
-    createSrtFile("test.docx", "BMVL_308_Timecode.txt", "refactor.txt")
+    create_srt_file("tests/BMVL_502_IND.docx", "tests/BMVL_502_timecode.txt", "tests/BMVL_502_IND.srt")

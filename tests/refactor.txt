@@ -11,11 +11,11 @@ Berdasarkan peristiwa nyata yang tercatat dalam Kitab Mormon: Satu Kesaksian Lag
 Setelah pertempuran yang besar dan hebat di Kumora, lihatlah, orang-orang Nefi yang telah lolos ke dalam kawasan sebelah selatan diburu oleh orang-orang Laman, sampai mereka semuanya dihancurkan. 
 
 4
-00:01:35,250 --> 00:01:50,958
+00:01:35,250 --> 00:01:50,959
 Dan ayahku juga dibunuh oleh mereka, dan aku bahkan tinggal seorang diri untuk menuliskan kisah sedih tentang kehancuran bangsaku. 
 
 5
-00:01:50,958 --> 00:02:09,083
+00:01:50,959 --> 00:02:09,083
 Apakah mereka akan membunuhku, aku tidak tahu. 
 
 6
@@ -27,15 +27,15 @@ Namun tujuan kekal Tuhan akan bergulir terus, sampai semua janji-Nya akan digena
 Karena dari dalam tanah akanlah perjanjian dan nubuat ini datang, melalui tangan Tuhan; dan akan datang bahkan seolah seseorang berbicara dari yang mati.
 
 8
-00:02:36,292 --> 00:02:50,958
+00:02:36,292 --> 00:02:50,959
 Tuhan telah memperlihatkan kepadaku apa yang besar dan menakjubkan mengenai apa yang mesti sesaat lagi datang, pada masa itu ketika hal-hal ini akan tampil di antara kamu. 
 
 9
-00:02:50,958 --> 00:03:16,458
+00:02:50,959 --> 00:03:16,459
 Aku bicara kepadamu seolah kamu hadir, namun kamu tidaklah hadir. Lihatlah, Yesus Kristus memperlihatkanmu kepadaku, dan aku tahu perbuatanmu. 
 
 10
-00:03:16,458 --> 00:03:37,250
+00:03:16,459 --> 00:03:37,250
 Janganlah mengecamku karena ketidaksempurnaanku, sebaliknya berterimakasihlah kepada Allah bahwa Dia telah menyatakan kepadamu ketidaksempurnaan kami, agar kamu boleh belajar menjadi lebih bijak daripada kami. 
 
 11
@@ -51,19 +51,19 @@ Dan aku tidak mau menyangkal Kristus; karenanya, aku mengembara ke mana pun aku 
 Sekarang aku menulis kepada saudaraku, orang-orang Laman; dan aku menghendaki agar mereka tahu bahwa lebih dari empat ratus dan dua puluh tahun telah berlalu sejak tanda diberikan tentang kedatangan Kristus. 
 
 14
-00:04:32,250 --> 00:04:40,750
+00:04:32,250 --> 00:04:40,751
 Dan aku memeteraikan catatan ini, setelah aku mengucapkan beberapa kata dengan cara desakan kepadamu. 
 
 15
-00:04:40,750 --> 00:05:01,708
+00:04:40,751 --> 00:05:01,709
 Lihatlah, aku hendak mendesakmu bahwa ketika kamu membaca hal-hal ini, jika adalah kebijaksanaan di dalam Allah bahwa kamu akan membacanya, bahwa kamu akan ingat betapa telah penuh belas kasihannya Tuhan kepada anak-anak manusia, sejak penciptaan Adam bahkan sampai ketika kamu akan menerima hal-hal ini, dan merenungkannya dalam hatimu. 
 
 16
-00:05:01,708 --> 00:05:14,583
+00:05:01,709 --> 00:05:14,584
 Dan ketika kamu menerima hal-hal ini, aku hendak mendesakmu agar kamu bertanya kepada Allah, Bapa Yang Kekal, dalam nama Kristus, apakah hal-hal ini tidaklah benar; 
 
 17
-00:05:14,583 --> 00:05:27,042
+00:05:14,584 --> 00:05:27,042
 dan jika kamu bertanya dengan hati yang tulus, dengan maksud yang sungguh-sungguh, memiliki iman kepada Kristus, Dia akan menyatakan kebenarannya kepadamu, melalui kuasa Roh Kudus. 
 
 18
@@ -71,11 +71,11 @@ dan jika kamu bertanya dengan hati yang tulus, dengan maksud yang sungguh-sunggu
 Dan melalui kuasa Roh Kudus kamu boleh mengetahui kebenaran akan segala hal. 
 
 19
-00:05:58,000 --> 00:06:09,833
+00:05:58,000 --> 00:06:09,834
 Karenanya, janganlah menyangkal kuasa Allah; karena Dia bekerja menurut iman anak-anak manusia, yang sama hari ini dan besok, dan selamanya. 
 
 20
-00:06:09,833 --> 00:06:15,667
+00:06:09,834 --> 00:06:15,667
 Allah akan memperlihatkan kepadamu, bahwa apa yang aku tuliskan adalah benar. 
 
 21
@@ -103,10 +103,10 @@ Ditulis, dimeteraikan, disembunyikan bagi Tuhan—Untuk tampil dengan kuasa Alla
 untuk memperlihatkan kepada sisa bani Israel hal-hal besar apa yang telah Tuhan lakukan bagi leluhur mereka;
 
 27
-00:07:48,542 --> 00:07:55,208
+00:07:48,542 --> 00:07:55,209
 agar mereka mengetahui perjanjian-perjanjian Tuhan, bahwa mereka tidak dienyahkan selamanya—
 
 28
-00:07:55,208 --> 00:08:37,417
+00:07:55,209 --> 00:08:37,417
 untuk diyakinkannya orang Yahudi dan orang bukan Israel bahwa Yesus adalah Kristus, Allah Yang Kekal.
 

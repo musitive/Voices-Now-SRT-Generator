@@ -62,3 +62,6 @@ class ProToolsMarkers:
         
     def get_markers(self):
         return self.markers
+    
+    def get_number_of_markers(self) -> int:
+        return len(self.markers)

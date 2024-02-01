@@ -42,7 +42,7 @@ def main() -> None:
                 continue
             else:
                 try:
-                    scriptExtract.createSrtFile(trans, time, dest + "/" + filename + ".txt")
+                    scriptExtract.create_srt_file(trans, time, dest + "/" + filename + ".txt")
                 except FileNotFoundError:
                     sg.popup_error_with_traceback("File not found")
                 except Exception as e:
