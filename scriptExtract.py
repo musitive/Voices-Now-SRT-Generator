@@ -8,16 +8,11 @@ py -m PyInstaller -w --onefile "SRT Generator.py"
 
 from ProToolsMarkers import ProToolsMarkers
 from LdsScript import LdsScript
+from SRTInfo import SRTInfo
 import codecs
 
 MAX_CHARACTER_LEN = 88              # Maximum number of characters allow in an SRT caption
 PRO_TOOLS_MARKER_START = 12         # Line that Pro Tools Marker data starts on
-
-def generate_srt(srt_id: int, in_time: str, out_time: str, translation: str) -> str:
-    text = str(srt_id) + "\n"
-    text += in_time + " --> " + out_time + "\n"
-    text += translation + "\n\n"
-    return text
 
 def create_srt_file(word_filename: str, timecode_filename: str, srt_filename: str) -> None:
     # Open relevant documents
@@ -31,6 +26,7 @@ def create_srt_file(word_filename: str, timecode_filename: str, srt_filename: st
     translation_index = 1               # current cell we are on in columns, 0 being the title "TRANSLATION" and 1 being the first translated text
     in_time = "00:00:00,000"            # timecode for the start of the current loop, defaulted to 0
     out_time = "00:00:00,000"           # timecode for the end of the current loop, defaulted to 0
+    srts = []                           # list of SRTs to be written to the file
 
     # Get the first marker
     marker = markers.get_marker(0)
@@ -60,7 +56,7 @@ def create_srt_file(word_filename: str, timecode_filename: str, srt_filename: st
             continue
 
         # Get translation from Word Doc
-        translation = script.get_translation(translation_index)
+        translation = script.get_translation(translation_index).replace("\n", "")
 
         # Skip grunts and efforts
         if translation == "(R)":
@@ -72,14 +68,16 @@ def create_srt_file(word_filename: str, timecode_filename: str, srt_filename: st
         out_time = next_marker.get_timecode_in_ms()
 
         # Generate SRT text
-        srt_text = generate_srt(srt_id, in_time, out_time, translation)
-
-        # Add text to file
-        srt_file.write(srt_text)
+        srts.append(SRTInfo(srt_id, in_time, out_time, translation))
 
         update_indices()
         translation_index += 1
         srt_id += 1
+
+
+    # Write SRTs to file
+    for srt in srts:
+        srt_file.write(str(srt)+"\n")
 
     # Close related text files
     srt_file.close()
@@ -88,4 +86,4 @@ def create_srt_file(word_filename: str, timecode_filename: str, srt_filename: st
 
 # Test Case
 if __name__ == '__main__':
-    create_srt_file("tests/BMVL_502_IND.docx", "tests/BMVL_502_timecode.txt", "tests/BMVL_502_IND.srt")
+    create_srt_file("tests/BMVL_502_IND.docx", "tests/BMVL_502_timecode.txt", "tests/BMVL_502_IND_refactor.srt")
