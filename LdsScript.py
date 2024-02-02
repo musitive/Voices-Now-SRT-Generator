@@ -50,9 +50,13 @@ class LdsScript:
         self.tables = self.document.tables
         self.columns = self.tables[1].columns
         if len(self.columns) == 4:
+            self.loops = self.columns[0]
+            self.characters = self.columns[1]
             self.translation = self.columns[3]
             self.old_start = 0
         elif len(self.columns) == 5:
+            self.loops = self.columns[1]
+            self.characters = self.columns[2]
             self.translation = self.columns[4]
             self.old_start = 1
         else:
