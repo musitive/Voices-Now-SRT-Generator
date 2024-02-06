@@ -117,7 +117,7 @@ class LdsScript:
     def add_row_to_new_table(self, translation_index: int, in_time: str, out_time: str) -> None:
         old_row = self.old_table.rows[translation_index]
         new_row = self.new_table.add_row()
-        self.shift_translation(old_row, new_row, in_time, out_time)
+        self.shift_translation(old_row, new_row, in_time, out_time, loop=str(translation_index))
 
     def shift_translation(self, old_row, new_row, in_time: str, out_time: str, bold: bool = False, style: str = 'Normal', loop: str = "") -> None:
         if loop == "":
