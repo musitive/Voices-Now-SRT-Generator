@@ -29,7 +29,7 @@ class ADRChartGenerator:
 # Test Case
 if __name__ == '__main__':
     # Example usage
-    script = LdsScript('tests/BMVL_502_IND.docx')
+    script = LdsScript('tests/BMVL_508_PD80000816_SCR_IND-INDONESIAN.docx')
     iterator = ADRChartGenerator(script)
     iterator.iterate()
-    iterator.generate_csv('tests/BMVL_502_IND.csv')
+    iterator.generate_csv('tests/BMVL_508_IND.csv')
