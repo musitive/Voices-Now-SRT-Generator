@@ -10,6 +10,7 @@ MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT ca
 PRIORITY_BY_LANGUAGE = {
     "ENG": "[\.\!\?\;]|[\,\:\—]|\s",
     "IND": "[\.\!\?\;]|[\,\:\—]|\s",
+    "TAH": "[\.\!\?\;]|[\,\:\—]|\s",
 }
 
 class CaptionManager:
@@ -38,6 +39,9 @@ class SRTManager(CaptionManager):
         self.word_d = word_d
 
 
+    """
+    Inner class to store SRT information
+    """
     class SRTInfo:
         def __init__(self, index, start_time, end_time, text):
             self.index = index
@@ -52,14 +56,104 @@ class SRTManager(CaptionManager):
 
 
     """
-    Create SRT blocks from the text
-    text: str       - the text to create SRT blocks from  
+    Create a new caption
+    translation: str        - the translated text
+    in_time: Timecode       - the time the caption appears on screen
+    out_time: Timecode      - the time the caption disappears from the screen
+    split: bool             - whether to split the caption into multiple lines
+    """
+    def create_caption(self, translation: str, in_time: Timecode, out_time: Timecode, split: bool = True):
+        if split == False:
+            self.split_caption(in_time, out_time, translation)
+        else:
+            self.add_srt(in_time, out_time, translation)
+
+        return
+
+
+    """
+    Split the SRT text into blocks of text that are less than the maximum line length
+    in_time: Timecode       - the time the caption appears on screen
+    out_time: Timecode      - the time the caption disappears from the screen
+    text: str               - the text to split
+    """
+    def split_caption(self, in_time: Timecode, out_time: Timecode, text: str) -> None:
+        n = len(text)
+
+        if n <= self.max_line_len:
+            self.add_srt(in_time, out_time, text.strip())
+            return
+
+        left, right = self.split_text_by_language(in_time, out_time, text)
+        l = len(left)
+        r = len(right)
+
+        if l <= self.max_line_len and r <= self.max_line_len:
+            self.add_srt(in_time, out_time, left + "\n" + right)
+            return
+        
+        split_time = self.weighted_average(in_time, out_time, n, l)
+        self.split_caption(in_time, split_time, left.strip())
+        self.split_caption(split_time, out_time, right.strip())
+
+
+    """
+    Split the text into two parts according to the language
+    in_time: Timecode       - the time the caption appears on screen
+    out_time: Timecode      - the time the caption disappears from the screen
+    text: str               - the text to split
+    """
+    def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
+        split_index, _ = self.calculate_weighted_split(in_time, out_time, text, False)
+        left = text[:split_index]
+        right = text[split_index:]
+
+        return left, right
+
+
+    """
+    Split the text into two parts according to the language, with sentence and word tokenizers
+    in_time: Timecode       - the time the caption appears on screen
+    out_time: Timecode      - the time the caption disappears from the screen
+    text: str               - the text to split
+    sentence_tokenizer: function    - the sentence tokenizer function
+    word_tokenizer: function        - the word tokenizer function
+    """
+    def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str, sentence_tokenizer: function, word_tokenizer: function) -> tuple:
+        sentences = sentence_tokenizer(text)
+        if len(sentences) > 1:
+            self.segmentation_split(in_time, out_time, sentences, self.sentence_d)
+        else:
+            tokens = word_tokenizer(text)
+            self.segmentation_split(in_time, out_time, tokens, self.word_d)
+        
+
+    """
+    Split the text into two parts using tokenization, works for both sentence and word tokenization
+    in_time: Timecode       - the time the caption appears on screen
+    out_time: Timecode      - the time the caption disappears from the screen
+    segments: list          - the list of segments to split
+    d: str                  - the delimiter to join the segments
+    """
+    def segmentation_split(self, in_time: Timecode, out_time: Timecode, segments: list, d = '') -> None:
+        m = len(segments)
+        index = m // 2
+        left = reduce(lambda x, y: x + d + y, map(str, segments[:index]))
+        right = reduce(lambda x, y: x + d + y, map(str, segments[index:]))
+        
+        return left, right
+
+    """
+    Calculate the weighted split index
     in_time: Timecode    - the time the caption appears on screen
     out_time: Timecode   - the time the caption disappears from the screen
-    splitSRT: bool  - whether to split the SRT text into blocks
+    text: str       - the text to split
+    prioritize: bool    - whether to prioritize splitting at punctuation
     """
-    def create_caption(self, text: str, in_time: Timecode, out_time: Timecode):
-        self.split_SRT(in_time, out_time, text.strip())
+    def calculate_weighted_split(self, in_time: Timecode, out_time: Timecode, text: str, prioritize: bool = True) -> tuple:
+        split_index = self.find_split_index(text, prioritize)
+        split_time = self.weighted_average(in_time, out_time, len(text), split_index)
+        return split_index, split_time
 
 
     """
@@ -76,46 +170,6 @@ class SRTManager(CaptionManager):
         average_frame = int((in_frame * (n - index) + out_frame * index) / n)
 
         return Timecode(average_frame, in_time.frame_rate)
-
-
-    """
-    Split the SRT text into blocks of text that are less than the maximum line length
-    text: str    - the text to split
-    """
-    def split_SRT(self, in_time: Timecode, out_time: Timecode, text: str) -> None:
-        n = len(text)
-
-        if n <= self.max_line_len:
-            self.add_srt(in_time, out_time, text.strip())
-            return
-
-        split_index, split_time = self.calculate_weighted_split(in_time, out_time, text, False)
-        left = text[:split_index]
-        right = text[split_index:]
-        l = len(left)
-        r = len(right)
-
-        if l <= self.max_line_len and r <= self.max_line_len:
-            self.add_srt(in_time, out_time, left + "\n" + right)
-            return
-        
-        split_time = self.weighted_average(in_time, out_time, n, l)
-        self.split_SRT(in_time, split_time, left.strip())
-        self.split_SRT(split_time, out_time, right.strip())
-
-
-    """
-    Calculate the weighted split index
-    in_time: Timecode    - the time the caption appears on screen
-    out_time: Timecode   - the time the caption disappears from the screen
-    text: str       - the text to split
-    prioritize: bool    - whether to prioritize splitting at punctuation
-    """
-    def calculate_weighted_split(self, in_time: Timecode, out_time: Timecode, text: str, prioritize: bool = True) -> tuple:
-        split_index = self.find_split_index(text, prioritize)
-        split_time = self.weighted_average(in_time, out_time, len(text), split_index)
-        return split_index, split_time
-
 
     """
     Find the split index of the text
@@ -168,50 +222,17 @@ class SRTManager(CaptionManager):
         srt_file.close()
 
 
-    def special_split(self, in_time: Timecode, out_time: Timecode, text: str, sentence_tokenizer, word_tokenizer) -> None:
-        n = len(text)
-
-        if n <= self.max_line_len:
-            self.add_srt(in_time, out_time, text.strip())
-            return
-
-        sentences = sentence_tokenizer(text)
-
-        if len(sentences) > 1:
-            self.segmentation_split(in_time, out_time, sentences, self.sentence_d)
-        else:
-            tokens = word_tokenizer(text)
-            self.segmentation_split(in_time, out_time, tokens, self.word_d)
-
-    def segmentation_split(self, in_time: Timecode, out_time: Timecode, segments: list, d = '') -> None:
-        m = len(segments)
-        index = m // 2
-        left = reduce(lambda x, y: x + d + y, map(str, segments[:index]))
-        right = reduce(lambda x, y: x + d + y, map(str, segments[index:]))
-        l = len(left)
-        r = len(right)
-        n = l + r
-
-        if l <= self.max_line_len and r <= self.max_line_len:
-            self.add_srt(in_time, out_time, left + "\n" + right)
-            return
-        
-        split_time = self.weighted_average(in_time, out_time, n, l)
-        self.split_SRT(in_time, split_time, left.strip())
-        self.split_SRT(split_time, out_time, right.strip())
-
-
 class ThaiSRTManager(SRTManager):
     def __init__(self, srt_filename: str):
         super(ThaiSRTManager, self).__init__(srt_filename, max_line_len=33, lang="THA", sentence_d=' ')
 
-    def split_SRT(self, in_time: Timecode, out_time: Timecode, text: str) -> None:
-        self.special_split(in_time, out_time, text, thai_segmenter.sentence_tokenize, thai_segmenter.word_tokenize)
+    def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
+        return super().split_text_by_language(in_time, out_time, text, thai_segmenter.sentence_segment, thai_segmenter.tokenize)
 
 
 class KhmerSRTManager(SRTManager):
     def __init__(self, srt_filename: str):
         super(KhmerSRTManager, self).__init__(srt_filename, max_line_len=33, lang="KHM")
 
-    def split_SRT(self, in_time: Timecode, out_time: Timecode, text: str) -> None:
-        self.special_split(in_time, out_time, text, khmernltk.sentence_tokenize, khmernltk.word_tokenize)
+    def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
+        return super().split_text_by_language(in_time, out_time, text, khmernltk.sentence_tokenize, khmernltk.word_tokenize)

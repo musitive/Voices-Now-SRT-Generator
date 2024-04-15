@@ -46,16 +46,25 @@ class ProToolsMarkerManager:
 
     # Refactor this code
 
+    """
+    Add a new marker to the list of markers
+    line: str       - the line of text containing the marker data
+    """
     def add_new_marker(self, line: str) -> None:
         marker_data = re.split(r"\t", line)
         marker_data = [x.strip() for x in marker_data]
 
+        # Based on the verison of Pro Tools, the marker data will have different lengths
         if len(marker_data) == 6:
             marker_id, location, time_reference, units, name, _ = marker_data
         else:
             marker_id, location, time_reference, units, name, _, _, _ = marker_data
         self.markers.append(ProToolsMarker(marker_id, location, time_reference, units, name, self.FRAME_RATE))
 
+
+    """
+    Get the next marker using iterator behavior
+    """
     def get_next_marker(self) -> ProToolsMarker:
         if self.current_marker_index >= len(self.markers):
             return None
@@ -65,6 +74,10 @@ class ProToolsMarkerManager:
 
         return marker
 
+    """
+    Get a marker by index
+    index: int      - the index of the marker
+    """
     def get_marker(self, index: int) -> ProToolsMarker:
         if index < 0 or index >= len(self.markers):
             # raise Exception("The Pro Tools Marker index {0} is out of bounds. Make sure that the number of named markers matches the number of loops.".format(index))
@@ -72,8 +85,16 @@ class ProToolsMarkerManager:
         
         return self.markers[index]
         
+
+    """
+    Get all markers
+    """
     def get_markers(self):
         return self.markers
     
+
+    """
+    Get the number of markers
+    """
     def get_number_of_markers(self) -> int:
         return len(self.markers)

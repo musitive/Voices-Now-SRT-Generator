@@ -107,7 +107,8 @@ class LdsScript(Script):
             color_cell(cell)
     
     def prevent_document_break(self) -> None:
-        """https://github.com/python-openxml/python-docx/issues/245#event-621236139
+        """
+        https://github.com/python-openxml/python-docx/issues/245#event-621236139
         Globally prevent table cells from splitting across pages.
         """
         tags = self.document.element.xpath('//w:tr')

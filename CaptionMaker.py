@@ -43,7 +43,7 @@ class CaptionMaker:
 
             # Generate SRT text
             if not self.skip_caption(translation, marker.name):
-                self.caption_manager.create_caption(translation, marker.timecode, next_marker.timecode)
+                self.caption_manager.create_caption(translation, marker.timecode, next_marker.timecode, split=True)
 
             # Update markers
             marker = next_marker
