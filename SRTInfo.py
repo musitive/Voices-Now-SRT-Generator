@@ -6,5 +6,7 @@ class SRTInfo:
         self.text = text
 
     def __str__(self):
-        return f"{self.index}\n{self.start_time} --> {self.end_time}\n{self.text}\n"
+        start_time = self.start_time.get_timecode_in_ms()
+        end_time = self.end_time.get_timecode_in_ms()
+        return f"{self.index}\n{start_time} --> {end_time}\n{self.text}\n"
     

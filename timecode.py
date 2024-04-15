@@ -1,51 +1,78 @@
-from ProToolsMarkers import ProToolsMarkers
-from LdsScript import LdsScript
+ROUNDING_RATE = 0.5                                 # Determine whether to round up or down
+TIMECODE_IN_FRAMES = "00:{0:02d}:{1:02d}:{2:02d}"   # Timecode in frames
+TIMECODE_IN_MS = "00:{0:02d}:{1:02d},{2:03d}"       # Timecode in milliseconds
 
-def enhance_script(filename: str, timecode_filename: str, new_filename: str) -> None:
-    script = LdsScript(filename)
-    markers = ProToolsMarkers(timecode_filename)
+class Timecode:
+    def __init__(self, hours: int = 0, minutes: int = 0, seconds: int = 0, frames: int = 0, frame_rate: float = 24.0):
+        self.hours = hours
+        self.minutes = minutes
+        self.seconds = seconds
+        self.frames = frames
+        self.frame_rate = frame_rate
 
-    script.set_styles()
-    script.change_orientation()
-    script.initialize_tables()
+    def __init__(self, x: int, frame_rate: float = 24.0):
+        if isinstance(x, int):
+            total_frames = x
+            self.frame_rate = frame_rate
+            self.hours = int(total_frames // (60 * 60 * frame_rate))
+            total_frames -= int(self.hours * 60 * 60 * frame_rate)
+            self.minutes = int(total_frames // (60 * frame_rate))
+            total_frames -= int(self.minutes * 60 * frame_rate)
+            self.seconds = int(total_frames // frame_rate)
+            self.frames = int(total_frames % frame_rate)
+        else:
+            self.hours, self.minutes, self.seconds, self.frames = map(int, x.split(":"))
+            self.frame_rate = frame_rate
 
-    timecode_index = 0
-    translation_index = 1
+    def get_total_frames(self) -> int:
+        total_seconds = self.minutes * 60 + self.seconds
+        return total_seconds * self.frame_rate + self.frames
 
-    marker = markers.get_marker(timecode_index)
-    in_time = marker.get_timecode_in_frames()
-    n = len(markers.get_markers())
+    def get_timecode_in_frames(self) -> str:
+        return TIMECODE_IN_FRAMES.format(self.minutes, self.seconds, self.frames)
 
-    def update_indices():
-        nonlocal marker, next_marker, in_time, out_time, timecode_index
-        timecode_index += 1
-        marker = next_marker
-        in_time = out_time
+    def get_timecode_in_ms(self) -> str:
+        ms = int((self.frames * 1000) / self.frame_rate + ROUNDING_RATE)
+        return TIMECODE_IN_MS.format(self.minutes, self.seconds, ms)
+    
+    def __eq__(self, other):
+        if isinstance(other, Timecode):
+            return (self.hours == other.hours and
+                    self.minutes == other.minutes and
+                    self.seconds == other.seconds and
+                    self.frames == other.frames and
+                    self.frame_rate == other.frame_rate)
+        
+        return False
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+    
+    def __lt__(self, other):
+        if isinstance(other, Timecode):
+            return self.get_total_frames() < other.get_total_frames()
+        
+        return False
 
-    for timecode_index in range(n):
-        next_marker = markers.get_marker(timecode_index+1)
-        if next_marker == None:
-            break
-        out_time = next_marker.get_timecode_in_frames()
+    def __le__(self, other):    
+        return self.__lt__(other) or self.__eq__(other)
 
-        name = marker.get_name()
-        if name == 'x' or name == 'END':
-            update_indices()
-            continue
+    def __gt__(self, other):    
+        return not self.__le__(other)
 
-        script.add_row_to_new_table(translation_index, in_time, out_time)
+    def __ge__(self, other):    
+        return not self.__lt__(other)
+    
+    def __add__(self, other):
+        if isinstance(other, Timecode):
+            total_frames = self.get_total_frames() + other.get_total_frames()
+            return Timecode(frames=total_frames, frame_rate=self.frame_rate)
+        
+        return None
 
-        update_indices()
-        translation_index += 1
-
-
-    script.prevent_document_break()
-    script.remove_table(0)
-
-    script.save_as_new_script(new_filename)
-
-# Test Case
-if __name__ == '__main__':
-    enhance_script("tests/test.docx", "tests/BMVL_308_Timecode.txt", "tests/output.docx")
-    enhance_script("tests/BMVL_501_PD80000808_SCR_IND-INDONESIAN.docx", "tests/BMVL_501_timecode.txt", "tests/output3.docx")
+    def __sub__(self, other):
+        if isinstance(other, Timecode):
+            total_frames = self.get_total_frames() - other.get_total_frames()
+            return Timecode(frames=total_frames, frame_rate=self.frame_rate)
+        
+        return None
