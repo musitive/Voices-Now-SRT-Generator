@@ -1,5 +1,5 @@
-from ProToolsMarkers import ProToolsMarkers
-from LdsScript import LdsScript
+from ProToolsMarkerManager import ProToolsMarkers
+from Script import LdsScript
 
 def enhance_script(filename: str, timecode_filename: str, new_filename: str) -> None:
     script = LdsScript(filename)

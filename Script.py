@@ -41,7 +41,10 @@ def set_widths(row):
     row.cells[ENGLISH].width = ENGLISH_WIDTH
     row.cells[TRANSLATION].width = TRANSLATION_WIDTH
 
-class LdsScript:
+class Script:
+    pass
+
+class LdsScript(Script):
     def __init__(self, wordFilename: str):
         self.document = Document(wordFilename)
 

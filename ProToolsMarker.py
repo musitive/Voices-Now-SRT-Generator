@@ -1,6 +1,6 @@
 from Timecode import Timecode
 
-class Marker:
+class ProToolsMarker:
 
     def __init__(self, marker_id: str, location: str, time_reference: str,
                  units: str, name: str, frame_rate: float):
@@ -11,8 +11,11 @@ class Marker:
         self.frame_rate = frame_rate
         self.timecode = Timecode(location, frame_rate)
     
+    """
+    Compare two ProToolsMarker objects to determine if they are equal
+    """
     def __eq__(self, other):
-        if isinstance(other, Marker):
+        if isinstance(other, ProToolsMarker):
             return (self.marker_id == other.marker_id and
                     self.minutes == other.minutes and
                     self.seconds == other.seconds and

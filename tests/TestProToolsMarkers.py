@@ -4,13 +4,13 @@ import sys
 # adding Folder_2 to the system path
 sys.path.insert(0, 'C:/Users/RichardsonJ/Documents/Python Scripts/Word Doc Experiment/')
 
-from ProToolsMarkers import ProToolsMarkers
-from Marker import Marker
+from ProToolsMarkerManager import ProToolsMarkerManager
+from ProToolsMarker import Marker
 
 class TestProToolsMarkers(unittest.TestCase):
     def setUp(self) -> None:
-        self.markers_01 = ProToolsMarkers("test_01.txt")
-        self.markers_02 = ProToolsMarkers("test_02.txt")
+        self.markers_01 = ProToolsMarkerManager("test_01.txt")
+        self.markers_02 = ProToolsMarkerManager("test_02.txt")
 
     def test_init(self):
         self.assertEqual(self.markers_01.FRAME_RATE, 23.976)
