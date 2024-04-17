@@ -7,7 +7,7 @@ py -m PyInstaller -w --onefile "SRT Generator.py"
 """
 
 import PySimpleGUI as sg
-import CaptionMaker
+import FileMaker
 
 def main() -> None:
     layout = [  [sg.T("")], \
@@ -42,7 +42,7 @@ def main() -> None:
                 continue
             else:
                 try:
-                    CaptionMaker.create_srt_file(trans, time, dest + "/" + filename + ".txt")
+                    FileMaker.create_srt_file(trans, time, dest + "/" + filename + ".txt")
                 except FileNotFoundError:
                     sg.popup_error_with_traceback("File not found")
                 except Exception as e:

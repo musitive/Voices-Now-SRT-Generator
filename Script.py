@@ -67,7 +67,7 @@ class LdsScript(Script):
         self.newSection = True
 
     def get_translation(self, translationRow: int) -> str:
-        return self.translation.cells[translationRow].text
+        return self.translation.cells[translationRow].text.replace("\n", "")
     
     def change_orientation(self) -> None:
         sections = self.document.sections
