@@ -23,33 +23,27 @@ class FileMaker:
     Read through markers and call the function provided by the caller
     update_file:    Function to call
     """
-    def read_through_markers(self, update_file: function) -> None:
+    def read_through_markers(self, update_file) -> None:
         # Get the first markers
-        marker = self.marker_manager.get_next_marker()
-        while marker is not None and self.skip_marker(marker.name):
-            marker = self.marker_manager.get_next_marker()
         next_marker = self.marker_manager.get_next_marker()
-        while next_marker is not None and self.skip_marker(next_marker.name, True):
-            next_marker = self.marker_manager.get_next_marker()
 
-        while marker is not None and next_marker is not None:
-            # If no more markers, break
-            if marker is None or next_marker is None:
-                break
-            
-            # Call the function provided by the caller
-            update_file(marker, next_marker)
-
-            # Update markers
+        while True:
             marker = next_marker
             while marker is not None and self.skip_marker(marker.name):
                 marker = self.marker_manager.get_next_marker()
             next_marker = self.marker_manager.get_next_marker()
             while next_marker is not None and self.skip_marker(next_marker.name, True):
                 next_marker = self.marker_manager.get_next_marker()
+            
+            # If no more markers, break
+            if marker is None or next_marker is None:
+                break
+            
+            # Call the function provided by the caller
+            update_file(self, marker, next_marker)
 
         return
-    
+
 
     """
     Logic to skip markers
@@ -57,10 +51,7 @@ class FileMaker:
     is_end:         Is the marker the last marker in the script
     """
     def skip_marker(self, name: str, is_end: bool = False) -> bool:
-        if name.isnumeric():
-            return False
-
         if is_end:
-            return not (name == 'x' or name == 'END' or name == 'w')
-        return name != 'w'
+            return False
+        return (name == 'x' or name == 'END')
 

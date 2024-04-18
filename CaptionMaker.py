@@ -1,8 +1,17 @@
+from importlib import reload
 from ProToolsMarkerManager import ProToolsMarkerManager
-from ScriptManager import LdsScriptManager
-from CaptionManager import SRTManager, ThaiSRTManager, KhmerSRTManager
+import CaptionManager
+import FileMaker
+import ScriptManager
 
-class CaptionMaker:
+reload(ScriptManager)
+reload(FileMaker)
+reload(CaptionManager)
+from FileMaker import FileMaker
+from CaptionManager import SRTManager, ThaiSRTManager, KhmerSRTManager
+from ScriptManager import LdsScriptManager
+
+class CaptionMaker(FileMaker):
     def __init__(self, timecode_filename: str):
         super().__init__(timecode_filename)
 
@@ -10,7 +19,7 @@ class CaptionMaker:
     """
     Create captions from the script and timecode markers
     """
-    def create_captions(self) -> None:
+    def create_captions(self, split: bool = True) -> None:
 
         # Inner function to update the file
         def update_file(self, marker, next_marker):
@@ -19,7 +28,7 @@ class CaptionMaker:
 
             # Generate SRT text
             if not self.skip_caption(translation, marker.name):
-                self.caption_manager.create_caption(translation, marker.timecode, next_marker.timecode, split=True)
+                self.caption_manager.create_caption(translation, marker.timecode, next_marker.timecode, split=split)
 
         # Read through markers
         self.read_through_markers(update_file)
@@ -50,7 +59,6 @@ class SRTMaker(CaptionMaker):
             self.caption_manager = KhmerSRTManager(srt_filename)
         else:
             self.caption_manager = SRTManager(srt_filename, lang=lang)
-
 
 
 # Test Case

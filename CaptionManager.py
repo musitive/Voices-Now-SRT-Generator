@@ -63,7 +63,7 @@ class SRTManager(CaptionManager):
     split: bool             - whether to split the caption into multiple lines
     """
     def create_caption(self, translation: str, in_time: Timecode, out_time: Timecode, split: bool = True):
-        if split == False:
+        if split:
             self.split_caption(in_time, out_time, translation)
         else:
             self.add_srt(in_time, out_time, translation)
@@ -119,13 +119,13 @@ class SRTManager(CaptionManager):
     sentence_tokenizer: function    - the sentence tokenizer function
     word_tokenizer: function        - the word tokenizer function
     """
-    def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str, sentence_tokenizer: function, word_tokenizer: function) -> tuple:
+    def split_text_by_token(self, in_time: Timecode, out_time: Timecode, text: str, sentence_tokenizer, word_tokenizer) -> tuple:
         sentences = sentence_tokenizer(text)
         if len(sentences) > 1:
-            self.segmentation_split(in_time, out_time, sentences, self.sentence_d)
+            return self.segmentation_split(in_time, out_time, sentences, self.sentence_d)
         else:
             tokens = word_tokenizer(text)
-            self.segmentation_split(in_time, out_time, tokens, self.word_d)
+            return self.segmentation_split(in_time, out_time, tokens, self.word_d)
         
 
     """
@@ -224,15 +224,15 @@ class SRTManager(CaptionManager):
 
 class ThaiSRTManager(SRTManager):
     def __init__(self, srt_filename: str):
-        super(ThaiSRTManager, self).__init__(srt_filename, max_line_len=33, lang="THA", sentence_d=' ')
+        super().__init__(srt_filename, max_line_len=33, lang="THA", sentence_d=' ')
 
     def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
-        return super().split_text_by_language(in_time, out_time, text, thai_segmenter.sentence_segment, thai_segmenter.tokenize)
+        return super().split_text_by_token(in_time, out_time, text, thai_segmenter.sentence_segment, thai_segmenter.tokenize)
 
 
 class KhmerSRTManager(SRTManager):
     def __init__(self, srt_filename: str):
-        super(KhmerSRTManager, self).__init__(srt_filename, max_line_len=33, lang="KHM")
+        super().__init__(srt_filename, max_line_len=33, lang="KHM")
 
     def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
-        return super().split_text_by_language(in_time, out_time, text, khmernltk.sentence_tokenize, khmernltk.word_tokenize)
+        return super().split_text_by_token(in_time, out_time, text, khmernltk.sentence_tokenize, khmernltk.word_tokenize)

@@ -1,7 +1,6 @@
 from Timecode import Timecode
 
 class ProToolsMarker:
-
     def __init__(self, marker_id: str, location: str, time_reference: str,
                  units: str, name: str, frame_rate: float):
         self.marker_id = marker_id
