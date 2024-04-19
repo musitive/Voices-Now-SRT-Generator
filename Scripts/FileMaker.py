@@ -6,12 +6,7 @@ Build executable:
 py -m PyInstaller -w --onefile "SRT Generator.py"
 """
 
-import CaptionManager
-from importlib import reload
-
-reload(CaptionManager)
-
-from ProToolsMarkers import ProToolsMarkerManager
+from ProToolsMarkers.ProToolsMarkerManager import ProToolsMarkerManager
 
 class FileMaker:
     def __init__(self, timecode_filename: str):

@@ -4,12 +4,7 @@ from functools import reduce
 from ProToolsMarkers.Timecode import Timecode
 import codecs
 import khmernltk
-from importlib import reload
-
-import CaptionManager
-reload(CaptionManager)
-
-from CaptionManager import CaptionManager
+from Scripts.CaptionManager import CaptionManager
 
 MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT caption
 

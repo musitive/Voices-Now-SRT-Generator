@@ -5,10 +5,8 @@ Author: Dallin Frank
 Run test cases:
 py -m unittest TestProToolsMarkerManager
 """
-import sys
-sys.path.append("ProToolsMarkers")
 
-from ProToolsMarker import ProToolsMarker
+from ProToolsMarkers.ProToolsMarker import ProToolsMarker
 import re
 
 PT_MARKER_DATA_START = 12

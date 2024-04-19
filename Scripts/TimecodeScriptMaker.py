@@ -1,6 +1,6 @@
-from FileMaker import FileMaker
-from ProToolsMarkers import ProToolsMarkerManager
-from ScriptManager import LdsScriptManager
+from Scripts.FileMaker import FileMaker
+from ProToolsMarkers.ProToolsMarkerManager import ProToolsMarkerManager
+from Scripts.ScriptManager import LdsScriptManager
 
 class TimecodeScriptMaker(FileMaker):
     def __init__(self, timecode_filename: str, script_filename: str):

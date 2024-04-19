@@ -1,4 +1,4 @@
-from Timecode import Timecode
+from ProToolsMarkers.Timecode import Timecode
 
 class ProToolsMarker:
     def __init__(self, marker_id: str, location: str, time_reference: str,

@@ -1,9 +1,4 @@
-import Script
-from importlib import reload
-
-reload(Script)
-
-from Script import LdsScript
+from Scripts.Script import LdsScript
 
 class ScriptManager:
     pass

@@ -1,18 +1,11 @@
-from importlib import reload
-from ProToolsMarkers import ProToolsMarkerManager
-import CaptionManager
-import FileMaker
-import ScriptManager
-import SRTManager
+import sys
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/ProToolsMarkers")
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
 
-reload(ScriptManager)
-reload(FileMaker)
-reload(CaptionManager)
-reload(SRTManager)
-
-from FileMaker import FileMaker
-from SRTManager import SRTManager, ThaiSRTManager, KhmerSRTManager
-from ScriptManager import LdsScriptManager
+from Scripts.FileMaker import FileMaker
+from Scripts.ScriptManager import LdsScriptManager
+from ProToolsMarkers.ProToolsMarkerManager import ProToolsMarkerManager
+from Scripts.SRTManager import SRTManager, ThaiSRTManager, KhmerSRTManager
 
 class CaptionMaker(FileMaker):
     def __init__(self, timecode_filename: str):
