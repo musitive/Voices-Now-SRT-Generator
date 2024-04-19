@@ -11,7 +11,7 @@ from importlib import reload
 
 reload(CaptionManager)
 
-from ProToolsMarkerManager import ProToolsMarkerManager
+from ProToolsMarkers import ProToolsMarkerManager
 
 class FileMaker:
     def __init__(self, timecode_filename: str):

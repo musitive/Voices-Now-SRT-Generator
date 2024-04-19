@@ -1,14 +1,17 @@
 from importlib import reload
-from ProToolsMarkerManager import ProToolsMarkerManager
+from ProToolsMarkers import ProToolsMarkerManager
 import CaptionManager
 import FileMaker
 import ScriptManager
+import SRTManager
 
 reload(ScriptManager)
 reload(FileMaker)
 reload(CaptionManager)
+reload(SRTManager)
+
 from FileMaker import FileMaker
-from CaptionManager import SRTManager, ThaiSRTManager, KhmerSRTManager
+from SRTManager import SRTManager, ThaiSRTManager, KhmerSRTManager
 from ScriptManager import LdsScriptManager
 
 class CaptionMaker(FileMaker):

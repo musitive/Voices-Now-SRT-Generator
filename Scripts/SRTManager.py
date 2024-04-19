@@ -1,9 +1,15 @@
 import re
 import thai_segmenter
 from functools import reduce
-from Timecode import Timecode
+from ProToolsMarkers.Timecode import Timecode
 import codecs
 import khmernltk
+from importlib import reload
+
+import CaptionManager
+reload(CaptionManager)
+
+from CaptionManager import CaptionManager
 
 MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT caption
 
@@ -12,16 +18,6 @@ PRIORITY_BY_LANGUAGE = {
     "IND": "[\.\!\?\;]|[\,\:\—]|\s",
     "TAH": "[\.\!\?\;]|[\,\:\—]|\s",
 }
-
-class CaptionManager:
-    def __init__(self):
-        pass
-
-    def create_caption(self, translation: str, in_time: Timecode, out_time: Timecode):
-        pass
-
-    def write_captions_to_file(self):
-        pass
 
 class SRTManager(CaptionManager):
     """
@@ -226,6 +222,10 @@ class ThaiSRTManager(SRTManager):
     def __init__(self, srt_filename: str):
         super().__init__(srt_filename, max_line_len=33, lang="THA", sentence_d=' ')
 
+    """
+    Call the split_text_by_language function with the Thai segmenter. This library doesn't seem to be very well optimized.
+    https://pypi.org/project/thai-segmenter/
+    """
     def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
         return super().split_text_by_token(in_time, out_time, text, thai_segmenter.sentence_segment, thai_segmenter.tokenize)
 
@@ -234,5 +234,9 @@ class KhmerSRTManager(SRTManager):
     def __init__(self, srt_filename: str):
         super().__init__(srt_filename, max_line_len=33, lang="KHM")
 
+    """
+    Call the split_text_by_language function with the KhmerNLTK library. This library works great.
+    https://pypi.org/project/khmer-nltk/
+    """
     def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
         return super().split_text_by_token(in_time, out_time, text, khmernltk.sentence_tokenize, khmernltk.word_tokenize)

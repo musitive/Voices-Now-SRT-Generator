@@ -5,6 +5,8 @@ Author: Dallin Frank
 Run test cases:
 py -m unittest TestProToolsMarkerManager
 """
+import sys
+sys.path.append("ProToolsMarkers")
 
 from ProToolsMarker import ProToolsMarker
 import re

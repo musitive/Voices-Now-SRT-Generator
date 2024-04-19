@@ -1,5 +1,5 @@
 from FileMaker import FileMaker
-from ProToolsMarkerManager import ProToolsMarkerManager
+from ProToolsMarkers import ProToolsMarkerManager
 from ScriptManager import LdsScriptManager
 
 class TimecodeScriptMaker(FileMaker):
