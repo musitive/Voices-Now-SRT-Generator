@@ -1,6 +1,6 @@
 import csv
 import re
-from Script import LdsScript
+from Scripts.Script import LdsScript
 
 class ADRChartGenerator:
     def __init__(self, ldsscript):

@@ -1,18 +1,34 @@
 import re
-import thai_segmenter
 from functools import reduce
 from ProToolsMarkers.Timecode import Timecode
 import codecs
-import khmernltk
 from Scripts.CaptionManager import CaptionManager
 
-MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT caption
-
 PRIORITY_BY_LANGUAGE = {
-    "ENG": "[\.\!\?\;]|[\,\:\—]|\s",
-    "IND": "[\.\!\?\;]|[\,\:\—]|\s",
-    "TAH": "[\.\!\?\;]|[\,\:\—]|\s",
+    # Arabic punctuation marks:
+    # U+06D4 ۔ ARABIC FULL STOP
+    # U+061F ؟ ARABIC QUESTION MARK
+    # U+061B ؛ ARABIC SEMICOLON
+    # U+060C ، ARABIC COMMA
+    "ARA": "(\.\s+)|[\!\u06D4\u061F\u061B]|[\u060C\:\—]|\s",
+    "BIS": "(\.\s+)|[\?\;]|[\,\:\—]|\s",
+
+    # Farsi punctuation marks:
+    # U+06D4 ۔ ARABIC FULL STOP
+    # U+061F ؟ ARABIC QUESTION MARK
+    # U+061B ؛ ARABIC SEMICOLON
+    # U+060C ، ARABIC COMMA
+    "FAR": "(\.\s+)|[\!\u06D4\u061F\u061B]|[\u060C\:\—]|\s",
+    "ENG": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
+
+    # Urdu punctuation marks (Uses Arabic script):
+    # U+061F ؟ ARABIC QUESTION MARK
+    # U+061B ؛ ARABIC SEMICOLON
+    # U+060C ، ARABIC COMMA
+    "URD": "(\.\s+)|[\!\u061F\u061B]|[\u060C\:\—]|\s"
 }
+
+MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT caption
 
 class SRTManager(CaptionManager):
     """
@@ -28,6 +44,10 @@ class SRTManager(CaptionManager):
         self.lang = lang
         self.sentence_d = sentence_d
         self.word_d = word_d
+        if lang in PRIORITY_BY_LANGUAGE:
+            self.regex = PRIORITY_BY_LANGUAGE[lang]
+        else:
+            self.regex = PRIORITY_BY_LANGUAGE["ENG"]
 
 
     """
@@ -54,6 +74,9 @@ class SRTManager(CaptionManager):
     split: bool             - whether to split the caption into multiple lines
     """
     def create_caption(self, translation: str, in_time: Timecode, out_time: Timecode, split: bool = True):
+        translation = translation.replace("(R)", "")
+        translation = re.sub(r"[\"“”]", "", translation)
+        translation = translation.strip()
         if split:
             self.split_caption(in_time, out_time, translation)
         else:
@@ -84,8 +107,8 @@ class SRTManager(CaptionManager):
             return
         
         split_time = self.weighted_average(in_time, out_time, n, l)
-        self.split_caption(in_time, split_time, left.strip())
-        self.split_caption(split_time, out_time, right.strip())
+        self.split_caption(in_time, split_time, left)
+        self.split_caption(split_time, out_time, right)
 
 
     """
@@ -95,11 +118,11 @@ class SRTManager(CaptionManager):
     text: str               - the text to split
     """
     def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
-        split_index, _ = self.calculate_weighted_split(in_time, out_time, text, False)
+        split_index, _ = self.calculate_weighted_split(in_time, out_time, text)
         left = text[:split_index]
         right = text[split_index:]
 
-        return left, right
+        return left.strip(), right.strip()
 
 
     """
@@ -134,6 +157,7 @@ class SRTManager(CaptionManager):
         
         return left, right
 
+
     """
     Calculate the weighted split index
     in_time: Timecode    - the time the caption appears on screen
@@ -162,6 +186,7 @@ class SRTManager(CaptionManager):
 
         return Timecode(average_frame, in_time.frame_rate)
 
+
     """
     Find the split index of the text
     text: str       - the text to split
@@ -181,13 +206,12 @@ class SRTManager(CaptionManager):
             return split_index+2
 
         if prioritize:
-            for regex in PRIORITY_BY_LANGUAGE[self.lang].split("|"):
+            for regex in self.regex.split("|"):
                 if bool(re.search(regex, text[1:-1])):
                     return search_text(regex, text[1:-1])
             
         else:
-            regex = PRIORITY_BY_LANGUAGE[self.lang]
-            return search_text(regex, text[1:-1])
+            return search_text(self.regex, text[1:-1])
             
 
     """
@@ -197,7 +221,9 @@ class SRTManager(CaptionManager):
     text: str       - the caption text
     """
     def add_srt(self, in_time: Timecode, out_time: Timecode, text: str) -> None:
-        self.srt_blocks.append(self.SRTInfo(self.srt_id, in_time, out_time, text.strip()))
+        text = text.strip()
+        if text != "":
+            self.srt_blocks.append(self.SRTInfo(self.srt_id, in_time, out_time, text))
         self.srt_id += 1
     
 
@@ -211,27 +237,3 @@ class SRTManager(CaptionManager):
             srt_file.write(str(srt)+"\n")
 
         srt_file.close()
-
-
-class ThaiSRTManager(SRTManager):
-    def __init__(self, srt_filename: str):
-        super().__init__(srt_filename, max_line_len=33, lang="THA", sentence_d=' ')
-
-    """
-    Call the split_text_by_language function with the Thai segmenter. This library doesn't seem to be very well optimized.
-    https://pypi.org/project/thai-segmenter/
-    """
-    def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
-        return super().split_text_by_token(in_time, out_time, text, thai_segmenter.sentence_segment, thai_segmenter.tokenize)
-
-
-class KhmerSRTManager(SRTManager):
-    def __init__(self, srt_filename: str):
-        super().__init__(srt_filename, max_line_len=33, lang="KHM")
-
-    """
-    Call the split_text_by_language function with the KhmerNLTK library. This library works great.
-    https://pypi.org/project/khmer-nltk/
-    """
-    def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
-        return super().split_text_by_token(in_time, out_time, text, khmernltk.sentence_tokenize, khmernltk.word_tokenize)

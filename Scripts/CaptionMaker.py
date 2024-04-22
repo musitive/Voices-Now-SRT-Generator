@@ -5,7 +5,13 @@ sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
 from Scripts.FileMaker import FileMaker
 from Scripts.ScriptManager import LdsScriptManager
 from ProToolsMarkers.ProToolsMarkerManager import ProToolsMarkerManager
-from Scripts.SRTManager import SRTManager, ThaiSRTManager, KhmerSRTManager
+from Scripts.SRTManager import SRTManager
+import Scripts.LanguageSpecificSRTManagers as LSSM
+
+LANG_SRT_MAP = {
+    "THA": LSSM.ThaiSRTManager,
+    "KHM": LSSM.KhmerSRTManager
+}
 
 class CaptionMaker(FileMaker):
     def __init__(self, timecode_filename: str):
@@ -24,7 +30,7 @@ class CaptionMaker(FileMaker):
 
             # Generate SRT text
             if not self.skip_caption(translation, marker.name):
-                self.caption_manager.create_caption(translation, marker.timecode, next_marker.timecode, split=split)
+                self.caption_manager.create_caption(translation.strip(), marker.timecode, next_marker.timecode, split=split)
 
         # Read through markers
         self.read_through_markers(update_file)
@@ -40,7 +46,7 @@ class CaptionMaker(FileMaker):
     caption:        Caption text
     marker_name:    Marker name
     """
-    def skip_caption(self, caption, marker_name) -> bool:
+    def skip_caption(self, caption: str, marker_name) -> bool:
         return caption == "(R)" or caption == "DO NOT TRANSLATE" or marker_name == 'w'
 
 
@@ -49,10 +55,8 @@ class SRTMaker(CaptionMaker):
         self.marker_manager = ProToolsMarkerManager(timecode_filename)          # Open Pro Tools Marker file
         self.script_manager = LdsScriptManager(script_filename)                 # Open Word Document
 
-        if lang == "THA":
-            self.caption_manager = ThaiSRTManager(srt_filename)
-        elif lang == "KHM":
-            self.caption_manager = KhmerSRTManager(srt_filename)
+        if lang in LANG_SRT_MAP:
+            self.caption_manager = LANG_SRT_MAP[lang](srt_filename)
         else:
             self.caption_manager = SRTManager(srt_filename, lang=lang)
 
