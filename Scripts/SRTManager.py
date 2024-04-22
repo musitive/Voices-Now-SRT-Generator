@@ -5,27 +5,27 @@ import codecs
 from Scripts.CaptionManager import CaptionManager
 
 PRIORITY_BY_LANGUAGE = {
+    "ENG": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
+    "BIS": "(\.\s+)|[\?\;]|[\,\:\—]|\s",
+
     # Arabic punctuation marks:
     # U+06D4 ۔ ARABIC FULL STOP
     # U+061F ؟ ARABIC QUESTION MARK
     # U+061B ؛ ARABIC SEMICOLON
     # U+060C ، ARABIC COMMA
     "ARA": "(\.\s+)|[\!\u06D4\u061F\u061B]|[\u060C\:\—]|\s",
-    "BIS": "(\.\s+)|[\?\;]|[\,\:\—]|\s",
-
-    # Farsi punctuation marks:
-    # U+06D4 ۔ ARABIC FULL STOP
-    # U+061F ؟ ARABIC QUESTION MARK
-    # U+061B ؛ ARABIC SEMICOLON
-    # U+060C ، ARABIC COMMA
     "FAR": "(\.\s+)|[\!\u06D4\u061F\u061B]|[\u060C\:\—]|\s",
-    "ENG": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
+    "URD": "(\.\s+)|[\!\u061F\u061B]|[\u060C\:\—]|\s",
 
-    # Urdu punctuation marks (Uses Arabic script):
-    # U+061F ؟ ARABIC QUESTION MARK
-    # U+061B ؛ ARABIC SEMICOLON
-    # U+060C ، ARABIC COMMA
-    "URD": "(\.\s+)|[\!\u061F\u061B]|[\u060C\:\—]|\s"
+    # Chinese punctuation marks:
+    # U+3002 。 IDEOGRAPHIC FULL STOP
+    # U+FF1F ？ FULLWIDTH QUESTION MARK
+    # U+FF01 ！ FULLWIDTH EXCLAMATION MARK
+    # U+FF0C ， FULLWIDTH COMMA
+    # U+FF1A ： FULLWIDTH COLON
+    "YUE": "[\u3002\uFF1F\uFF01]|[\uFF0C\uFF1A\—]|\s",
+    "CMN": "[\u3002\uFF1F\uFF01]|[\uFF0C\uFF1A\—]|\s",
+    "JPN": "[\u3002\uFF1F\uFF01]|[\uFF0C\uFF1A\—]|\s"
 }
 
 MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT caption
@@ -75,7 +75,7 @@ class SRTManager(CaptionManager):
     """
     def create_caption(self, translation: str, in_time: Timecode, out_time: Timecode, split: bool = True):
         translation = translation.replace("(R)", "")
-        translation = re.sub(r"[\"“”]", "", translation)
+        # translation = re.sub(r"[\"“”]", "", translation)
         translation = translation.strip()
         if split:
             self.split_caption(in_time, out_time, translation)
@@ -98,12 +98,12 @@ class SRTManager(CaptionManager):
             self.add_srt(in_time, out_time, text.strip())
             return
 
-        left, right = self.split_text_by_language(in_time, out_time, text)
+        left, right = self.split_text_by_language(text)
         l = len(left)
         r = len(right)
 
         if l <= self.max_line_len and r <= self.max_line_len:
-            self.add_srt(in_time, out_time, left + "\n" + right)
+            self.add_srt(in_time, out_time, left.strip() + "\n" + right.strip())
             return
         
         split_time = self.weighted_average(in_time, out_time, n, l)
@@ -117,8 +117,8 @@ class SRTManager(CaptionManager):
     out_time: Timecode      - the time the caption disappears from the screen
     text: str               - the text to split
     """
-    def split_text_by_language(self, in_time: Timecode, out_time: Timecode, text: str) -> tuple:
-        split_index, _ = self.calculate_weighted_split(in_time, out_time, text)
+    def split_text_by_language(self, text: str) -> tuple:
+        split_index = self.find_split_index(text)
         left = text[:split_index]
         right = text[split_index:]
 
@@ -136,10 +136,10 @@ class SRTManager(CaptionManager):
     def split_text_by_token(self, in_time: Timecode, out_time: Timecode, text: str, sentence_tokenizer, word_tokenizer) -> tuple:
         sentences = sentence_tokenizer(text)
         if len(sentences) > 1:
-            return self.segmentation_split(in_time, out_time, sentences, self.sentence_d)
+            return self.segmentation_split(sentences, self.sentence_d)
         else:
             tokens = word_tokenizer(text)
-            return self.segmentation_split(in_time, out_time, tokens, self.word_d)
+            return self.segmentation_split(tokens, self.word_d)
         
 
     """
@@ -149,26 +149,13 @@ class SRTManager(CaptionManager):
     segments: list          - the list of segments to split
     d: str                  - the delimiter to join the segments
     """
-    def segmentation_split(self, in_time: Timecode, out_time: Timecode, segments: list, d = '') -> None:
+    def segmentation_split(self, segments: list, d = '') -> None:
         m = len(segments)
         index = m // 2
         left = reduce(lambda x, y: x + d + y, map(str, segments[:index]))
         right = reduce(lambda x, y: x + d + y, map(str, segments[index:]))
         
         return left, right
-
-
-    """
-    Calculate the weighted split index
-    in_time: Timecode    - the time the caption appears on screen
-    out_time: Timecode   - the time the caption disappears from the screen
-    text: str       - the text to split
-    prioritize: bool    - whether to prioritize splitting at punctuation
-    """
-    def calculate_weighted_split(self, in_time: Timecode, out_time: Timecode, text: str, prioritize: bool = True) -> tuple:
-        split_index = self.find_split_index(text, prioritize)
-        split_time = self.weighted_average(in_time, out_time, len(text), split_index)
-        return split_index, split_time
 
 
     """
@@ -181,7 +168,6 @@ class SRTManager(CaptionManager):
     def weighted_average(self, in_time: Timecode, out_time: Timecode, n: int, index: int) -> Timecode:
         in_frame = in_time.get_total_frames()
         out_frame = out_time.get_total_frames()
-
         average_frame = int((in_frame * (n - index) + out_frame * index) / n)
 
         return Timecode(average_frame, in_time.frame_rate)
@@ -189,10 +175,12 @@ class SRTManager(CaptionManager):
 
     """
     Find the split index of the text
-    text: str       - the text to split
+    text: str           - the text to split
     prioritize: bool    - whether to prioritize splitting at punctuation
     """
     def find_split_index(self, text: str, prioritize: bool = True) -> int:
+        WIDTH = 2
+
         def search_text(regex: str, text: str):
             n = len(text) // 2
             split_index = len(text) + 1
@@ -201,17 +189,17 @@ class SRTManager(CaptionManager):
                 if abs(n - m.start()) < abs(n - split_index):
                     split_index = m.start()
                 else:
-                    return split_index+2
+                    return split_index+1+WIDTH
                 
-            return split_index+2
+            return split_index+1+WIDTH
 
         if prioritize:
             for regex in self.regex.split("|"):
-                if bool(re.search(regex, text[1:-1])):
-                    return search_text(regex, text[1:-1])
+                if bool(re.search(regex, text[WIDTH:-WIDTH])):
+                    return search_text(regex, text[WIDTH:-WIDTH])
             
         else:
-            return search_text(self.regex, text[1:-1])
+            return search_text(self.regex, text[WIDTH:-WIDTH])
             
 
     """

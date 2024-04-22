@@ -29,11 +29,13 @@ class FileMaker:
             next_marker = self.marker_manager.get_next_marker()
             while next_marker is not None and self.skip_marker(next_marker.name, True):
                 next_marker = self.marker_manager.get_next_marker()
-            
+
             # If no more markers, break
             if marker is None or next_marker is None:
                 break
             
+            print(f"Marker: {marker.name}\t\t{marker.timecode.get_timecode_in_frames()}")
+
             # Call the function provided by the caller
             update_file(self, marker, next_marker)
 
