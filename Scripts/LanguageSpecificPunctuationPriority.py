@@ -23,6 +23,18 @@ PRIORITY_BY_LANGUAGE = {
 
     # Amharic punctuation marks:
     # U+1362 ። ETHIOPIC FULL STOP
-
+    # U+1367 ፧ ETHIOPIC QUESTION MARK
+    # U+1364 ፤ ETHIOPIC COLON
+    # U+1368 ፨ ETHIOPIC PARAGRAPH SEPARATOR
+    # U+1363 ፣ ETHIOPIC COMMA
+    # U+1365 ፥ ETHIOPIC SEMICOLON
     "AMH": "(\u1362\s+)|[\!\?\u1367\u1364\u1368]|[\u1363\u1365\—]|\s",
+
+    # Armenian punctuation marks:
+    # U+0589 ։ ARMENIAN FULL STOP
+    # U+055C ՜ ARMENIAN EXCLAMATION MARK
+    # U+055E ՞ ARMENIAN QUESTION MARK
+    # U+055D ՝ ARMENIAN COMMA
+    # U+2024 ․ ONE DOT LEADER
+    "HYE": "(\u0589\s+)|(\:\s+)|[\u055C\u055E\u055D]|[\,\.\u2024\—]|\s",
 }
