@@ -3,30 +3,7 @@ from functools import reduce
 from ProToolsMarkers.Timecode import Timecode
 import codecs
 from Scripts.CaptionManager import CaptionManager
-
-PRIORITY_BY_LANGUAGE = {
-    "ENG": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
-    "BIS": "(\.\s+)|[\?\;]|[\,\:\—]|\s",
-
-    # Arabic punctuation marks:
-    # U+06D4 ۔ ARABIC FULL STOP
-    # U+061F ؟ ARABIC QUESTION MARK
-    # U+061B ؛ ARABIC SEMICOLON
-    # U+060C ، ARABIC COMMA
-    "ARA": "(\.\s+)|[\!\u06D4\u061F\u061B]|[\u060C\:\—]|\s",
-    "FAR": "(\.\s+)|[\!\u06D4\u061F\u061B]|[\u060C\:\—]|\s",
-    "URD": "(\.\s+)|[\!\u061F\u061B]|[\u060C\:\—]|\s",
-
-    # Chinese punctuation marks:
-    # U+3002 。 IDEOGRAPHIC FULL STOP
-    # U+FF1F ？ FULLWIDTH QUESTION MARK
-    # U+FF01 ！ FULLWIDTH EXCLAMATION MARK
-    # U+FF0C ， FULLWIDTH COMMA
-    # U+FF1A ： FULLWIDTH COLON
-    "YUE": "[\u3002\uFF1F\uFF01]|[\uFF0C\uFF1A\—]|\s",
-    "CMN": "[\u3002\uFF1F\uFF01]|[\uFF0C\uFF1A\—]|\s",
-    "JPN": "[\u3002\uFF1F\uFF01]|[\uFF0C\uFF1A\—]|\s"
-}
+from Scripts.LanguageSpecificPunctuationPriority import PRIORITY_BY_LANGUAGE
 
 MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT caption
 
