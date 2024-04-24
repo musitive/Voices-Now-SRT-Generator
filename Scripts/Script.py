@@ -26,15 +26,16 @@ class LdsScript(Script):
             "TRANSLATION" not in self.headers):
             raise Exception("Unable to resolve this LDS Script format.")
         
-        get_text_from_row = lambda cells: LdsScript.ScriptBlock(cells[self.headers["LOOP"]].text.replace("\n", "").strip(),
+        get_text_from_row = lambda cells: (cells[self.headers["LOOP"]].text.replace("\n", "").strip(),
+                                           LdsScript.ScriptBlock(cells[self.headers["LOOP"]].text.replace("\n", "").strip(),
                                                                 cells[self.headers["CHARACTER"]].text.replace("\n", "").strip(),
                                                                 cells[self.headers["ENGLISH"]].text.replace("\n", "").strip(),
-                                                                cells[self.headers["TRANSLATION"]].text.replace("\n", "").strip())
-        self.blocks = [get_text_from_row(row.cells) for row in self.document.tables[1].rows[1:]]
+                                                                cells[self.headers["TRANSLATION"]].text.replace("\n", "").strip()))
+        self.blocks = dict([get_text_from_row(row.cells) for row in self.document.tables[1].rows[1:]])
 
     """
     Get the translation of a specific row in the script
     translationRow  - The row number of the translation to get
     """
-    def get_translation(self, translationRow: int) -> str:
+    def get_translation(self, translationRow: str) -> str:
         return self.blocks[translationRow].translation

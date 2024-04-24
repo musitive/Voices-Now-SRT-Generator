@@ -1,3 +1,5 @@
+import csv
+
 PRIORITY_BY_LANGUAGE = {
     "ENG": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
     "BIS": "(\.\s+)|[\?\;]|[\,\:\—]|\s",
@@ -9,7 +11,7 @@ PRIORITY_BY_LANGUAGE = {
     # U+060C ، ARABIC COMMA
     "ARA": "(\.\s+)|[\!\u06D4\u061F\u061B]|[\u060C\:\—]|\s",
     "FAR": "(\.\s+)|[\!\u06D4\u061F\u061B]|[\u060C\:\—]|\s",
-    "URD": "(\.\s+)|[\!\u061F\u061B]|[\u060C\:\—]|\s",
+    "URD": "(\.\s+)|[\!\u061F\u061B]|[\u060C\:\—]|\s",      # removed arabic full stop because it is in the middle of a word
 
     # Chinese punctuation marks:
     # U+3002 。 IDEOGRAPHIC FULL STOP
@@ -38,3 +40,10 @@ PRIORITY_BY_LANGUAGE = {
     # U+2024 ․ ONE DOT LEADER
     "HYE": "(\u0589\s+)|(\:\s+)|[\u055C\u055E\u055D]|[\,\.\u2024\—]|\s",
 }
+
+def generate_languages() -> dict:
+    languages = {}
+    with open('/Users/studiod/Documents/GitHub/Voices-Now-SRT-Generator/Scripts/All_Languages.csv', 'r') as file:
+        reader = csv.reader(file)
+        languages = {lang[1].upper(): lang[2] for lang in reader}
+    return languages

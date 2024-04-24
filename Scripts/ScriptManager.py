@@ -6,13 +6,11 @@ class ScriptManager:
 class LdsScriptManager(ScriptManager):
     def __init__(self, filename: str):
         self.script = LdsScript(filename)
-        self.translation_index = 0
 
 
     """
     Iterate to the next translation in the script
     """
-    def get_next_translation(self) -> str:
-        translation = self.script.get_translation(self.translation_index)
-        self.translation_index += 1
+    def get_translation(self, loop_name: str) -> str:
+        translation = self.script.get_translation(loop_name)
         return translation

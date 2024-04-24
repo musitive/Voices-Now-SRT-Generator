@@ -110,7 +110,7 @@ class SRTManager(CaptionManager):
     sentence_tokenizer: function    - the sentence tokenizer function
     word_tokenizer: function        - the word tokenizer function
     """
-    def split_text_by_token(self, in_time: Timecode, out_time: Timecode, text: str, sentence_tokenizer, word_tokenizer) -> tuple:
+    def split_text_by_token(self, text: str, sentence_tokenizer, word_tokenizer) -> tuple:
         sentences = sentence_tokenizer(text)
         if len(sentences) > 1:
             return self.segmentation_split(sentences, self.sentence_d)

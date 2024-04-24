@@ -10,7 +10,8 @@ import Scripts.LanguageSpecificSRTManagers as LSSM
 
 LANG_SRT_MAP = {
     "THA": LSSM.ThaiSRTManager,
-    "KHM": LSSM.KhmerSRTManager
+    "KHM": LSSM.KhmerSRTManager,
+    "LAO": LSSM.LaoSRTManager
 }
 
 class CaptionMaker(FileMaker):
@@ -26,7 +27,7 @@ class CaptionMaker(FileMaker):
         # Inner function to update the file
         def update_file(self, marker, next_marker):
             # Get translation from Word Doc
-            translation = self.script_manager.get_next_translation()
+            translation = self.script_manager.get_translation(marker.name)
 
             # Generate SRT text
             if not self.skip_caption(translation, marker.name):
