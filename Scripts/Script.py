@@ -18,7 +18,7 @@ class LdsScript(Script):
         self.headers = {}
         header_row = self.document.tables[1].rows[0]
         for i in range(len(header_row.cells)):
-            self.headers[header_row.cells[i].text] = i
+            self.headers[header_row.cells[i].text.upper().strip()] = i
 
         if ("LOOP" not in self.headers or
             "CHARACTER" not in self.headers or
