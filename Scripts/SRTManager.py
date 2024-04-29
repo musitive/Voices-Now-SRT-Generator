@@ -3,7 +3,7 @@ from functools import reduce
 from ProToolsMarkers.Timecode import Timecode
 import codecs
 from Scripts.CaptionManager import CaptionManager
-from Scripts.LanguageSpecificPunctuationPriority import PRIORITY_BY_LANGUAGE
+from Scripts.LanguageSpecificPunctuationPriority import PRIORITY_BY_LANGUAGE as LANGUAGE, PRIORITY_BY_SCRIPT as SCRIPT, generate_script_type
 
 MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT caption
 
@@ -21,10 +21,16 @@ class SRTManager(CaptionManager):
         self.lang = lang
         self.sentence_d = sentence_d
         self.word_d = word_d
-        if lang in PRIORITY_BY_LANGUAGE:
-            self.regex = PRIORITY_BY_LANGUAGE[lang]
+        scripts = generate_script_type()
+
+        if lang in LANGUAGE:
+            self.regex = LANGUAGE[lang]
+        elif lang in scripts and scripts[lang] in SCRIPT:
+            self.regex = SCRIPT[scripts[lang]]
         else:
-            self.regex = PRIORITY_BY_LANGUAGE["ENG"]
+            self.regex = SCRIPT["Latin"]
+
+        return
 
 
     """
@@ -75,7 +81,13 @@ class SRTManager(CaptionManager):
             self.add_srt(in_time, out_time, text.strip())
             return
 
-        left, right = self.split_text_by_language(text)
+        try:
+            left, right = self.split_text_by_language(text)
+        except Exception as e:
+            print(f"Error: {e}.")
+            self.add_srt(in_time, out_time, text.strip())
+            return
+        
         l = len(left)
         r = len(right)
 
@@ -166,8 +178,11 @@ class SRTManager(CaptionManager):
                 if abs(n - m.start()) < abs(n - split_index):
                     split_index = m.start()
                 else:
-                    return split_index+1+WIDTH
+                    break
                 
+            if split_index == len(text) + 1:
+                raise Exception(f"Split index could not be found:\n{text}")
+            
             return split_index+1+WIDTH
 
         if prioritize:

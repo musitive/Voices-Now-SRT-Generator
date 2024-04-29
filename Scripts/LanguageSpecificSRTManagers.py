@@ -1,9 +1,9 @@
 from Scripts.SRTManager import SRTManager
-from ProToolsMarkers.Timecode import Timecode
 
 import thai_segmenter
 import khmernltk
 import laonlp
+import fugashi
 
 class ThaiSRTManager(SRTManager):
     def __init__(self, srt_filename: str):
@@ -42,3 +42,27 @@ class LaoSRTManager(SRTManager):
     """
     def split_text_by_language(self, text: str) -> tuple:
         return super().split_text_by_token(text, laonlp.sent_tokenize, laonlp.word_tokenize)
+    
+"""
+Japanese SRT Manager
+Japanese is a bit more complicated since sometimes it has spaces. It also has three writing systems: Kanji, Hiragana, and Katakana.
+In the case that a line is too long, we will use the fugashi library to split the text.
+"""
+class JapaneseSRTManager(SRTManager):
+    def __init__(self, srt_filename: str):
+        self.tagger = fugashi.Tagger()
+        super().__init__(srt_filename, lang="JPN")
+
+
+    """
+    Call the split_text_by_language function with the fugashi library.
+    https://pypi.org/project/fugashi/
+    """
+    def split_text_by_language(self, text: str) -> tuple:
+        try:
+            left, right = super().split_text_by_language(text)
+        except Exception as e:
+            words = self.tagger(text)
+            left, right = self.segmentation_split(words)
+
+        return left.strip(), right.strip()
