@@ -34,6 +34,10 @@ PRIORITY_BY_SCRIPT = {
     # U+055D ՝ ARMENIAN COMMA
     # U+2024 ․ ONE DOT LEADER
     "Armenian": "(\u0589\s+)|(\:\s+)|[\u055C\u055E\u055D]|[\,\.\u2024\—]|\s",
+
+    # Cyrillic punctuation marks:
+    "Cyrillic": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
+
 }
 
 PRIORITY_BY_LANGUAGE = {
@@ -43,6 +47,9 @@ PRIORITY_BY_LANGUAGE = {
     # Arabic punctuation marks, removed arabic full stop because it is in the middle of words
     "URD": "(\.\s+)|[\!\u061F\u061B]|[\u060C\:\—]|\s",
 
+    # Hebrew punctuation marks:
+    # U+05C3 ׃ HEBREW PUNCTUATION SOF PASUQ
+    "HEB": "(\.\s+)|(\:\s+)|(\u05C3\s+)|[\!\?\;]|[\,\:\—]|\s",
 }
 
 def generate_languages() -> dict:
