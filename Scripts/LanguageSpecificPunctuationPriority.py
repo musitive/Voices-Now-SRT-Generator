@@ -38,6 +38,11 @@ PRIORITY_BY_SCRIPT = {
     # Cyrillic punctuation marks:
     "Cyrillic": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
 
+    # Greek punctuation marks:
+    # U+0387 · GREEK ANO TELEIA
+    # U+00B7 · MIDDLE DOT
+    "Greek": "(\.\s+)|[\!\;\u0387\u00B7]|[\,\:\—]|\s",
+
 }
 
 PRIORITY_BY_LANGUAGE = {
