@@ -8,7 +8,8 @@ class ProToolsMarker:
         self.units = units
         self.name = name
         self.frame_rate = frame_rate
-        self.timecode = Timecode(location, frame_rate)
+        self.timecode = Timecode.from_frames(location, frame_rate)
+        self.timecode.hours = 0
     
     """
     Compare two ProToolsMarker objects to determine if they are equal

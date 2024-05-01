@@ -159,7 +159,7 @@ class SRTManager(CaptionManager):
         out_frame = out_time.get_total_frames()
         average_frame = int((in_frame * (n - index) + out_frame * index) / n)
 
-        return Timecode(average_frame, in_time.frame_rate)
+        return Timecode.from_frames(average_frame, in_time.frame_rate)
 
 
     """
