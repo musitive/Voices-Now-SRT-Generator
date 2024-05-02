@@ -59,7 +59,7 @@ class ProToolsMarkerManager:
             marker_id, location, time_reference, units, name, _ = marker_data
         else:
             marker_id, location, time_reference, units, name, _, _, _ = marker_data
-        self.markers.append(ProToolsMarker(marker_id, location, time_reference, units, name, self.FRAME_RATE))
+        self.markers.append(ProToolsMarker(marker_id, location, time_reference, units, name, ""))
 
 
     """

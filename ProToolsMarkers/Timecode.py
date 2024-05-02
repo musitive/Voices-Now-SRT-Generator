@@ -5,12 +5,6 @@ TIMECODE_IN_FRAMES = "{0:02d}:{1:02d}:{2:02d}:{3:02d}"   # Timecode in frames
 TIMECODE_IN_MS = "{0:02d}:{1:02d}:{2:02d},{3:03d}"       # Timecode in milliseconds
 
 class Timecode:
-
-    # TODO: Refactor the initializer to be compliant with Python
-    #       Look at this Stack Overflow post for guidance:
-    #       https://stackoverflow.com/questions/682504/what-is-a-clean-pythonic-way-to-have-multiple-constructors-in-python
-
-
     """
     Constructor based on separate time components
     hours: int      - the number of hours
