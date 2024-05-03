@@ -12,37 +12,49 @@ import re
 PT_MARKER_DATA_START = 12
 PT_FRAMERATE_INDEX = 4
 
+PT_MARKER_ID = "#"
+PT_LOCATION_ID = "LOCATION"
+PT_TIMEREF_ID = "TIME REFERENCE"
+PT_UNITS_ID = "UNITS"
+PT_NAME_ID = "NAME"
+PT_TNAME_ID = "TRACK NAME"
+PT_TTYPE_ID = "TRACK TYPE"
+PT_COMMENTS_ID = "COMMENTS"
+
 class ProToolsMarkerManager:
     def __init__(self, filename: str):
-        timecode_file = open(filename, "r")
-        timecode_index = 0
-        self.markers = []
-        self.current_marker_index = 0
+        with open(filename, 'r') as timecode_file:
+            timecode_index = 0
+            self.markers = []
+            self.current_marker_index = 0
 
-        # Iterate through the timecode file
-        for line in timecode_file:
-            
-            # Extract the framerate from the file
-            if timecode_index == PT_FRAMERATE_INDEX:
-                _, frame_rate = re.split(r"\t", line)
-                frame_rate, _ = re.split("\s", frame_rate, 1)
-                self.FRAME_RATE = float(frame_rate)
+            # Iterate through the timecode file
+            for line in timecode_file:
+                
+                # Extract the framerate from the file
+                if timecode_index == PT_FRAMERATE_INDEX:
+                    _, frame_rate = re.split(r"\t", line)
+                    frame_rate, _ = re.split("\s", frame_rate, 1)
+                    self.FRAME_RATE = float(frame_rate)
 
+                    timecode_index += 1
+                    continue
+
+                # Currently useless metadata from Pro Tools, skip it
+                elif timecode_index < PT_MARKER_DATA_START:
+                    timecode_index += 1
+                    continue
+
+                elif timecode_index == PT_MARKER_DATA_START:
+                    header_data = re.split(r"\t", line)
+                    self.column_headers = {header_data[i] : i for i in range(len(header_data))}
+                    continue
+
+                # Split the marker data and timestamp
+                self.add_new_marker(line)
+
+                # Update iterators
                 timecode_index += 1
-                continue
-
-            # Currently useless metadata from Pro Tools, skip it
-            elif timecode_index < PT_MARKER_DATA_START:
-                timecode_index += 1
-                continue
-
-            # Split the marker data and timestamp
-            self.add_new_marker(line)
-
-            # Update iterators
-            timecode_index += 1
-
-        timecode_file.close()
 
     # Refactor this code
 
@@ -54,12 +66,14 @@ class ProToolsMarkerManager:
         marker_data = re.split(r"\t", line)
         marker_data = [x.strip() for x in marker_data]
 
-        # Based on the verison of Pro Tools, the marker data will have different lengths
-        if len(marker_data) == 6:
-            marker_id, location, time_reference, units, name, _ = marker_data
-        else:
-            marker_id, location, time_reference, units, name, _, _, _ = marker_data
-        self.markers.append(ProToolsMarker(marker_id, location, time_reference, units, name, ""))
+        marker_id = marker_data[self.column_headers[PT_MARKER_ID]]
+        location = marker_data[self.column_headers[PT_LOCATION_ID]]
+        time_reference = marker_data[self.column_headers[PT_TIMEREF_ID]]
+        units = marker_data[self.column_headers[PT_UNITS_ID]]
+        name = marker_data[self.column_headers[PT_NAME_ID]]
+        comments = marker_data[self.column_headers[PT_COMMENTS_ID]]
+
+        self.markers.append(ProToolsMarker(marker_id, location, time_reference, units, name, comments))
 
 
     """
@@ -79,22 +93,6 @@ class ProToolsMarkerManager:
     index: int      - the index of the marker
     """
     def get_marker(self, index: int) -> ProToolsMarker:
-        if index < 0 or index >= len(self.markers):
-            # raise Exception("The Pro Tools Marker index {0} is out of bounds. Make sure that the number of named markers matches the number of loops.".format(index))
-            return None
-        
+        assert index >= 0 and index < len(self.markers), f"The Pro Tools Marker index {index} is out of bounds"        
         return self.markers[index]
-        
-
-    """
-    Get all markers
-    """
-    def get_markers(self):
-        return self.markers
     
-
-    """
-    Get the number of markers
-    """
-    def get_number_of_markers(self) -> int:
-        return len(self.markers)
