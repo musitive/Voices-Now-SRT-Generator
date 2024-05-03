@@ -48,6 +48,21 @@ PRIORITY_BY_SCRIPT = {
     # U+0965 ॥ DEVANAGARI DOUBLE DANDA
     # U+0A4D ੍ GURMUKHI SIGN VIRAMA
     "Gurumukhi": "(\u0965\s+)|(\u0964\s+)|(\.\s+)|[\u0A4D\!\?\;]|[\,\:\—]|\s",
+
+    # Mkhedruli punctuation marks:
+    # Supposedly the same as Latin script
+    "Mkhedruli": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
+
+    # Burmese punctuation marks:
+    # U+104A ၊ MYANMAR SIGN LITTLE SECTION
+    # U+104B ။ MYANMAR SIGN SECTION
+    # EM DASH is used as a colon
+    # U+1038 း။ MYANMAR SIGN VISARGA
+    # း။ is used as a question mark
+    # U+104F ၏ MYANMAR SYMBOL GENITIVE
+    # U+104D ၍ MYANMAR SYMBOL SHAN ONE
+    "Burmese": "(\u104B\s+)|(\u104F\s+)|(\u104D\s+)|(\u1038\u104B)|(\-\u104A)|\s",
+
 }
 
 PRIORITY_BY_LANGUAGE = {

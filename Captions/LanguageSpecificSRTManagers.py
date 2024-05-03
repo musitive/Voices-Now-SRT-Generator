@@ -4,6 +4,7 @@ import thai_segmenter
 import khmernltk
 import laonlp
 import fugashi
+import botok
 
 class ThaiSRTManager(SRTManager):
     def __init__(self, srt_filename: str):
@@ -66,3 +67,29 @@ class JapaneseSRTManager(SRTManager):
             left, right = self.segmentation_split(words)
 
         return left.strip(), right.strip()
+
+
+class TibetanSRTManager(SRTManager):
+    def __init__(self, srt_filename: str):
+        super().__init__(srt_filename, max_line_len=33, lang="TIB")
+
+    """
+    Wrapper function for the sentence tokenizer in the botok library.
+    """
+    def sentence_tokenize(self, text: str) -> list:
+        t = botok.Text(text)
+        return t.tokenize_sentences_plaintext()
+    
+    """
+    Wrapper function for the word tokenizer in the botok library.
+    """
+    def word_tokenize(self, text: str) -> list:
+        t = botok.Text(text)
+        return t.tokenize_words_raw_text()
+
+    """
+    Call the split_text_by_language function with the botok library.
+    https://pypi.org/project/botok/
+    """
+    def split_text_by_language(self, text: str) -> tuple:
+        return super().split_text_by_token(text, self.sentence_tokenize, self.word_tokenize)
