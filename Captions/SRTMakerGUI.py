@@ -7,7 +7,7 @@ py -m PyInstaller -w --onefile "SRT Generator.py"
 """
 
 import PySimpleGUI as sg
-from Scripts.CaptionMaker import SRTMaker
+from Captions.CaptionMaker import SRTMaker
 
 def main() -> None:
     layout = [  [sg.T("")], \

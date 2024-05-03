@@ -1,4 +1,4 @@
-from Scripts.FileMaker import FileMaker
+from Captions.FileMaker import FileMaker
 from ProToolsMarkers.ProToolsMarkerManager import ProToolsMarkerManager
 from Scripts.ScriptManager import LdsScriptManager
 

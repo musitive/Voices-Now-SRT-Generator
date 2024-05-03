@@ -1,4 +1,4 @@
-from Scripts.SRTManager import SRTManager
+from Captions.SRTManager import SRTManager
 
 import thai_segmenter
 import khmernltk

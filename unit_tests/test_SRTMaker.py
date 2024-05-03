@@ -1,10 +1,10 @@
 import filecmp
 import sys
-sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
 
 import unittest
-from Scripts.CaptionMaker import SRTMaker
-from Scripts.LanguageSpecificPunctuationPriority import generate_languages2
+from Captions.CaptionMaker import SRTMaker
+from Captions.LanguageSpecificPunctuationPriority import generate_languages2
 import os
 
 class TestSRTMaker(unittest.TestCase):

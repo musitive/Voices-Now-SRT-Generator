@@ -2,11 +2,11 @@ import sys
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/ProToolsMarkers")
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
 
-from Scripts.FileMaker import FileMaker
+from Captions.FileMaker import FileMaker
 from Scripts.ScriptManager import LdsScriptManager
 from ProToolsMarkers.ProToolsMarkerManager import ProToolsMarkerManager
-from Scripts.SRTManager import SRTManager
-import Scripts.LanguageSpecificSRTManagers as LSSM
+from Captions.SRTManager import SRTManager
+import Captions.LanguageSpecificSRTManagers as LSSM
 
 LANG_SRT_MAP = {
     "THA": LSSM.ThaiSRTManager,

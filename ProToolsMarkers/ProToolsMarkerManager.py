@@ -24,7 +24,6 @@ PT_COMMENTS_ID = "COMMENTS"
 class ProToolsMarkerManager:
     def __init__(self, filename: str):
         with open(filename, 'r') as timecode_file:
-            timecode_index = 0
             self.markers = []
             self.current_marker_index = 0
 

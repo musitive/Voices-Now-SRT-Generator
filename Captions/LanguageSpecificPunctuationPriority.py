@@ -43,6 +43,11 @@ PRIORITY_BY_SCRIPT = {
     # U+00B7 · MIDDLE DOT
     "Greek": "(\.\s+)|[\!\;\u0387\u00B7]|[\,\:\—]|\s",
 
+    # Gurumukhi punctuation marks:
+    # U+0964 । DEVANAGARI DANDA
+    # U+0965 ॥ DEVANAGARI DOUBLE DANDA
+    # U+0A4D ੍ GURMUKHI SIGN VIRAMA
+    "Gurumukhi": "(\u0965\s+)|(\u0964\s+)|(\.\s+)|[\u0A4D\!\?\;]|[\,\:\—]|\s",
 }
 
 PRIORITY_BY_LANGUAGE = {
@@ -59,21 +64,21 @@ PRIORITY_BY_LANGUAGE = {
 
 def generate_languages() -> dict:
     languages = {}
-    with open('/Users/studiod/Documents/GitHub/Voices-Now-SRT-Generator/Scripts/All_Languages.csv', 'r') as file:
+    with open('/Users/studiod/Documents/GitHub/Voices-Now-SRT-Generator/Captions/All_Languages.csv', 'r') as file:
         reader = csv.reader(file)
         languages = {lang[1].upper(): lang[2] for lang in reader}
     return languages
 
 def generate_languages2() -> dict:
     languages = {}
-    with open('/Users/studiod/Documents/GitHub/Voices-Now-SRT-Generator/Scripts/All_Languages.csv', 'r') as file:
+    with open('/Users/studiod/Documents/GitHub/Voices-Now-SRT-Generator/Captions/All_Languages.csv', 'r') as file:
         reader = csv.reader(file)
         languages = {lang[2]: lang[1].upper() for lang in reader}
     return languages
 
 def generate_script_type() -> dict:
     languages = {}
-    with open('/Users/studiod/Documents/GitHub/Voices-Now-SRT-Generator/Scripts/All_Languages.csv', 'r') as file:
+    with open('/Users/studiod/Documents/GitHub/Voices-Now-SRT-Generator/Captions/All_Languages.csv', 'r') as file:
         reader = csv.reader(file)
         languages = {lang[1].upper(): lang[3] for lang in reader}
     return languages
