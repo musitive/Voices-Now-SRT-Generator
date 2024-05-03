@@ -28,35 +28,25 @@ class ProToolsMarkerManager:
             self.markers = []
             self.current_marker_index = 0
 
-            # Iterate through the timecode file
-            for line in timecode_file:
-                
-                # Extract the framerate from the file
-                if timecode_index == PT_FRAMERATE_INDEX:
-                    _, frame_rate = re.split(r"\t", line)
-                    frame_rate, _ = re.split("\s", frame_rate, 1)
-                    self.FRAME_RATE = float(frame_rate)
+            content = timecode_file.readlines()
 
-                    timecode_index += 1
-                    continue
+            _, frame_rate = re.split(r"\t", content[PT_FRAMERATE_INDEX])
+            frame_rate, _ = re.split("\s", frame_rate, 1)
+            self.FRAME_RATE = float(frame_rate)
 
-                # Currently useless metadata from Pro Tools, skip it
-                elif timecode_index < PT_MARKER_DATA_START:
-                    timecode_index += 1
-                    continue
+            header_data = re.split(r"\t", content[PT_MARKER_DATA_START])
+            self.column_headers = {header_data[i] : i for i in range(len(header_data))}
 
-                elif timecode_index == PT_MARKER_DATA_START:
-                    header_data = re.split(r"\t", line)
-                    self.column_headers = {header_data[i] : i for i in range(len(header_data))}
-                    continue
+            assert PT_MARKER_ID in self.column_headers, "Error: Pro Tools Marker data is missing a required field: #"
+            assert PT_LOCATION_ID in self.column_headers, "Error: Pro Tools Marker data is missing a required field: LOCATION"
+            assert PT_TIMEREF_ID in self.column_headers, "Error: Pro Tools Marker data is missing a required field: TIME REFERENCE"
+            assert PT_UNITS_ID in self.column_headers, "Error: Pro Tools Marker data is missing a required field: UNITS"
+            assert PT_NAME_ID in self.column_headers, "Error: Pro Tools Marker data is missing a required field: NAME"
+            assert PT_COMMENTS_ID in self.column_headers, "Error: Pro Tools Marker data is missing a required field: COMMENTS"
 
-                # Split the marker data and timestamp
+            for line in content[PT_MARKER_DATA_START+1:]:
                 self.add_new_marker(line)
-
-                # Update iterators
-                timecode_index += 1
-
-    # Refactor this code
+            
 
     """
     Add a new marker to the list of markers
@@ -66,12 +56,15 @@ class ProToolsMarkerManager:
         marker_data = re.split(r"\t", line)
         marker_data = [x.strip() for x in marker_data]
 
-        marker_id = marker_data[self.column_headers[PT_MARKER_ID]]
-        location = marker_data[self.column_headers[PT_LOCATION_ID]]
-        time_reference = marker_data[self.column_headers[PT_TIMEREF_ID]]
-        units = marker_data[self.column_headers[PT_UNITS_ID]]
-        name = marker_data[self.column_headers[PT_NAME_ID]]
-        comments = marker_data[self.column_headers[PT_COMMENTS_ID]]
+        try:
+            marker_id = marker_data[self.column_headers[PT_MARKER_ID]]
+            location = marker_data[self.column_headers[PT_LOCATION_ID]]
+            time_reference = marker_data[self.column_headers[PT_TIMEREF_ID]]
+            units = marker_data[self.column_headers[PT_UNITS_ID]]
+            name = marker_data[self.column_headers[PT_NAME_ID]]
+            comments = marker_data[self.column_headers[PT_COMMENTS_ID]]
+        except KeyError as e:
+            raise(f"Error: Pro Tools Marker data is missing a required field: {e}")
 
         self.markers.append(ProToolsMarker(marker_id, location, time_reference, units, name, comments))
 
