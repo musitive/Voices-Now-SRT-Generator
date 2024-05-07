@@ -6,23 +6,20 @@ from Captions.FileMaker import FileMaker
 from Scripts.ScriptManager import LdsScriptManager
 from ProToolsMarkers.ProToolsMarkerManager import ProToolsMarkerManager
 from Captions.SRTManager import SRTManager
-import Captions.LanguageSpecificSRTManagers as LSSM
+from Captions.LanguageSpecificSRTManagers import LANG_SRT_MAP
 
-LANG_SRT_MAP = {
-    "THA": LSSM.ThaiSRTManager,
-    "KHM": LSSM.KhmerSRTManager,
-    "LAO": LSSM.LaoSRTManager,
-    "JPN": LSSM.JapaneseSRTManager
-}
+# ================================================================================================
 
 class CaptionMaker(FileMaker):
+    # ----------------------------------------------------------------------------
+    # Caption Maker
     def __init__(self, timecode_filename: str):
         super().__init__(timecode_filename)
+    # ----------------------------------------------------------------------------
 
-
-    """
-    Create captions from the script and timecode markers
-    """
+    # ----------------------------------------------------------------------------
+    # Create captions from the script and timecode markers
+    # split:    bool    - split the captions into multiple lines
     def create_captions(self, split: bool = True) -> None:
 
         # Inner function to update the file
@@ -39,30 +36,33 @@ class CaptionMaker(FileMaker):
 
         # Write SRTs to file
         self.caption_manager.write_captions_to_file()
+    # ----------------------------------------------------------------------------
 
-        return
-
-
-    """
-    Logic to skip captions
-    caption:        Caption text
-    marker_name:    Marker name
-    """
+    # ----------------------------------------------------------------------------
+    # Logic to skip captions
+    # caption:        Caption text
+    # marker_name:    Marker name
     def skip_caption(self, caption: str, marker_name) -> bool:
-        return caption == "(R)" or caption == "DO NOT TRANSLATE" or marker_name == 'w'
+        return caption == "(R)" or caption == "DO NOT TRANSLATE"
+    # ----------------------------------------------------------------------------
 
+# ================================================================================================
 
 class SRTMaker(CaptionMaker):
+    # ----------------------------------------------------------------------------
+    # SRT Maker
+    # script_filename: str    - the name of the file containing the script data
+    # timecode_filename: str  - the name of the file containing the timecode data
+    # srt_filename: str       - the name of the file containing the SRT data
+    # lang: str               - the language of the SRT data
     def __init__(self, script_filename: str, timecode_filename: str, srt_filename: str, lang: str):
-        self.marker_manager = ProToolsMarkerManager(timecode_filename)          # Open Pro Tools Marker file
-        self.script_manager = LdsScriptManager(script_filename)                 # Open Word Document
+        self.marker_manager = ProToolsMarkerManager(timecode_filename)
+        self.script_manager = LdsScriptManager(script_filename)
 
         if lang in LANG_SRT_MAP:
             self.caption_manager = LANG_SRT_MAP[lang](srt_filename)
         else:
             self.caption_manager = SRTManager(srt_filename, lang=lang)
+    # ----------------------------------------------------------------------------
 
-
-# Test Case
-# if __name__ == '__main__':
-#     create_srt_file("tests/BMVL_502_IND.docx", "tests/BMVL_502_timecode.txt", "tests/BMVL_502_IND_refactor.srt")
+# ================================================================================================
