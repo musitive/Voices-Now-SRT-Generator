@@ -1,6 +1,6 @@
 import filecmp
 import sys
-sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator")
 
 import unittest
 from Captions.CaptionMaker import SRTMaker

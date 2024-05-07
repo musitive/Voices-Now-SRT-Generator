@@ -1,3 +1,6 @@
+import sys
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator")
+
 import unittest
 from ProToolsMarkers.Timecode import Timecode
 

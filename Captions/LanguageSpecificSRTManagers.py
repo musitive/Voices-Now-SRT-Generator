@@ -20,7 +20,7 @@ class LanguageSpecificSRTManager(SRTManager):
     # lang: str               - the language code
     # sentence_d: str         - the delimiter for sentence tokenization
     # word_d: str             - the delimiter for word tokenization
-    def __init__(self, srt_filename: str, sentence_tokenizer: function, word_tokenizer: function,
+    def __init__(self, srt_filename: str, sentence_tokenizer, word_tokenizer,
                  max_line_len: int = 33, lang: str = "ENG", sentence_d = '', word_d = ''):
         super().__init__(srt_filename, max_line_len, lang, sentence_d, word_d)
         self.sentence_tokenizer = sentence_tokenizer
