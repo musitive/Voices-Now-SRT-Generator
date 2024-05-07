@@ -11,7 +11,8 @@ import Captions.LanguageSpecificSRTManagers as LSSM
 LANG_SRT_MAP = {
     "THA": LSSM.ThaiSRTManager,
     "KHM": LSSM.KhmerSRTManager,
-    "LAO": LSSM.LaoSRTManager
+    "LAO": LSSM.LaoSRTManager,
+    "JPN": LSSM.JapaneseSRTManager
 }
 
 class CaptionMaker(FileMaker):

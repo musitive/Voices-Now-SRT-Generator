@@ -9,6 +9,7 @@ py -m unittest TestProToolsMarkerManager
 from ProToolsMarkers.ProToolsMarker import ProToolsMarker
 import re
 
+PT_COLUMN_HEADERS = 11
 PT_MARKER_DATA_START = 12
 PT_FRAMERATE_INDEX = 4
 
@@ -33,8 +34,8 @@ class ProToolsMarkerManager:
             frame_rate, _ = re.split("\s", frame_rate, 1)
             self.FRAME_RATE = float(frame_rate)
 
-            header_data = re.split(r"\t", content[PT_MARKER_DATA_START])
-            self.column_headers = {header_data[i] : i for i in range(len(header_data))}
+            header_data = re.split(r"\t", content[PT_COLUMN_HEADERS])
+            self.column_headers = {header_data[i].strip() : i for i in range(len(header_data))}
 
             assert PT_MARKER_ID in self.column_headers, "Error: Pro Tools Marker data is missing a required field: #"
             assert PT_LOCATION_ID in self.column_headers, "Error: Pro Tools Marker data is missing a required field: LOCATION"
@@ -43,7 +44,7 @@ class ProToolsMarkerManager:
             assert PT_NAME_ID in self.column_headers, "Error: Pro Tools Marker data is missing a required field: NAME"
             assert PT_COMMENTS_ID in self.column_headers, "Error: Pro Tools Marker data is missing a required field: COMMENTS"
 
-            for line in content[PT_MARKER_DATA_START+1:]:
+            for line in content[PT_MARKER_DATA_START:]:
                 self.add_new_marker(line)
             
 
@@ -65,7 +66,7 @@ class ProToolsMarkerManager:
         except KeyError as e:
             raise(f"Error: Pro Tools Marker data is missing a required field: {e}")
 
-        self.markers.append(ProToolsMarker(marker_id, location, time_reference, units, name, comments))
+        self.markers.append(ProToolsMarker(marker_id, location, time_reference, units, name, self.FRAME_RATE, comments))
 
 
     """

@@ -16,7 +16,14 @@ class LdsScript(Script):
         self.document = Document(wordFilename)
 
         self.headers = {}
-        header_row = self.document.tables[1].rows[0]
+
+        # Find the correct table
+        for table in self.document.tables:
+            if table.rows[0].cells[1].text.strip().upper() == "CHARACTER":
+                self.translation_table = table
+                break
+        
+        header_row = self.translation_table.rows[0]
         for i in range(len(header_row.cells)):
             self.headers[header_row.cells[i].text.upper().strip()] = i
 
@@ -31,7 +38,7 @@ class LdsScript(Script):
                                                                 cells[self.headers["CHARACTER"]].text.replace("\n", "").strip(),
                                                                 cells[self.headers["ENGLISH"]].text.replace("\n", "").strip(),
                                                                 cells[self.headers["TRANSLATION"]].text.replace("\n", "").strip()))
-        self.blocks = dict([get_text_from_row(row.cells) for row in self.document.tables[1].rows[1:]])
+        self.blocks = dict([get_text_from_row(row.cells) for row in self.translation_table.rows[1:]])
 
     """
     Get the translation of a specific row in the script

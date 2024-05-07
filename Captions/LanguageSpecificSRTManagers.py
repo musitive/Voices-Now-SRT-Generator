@@ -3,7 +3,7 @@ from Captions.SRTManager import SRTManager
 import thai_segmenter
 import khmernltk
 import laonlp
-import fugashi
+import konoha
 import botok
 
 class ThaiSRTManager(SRTManager):
@@ -51,22 +51,28 @@ In the case that a line is too long, we will use the fugashi library to split th
 """
 class JapaneseSRTManager(SRTManager):
     def __init__(self, srt_filename: str):
-        self.tagger = fugashi.Tagger()
-        super().__init__(srt_filename, lang="JPN")
-
+        super().__init__(srt_filename, max_line_len=33, lang="JPN")
 
     """
-    Call the split_text_by_language function with the fugashi library.
-    https://pypi.org/project/fugashi/
+    Wrapper function for the sentence tokenizer in the botok library.
+    """
+    def sentence_tokenize(self, text: str) -> list:
+        t = konoha.SentenceTokenizer()
+        return t.tokenize(text)
+    
+    """
+    Wrapper function for the word tokenizer in the botok library.
+    """
+    def word_tokenize(self, text: str) -> list:
+        t = konoha.WordTokenizer()
+        return t.tokenize(text)
+
+    """
+    Call the split_text_by_language function with the botok library.
+    https://github.com/himkt/konoha
     """
     def split_text_by_language(self, text: str) -> tuple:
-        try:
-            left, right = super().split_text_by_language(text)
-        except Exception as e:
-            words = self.tagger(text)
-            left, right = self.segmentation_split(words)
-
-        return left.strip(), right.strip()
+        return super().split_text_by_token(text, self.sentence_tokenize, self.word_tokenize)
 
 
 class TibetanSRTManager(SRTManager):
