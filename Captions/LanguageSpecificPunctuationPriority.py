@@ -122,23 +122,35 @@ PRIORITY_BY_LANGUAGE = {
 
 # ================================================================================================
 
+# ------------------------------------------------------------------------------------
+# Generate a dictionary of language codes to languages
+## returns: dict
 def generate_languages() -> dict:
     languages = {}
     with open(LDS_LANGUAGES_CSV, 'r') as file:
         reader = csv.reader(file)
         languages = {lang[1].upper(): lang[2] for lang in reader}
     return languages
+# ------------------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------------
+# Generate a dictionary of languages to language codes
+## returns: dict
 def generate_languages2() -> dict:
     languages = {}
     with open(LDS_LANGUAGES_CSV, 'r') as file:
         reader = csv.reader(file)
         languages = {lang[2]: lang[1].upper() for lang in reader}
     return languages
+# ------------------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------------
+# Generate a dictionary of language codes to script types
+## returns: dict
 def generate_script_type() -> dict:
     languages = {}
     with open(LDS_LANGUAGES_CSV, 'r') as file:
         reader = csv.reader(file)
         languages = {lang[1].upper(): lang[3] for lang in reader}
     return languages
+# ------------------------------------------------------------------------------------

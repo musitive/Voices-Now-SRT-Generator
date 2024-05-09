@@ -56,8 +56,15 @@ class SRTMaker(CaptionMaker):
     # srt_filename: str       - the name of the file containing the SRT data
     # lang: str               - the language of the SRT data
     def __init__(self, script_filename: str, timecode_filename: str, srt_filename: str, lang: str):
-        self.marker_manager = ProToolsMarkerManager(timecode_filename)
+        
         self.script_manager = LdsScriptManager(script_filename)
+        if timecode_filename is not None:
+            self.marker_manager = ProToolsMarkerManager.from_file(timecode_filename)
+        elif self.script_manager.has_timecodes():
+            timecode_dict = self.script_manager.get_timecodes()
+            self.marker_manager = ProToolsMarkerManager.from_script(timecode_dict)
+        else:
+            raise Exception("No timecode file provided and no timecodes found in script file")
 
         if lang in LANG_SRT_MAP:
             self.caption_manager = LANG_SRT_MAP[lang](srt_filename)

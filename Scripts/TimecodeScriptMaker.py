@@ -4,7 +4,7 @@ from Scripts.ScriptManager import LdsScriptManager
 
 class TimecodeScriptMaker(FileMaker):
     def __init__(self, timecode_filename: str, script_filename: str):
-        self.marker_manager = ProToolsMarkerManager(timecode_filename)          # Open Pro Tools Marker file
+        self.marker_manager = ProToolsMarkerManager.from_file(timecode_filename)          # Open Pro Tools Marker file
         self.script_manager = LdsScriptManager(script_filename)                 # Open Word Document
 
 

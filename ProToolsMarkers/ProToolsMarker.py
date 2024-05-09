@@ -11,7 +11,19 @@ EXAMPLE PRO TOOLS MARKER 2
 1   	01:00:41:20  	2154152           	Samples  	1                                	Cues                             	Ruler                            	
 """
 
+import re
 from ProToolsMarkers.Timecode import Timecode
+
+# ================================================================================================
+
+PT_MARKER_ID = "#"
+PT_LOCATION_ID = "LOCATION"
+PT_TIMEREF_ID = "TIME REFERENCE"
+PT_UNITS_ID = "UNITS"
+PT_NAME_ID = "NAME"
+PT_TNAME_ID = "TRACK NAME"
+PT_TTYPE_ID = "TRACK TYPE"
+PT_COMMENTS_ID = "COMMENTS"
 
 # ================================================================================================
 
@@ -32,8 +44,8 @@ class ProToolsMarker:
         assert marker_id != "" and int(marker_id) >= 0, f"Invalid ProTools Marker ID: {marker_id}"
         assert len(location) == 11 and location[2] == ":" and location[5] == ":" and location[8] == ":",\
               f"Invalid timecode format {location} for ProTools Marker {marker_id}"
-        assert int(time_reference) >= 0, f"Invalid location {time_reference} for ProTools Marker {marker_id}"
-        assert units == "Samples", f"Unit type {units} unsupported at ProTools Marker {marker_id}"
+        # assert int(time_reference) >= 0, f"Invalid location {time_reference} for ProTools Marker {marker_id}"
+        # assert units == "Samples", f"Unit type {units} unsupported at ProTools Marker {marker_id}"
         assert name != "", f"ProTools Marker name cannot be empty at ProTools Marker {marker_id}"
         assert 0 < frame_rate, "Frame rate must be greater than 0"
 
@@ -48,6 +60,30 @@ class ProToolsMarker:
 
         # TODO: rewrite this so it knows how to better handle the hours
         self.timecode.hours = 0
+    # ----------------------------------------------------------------------------
+
+    # ----------------------------------------------------------------------------
+    # Add a new marker to the list of markers
+    # line: str       - the line of text containing the marker data
+    ## returns: ProToolsMarker
+    @staticmethod
+    def add_new_marker(self, line: str) -> 'ProToolsMarker':
+        # Split the line into marker data
+        marker_data = re.split(r"\t", line)
+        marker_data = [x.strip() for x in marker_data]
+
+        # Verify that the marker data is complete
+        try:
+            marker_id = marker_data[self.column_headers[PT_MARKER_ID]]
+            location = marker_data[self.column_headers[PT_LOCATION_ID]]
+            time_reference = marker_data[self.column_headers[PT_TIMEREF_ID]]
+            units = marker_data[self.column_headers[PT_UNITS_ID]]
+            name = marker_data[self.column_headers[PT_NAME_ID]]
+            comments = marker_data[self.column_headers[PT_COMMENTS_ID]]
+        except KeyError as e:
+            raise(f"Error: Pro Tools Marker data is missing a required field: {e}")
+
+        return ProToolsMarker(marker_id, location, time_reference, units, name, self.FRAME_RATE, comments)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------

@@ -18,7 +18,7 @@ class FileMaker:
     # FileMaker
     # timecode_filename: str    - the name of the file containing the timecode data
     def __init__(self, timecode_filename: str):
-        self.marker_manager = ProToolsMarkerManager(timecode_filename)
+        self.marker_manager = ProToolsMarkerManager.from_file(timecode_filename)
         self.script_manager = None
     # ----------------------------------------------------------------------------
 
