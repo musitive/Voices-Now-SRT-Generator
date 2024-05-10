@@ -81,12 +81,13 @@ class ProToolsMarkerManager:
             assert PT_COMMENTS_ID in column_headers, f"Error: Pro Tools Marker data is missing a required field: {PT_COMMENTS_ID}"
 
             ## Create head node for linked list
-            head_node = ProToolsMarkerManager.MarkerNode(ProToolsMarker.add_new_marker(content[PT_MARKER_DATA_START]))
+            line = content[PT_MARKER_DATA_START]
+            head_node = ProToolsMarkerManager.MarkerNode(ProToolsMarker.add_new_marker(column_headers, line, frame_rate))
             current_node = head_node
 
             ## Add markers to linked list
             for line in content[PT_MARKER_DATA_START+1:]:
-                next_marker = ProToolsMarker.add_new_marker(line)
+                next_marker = ProToolsMarker.add_new_marker(column_headers, line, frame_rate)
 
                 # If the next marker is the end of a segment, set the current node's end to the next marker
                 # Otherwise, add the next marker to the linked list

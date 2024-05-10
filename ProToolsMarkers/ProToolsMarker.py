@@ -67,23 +67,23 @@ class ProToolsMarker:
     # line: str       - the line of text containing the marker data
     ## returns: ProToolsMarker
     @staticmethod
-    def add_new_marker(self, line: str) -> 'ProToolsMarker':
+    def add_new_marker(column_headers: dict, line: str, frame_rate: float) -> 'ProToolsMarker':
         # Split the line into marker data
         marker_data = re.split(r"\t", line)
         marker_data = [x.strip() for x in marker_data]
 
         # Verify that the marker data is complete
         try:
-            marker_id = marker_data[self.column_headers[PT_MARKER_ID]]
-            location = marker_data[self.column_headers[PT_LOCATION_ID]]
-            time_reference = marker_data[self.column_headers[PT_TIMEREF_ID]]
-            units = marker_data[self.column_headers[PT_UNITS_ID]]
-            name = marker_data[self.column_headers[PT_NAME_ID]]
-            comments = marker_data[self.column_headers[PT_COMMENTS_ID]]
+            marker_id = marker_data[column_headers[PT_MARKER_ID]]
+            location = marker_data[column_headers[PT_LOCATION_ID]]
+            time_reference = marker_data[column_headers[PT_TIMEREF_ID]]
+            units = marker_data[column_headers[PT_UNITS_ID]]
+            name = marker_data[column_headers[PT_NAME_ID]]
+            comments = marker_data[column_headers[PT_COMMENTS_ID]]
         except KeyError as e:
             raise(f"Error: Pro Tools Marker data is missing a required field: {e}")
 
-        return ProToolsMarker(marker_id, location, time_reference, units, name, self.FRAME_RATE, comments)
+        return ProToolsMarker(marker_id, location, time_reference, units, name, frame_rate, comments)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
