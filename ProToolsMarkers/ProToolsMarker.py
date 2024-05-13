@@ -4,11 +4,14 @@ EXAMPLE PRO TOOLS MARKER 1
 
 #   	LOCATION     	TIME REFERENCE    	UNITS    	NAME                             	COMMENTS
 1   	01:00:39:12  	2043360           	Samples  	1                                	
+
 ========================================================================================================================================================
+
 EXAMPLE PRO TOOLS MARKER 2
 
 #   	LOCATION     	TIME REFERENCE    	UNITS    	NAME                             	TRACK NAME                       	TRACK TYPE   	COMMENTS
 1   	01:00:41:20  	2154152           	Samples  	1                                	Cues                             	Ruler                            	
+
 """
 
 import re

@@ -16,11 +16,18 @@ LDS_TRANSLATION_ID = "TRANSLATION"
 class LdsScript(Script):
     # ----------------------------------------------------------------------------
     class ScriptBlock:
+        # ------------------------------------------------------------------------
+        # ScriptBlock
+        # loop: str         - the loop number of the block
+        # character: str    - the character speaking in the block
+        # english: str      - the english text of the block
+        # translation: str  - the translation of the block
         def __init__(self, loop: str, character: str, english: str, translation: str):
             self.loop = loop
             self.character = character
             self.english = english
             self.translation = translation
+        # ------------------------------------------------------------------------
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
@@ -37,24 +44,42 @@ class LdsScript(Script):
                 self.translation_table = table
                 break
         
+        # Create a dictionary of column headers
         header_row = self.translation_table.rows[0]
         for i in range(len(header_row.cells)):
             self.headers[header_row.cells[i].text.upper().strip()] = i
 
-        if (LDS_LOOP_ID not in self.headers or
-            LDS_CHARACTER_ID not in self.headers or
-            LDS_DIAL_ID not in self.headers or
-            LDS_TRANSLATION_ID not in self.headers):
-            raise Exception("Unable to resolve this LDS Script format.")
+        # Check for required fields
+        assert LDS_LOOP_ID in self.headers, "Unable to resolve this LDS Script format. LOOP column not found."
+        assert LDS_CHARACTER_ID in self.headers, "Unable to resolve this LDS Script format. TIMECODE column not found."
+        assert LDS_DIAL_ID in self.headers, "Unable to resolve this LDS Script format. TIMECODE column not found."
+        assert LDS_TRANSLATION_ID in self.headers, "Unable to resolve this LDS Script format. TRANSLATION column not found."
+
+        # Inner function to get the text from a row
+        def get_text_from_row(cells: list, id: str):
+            # Get the text from the row
+            loop = self.get_text(cells, LDS_LOOP_ID)
+            character = self.get_text(cells, LDS_CHARACTER_ID)
+            dial = self.get_text(cells, LDS_DIAL_ID)
+            translation = self.get_text(cells, LDS_TRANSLATION_ID)
+            
+            script_block = LdsScript.ScriptBlock(loop, character, dial, translation)
+
+            return loop, script_block
         
-        get_text_from_row = lambda cells: (cells[self.headers[LDS_LOOP_ID]].text.replace("\n", "").strip(),
-                                           LdsScript.ScriptBlock(cells[self.headers[LDS_LOOP_ID]].text.replace("\n", "").strip(),
-                                                                cells[self.headers[LDS_CHARACTER_ID]].text.replace("\n", "").strip(),
-                                                                cells[self.headers[LDS_DIAL_ID]].text.replace("\n", "").strip(),
-                                                                cells[self.headers[LDS_TRANSLATION_ID]].text.replace("\n", "").strip()))
+        # Create a dictionary of script blocks
         self.blocks = dict([get_text_from_row(row.cells) for row in self.translation_table.rows[1:]])
     # ----------------------------------------------------------------------------
     
+    # ----------------------------------------------------------------------------
+    # Get the text from a specific cell in a row
+    # cells  - The cells in the row
+    # id     - The ID of the cell to get the text from
+    ## returns: str
+    def get_text(self, cells: list, id: str) -> str:
+        return cells[self.headers[id]].text.replace("\n", "").strip()
+    # ----------------------------------------------------------------------------
+
     # ----------------------------------------------------------------------------
     # Get the translation of a specific row in the script
     # translationRow  - The row number of the translation to get
@@ -73,8 +98,8 @@ class LdsScript(Script):
     def get_timecodes(self) -> dict:
         assert self.has_timecodes(), "No timecodes found in script"
 
-        return dict([(row.cells[self.headers[LDS_LOOP_ID]].text.strip(),
-                        row.cells[self.headers[LDS_TIMECODE_ID]].text.strip()) for row in self.translation_table.rows[1:]])
+        return dict([(self.get_text(row.cells, LDS_LOOP_ID),
+                      self.get_text(row.cells, LDS_TIMECODE_ID)) for row in self.translation_table.rows[1:]])
     # ----------------------------------------------------------------------------
 
 # ================================================================================================

@@ -2,12 +2,7 @@ from Scripts.Script import LdsScript
 
 # ================================================================================================
 
-class ScriptManager:
-    pass
-
-# ================================================================================================
-
-class LdsScriptManager(ScriptManager):
+class LdsScriptManager:
     # ----------------------------------------------------------------------------
     def __init__(self, filename: str):
         self.script = LdsScript(filename)
