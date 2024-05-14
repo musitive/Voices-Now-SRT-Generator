@@ -13,6 +13,8 @@ LDS_CHARACTER_ID = "CHARACTER"
 LDS_DIAL_ID = "ENGLISH"
 LDS_TRANSLATION_ID = "TRANSLATION"
 
+# ================================================================================================
+
 class LdsScript(Script):
     # ----------------------------------------------------------------------------
     class ScriptBlock:
