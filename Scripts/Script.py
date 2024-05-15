@@ -58,7 +58,7 @@ class LdsScript(Script):
         assert LDS_TRANSLATION_ID in self.headers, "Unable to resolve this LDS Script format. TRANSLATION column not found."
 
         # Inner function to get the text from a row
-        def get_text_from_row(cells: list, id: str):
+        def get_text_from_row(cells: list):
             # Get the text from the row
             loop = self.get_text(cells, LDS_LOOP_ID)
             character = self.get_text(cells, LDS_CHARACTER_ID)
