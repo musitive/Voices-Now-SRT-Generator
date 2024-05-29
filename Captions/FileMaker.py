@@ -6,7 +6,7 @@ Build executable:
 py -m PyInstaller -w --onefile "SRT Generator.py"
 """
 
-from ProToolsMarkers.ProToolsMarkerManager import ProToolsMarkerManager
+from ProToolsData.ProToolsDataManager import ProToolsDataManager
 import logging, sys
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -17,19 +17,19 @@ class FileMaker:
     # ----------------------------------------------------------------------------
     # FileMaker
     # timecode_filename: str    - the name of the file containing the timecode data
-    def __init__(self, timecode_filename: str):
-        self.marker_manager = ProToolsMarkerManager.from_file(timecode_filename)
+    def __init__(self, timecode_filename: str, data_type: str = "MRK"):
+        self.data_manager = ProToolsDataManager.from_file(timecode_filename, data_type)
         self.script_manager = None
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
     # Read through markers and call the function provided by the caller
     # update_file:    Function to call
-    ## returns: None
-    def read_through_markers(self, update_file) -> None:
+    ## returns: bool
+    def read_through_markers(self, update_file) -> bool:
 
         while True:
-            node = self.marker_manager.get_current_node()
+            node = self.data_manager.get_current_node()
             if node == None:
                 break
             
@@ -44,6 +44,8 @@ class FileMaker:
 
             # Call the function provided by the caller
             update_file(self, marker, end_marker)
+
+        return True
     # ----------------------------------------------------------------------------
 
 # ================================================================================================

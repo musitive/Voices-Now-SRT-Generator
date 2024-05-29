@@ -1,6 +1,6 @@
 import re
 import codecs
-from ProToolsMarkers.Timecode import Timecode
+from ProToolsData.Timecode import Timecode
 from Captions.LanguageSpecificPunctuationPriority import PRIORITY_BY_LANGUAGE as LANGUAGE, PRIORITY_BY_SCRIPT as SCRIPT_TYPES
 from Captions.LanguageManager import LanguageManager
 

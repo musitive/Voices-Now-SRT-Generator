@@ -15,7 +15,7 @@ EXAMPLE PRO TOOLS MARKER 2
 """
 
 import re
-from ProToolsMarkers.Timecode import Timecode
+from ProToolsData.Timecode import Timecode
 
 # ================================================================================================
 

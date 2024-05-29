@@ -1,4 +1,4 @@
-from ProToolsMarkers.ProToolsMarker import ProToolsMarker, PT_COLUMN_HEADERS
+from ProToolsData.ProToolsMarker import ProToolsMarker, PT_COLUMN_HEADERS
 import re
 
 # ================================================================================================

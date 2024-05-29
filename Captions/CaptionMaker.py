@@ -4,7 +4,7 @@ sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
 
 from Captions.FileMaker import FileMaker
 from Scripts.ScriptManager import LdsScriptManager
-from ProToolsMarkers.ProToolsMarkerManager import ProToolsMarkerManager
+from ProToolsData.ProToolsMarkerManager import ProToolsMarkerManager
 from Captions.SRTManager import SRTManager
 from Captions.LanguageSpecificSRTManagers import LANG_SRT_MAP
 
