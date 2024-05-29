@@ -28,6 +28,8 @@ PT_TNAME_ID = "TRACK NAME"
 PT_TTYPE_ID = "TRACK TYPE"
 PT_COMMENTS_ID = "COMMENTS"
 
+PT_COLUMN_HEADERS = [PT_MARKER_ID, PT_LOCATION_ID, PT_TIMEREF_ID, PT_UNITS_ID, PT_NAME_ID, PT_TNAME_ID, PT_TTYPE_ID, PT_COMMENTS_ID]
+
 # ================================================================================================
 
 class ProToolsMarker:
@@ -66,11 +68,13 @@ class ProToolsMarker:
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
-    # Add a new marker to the list of markers
-    # line: str       - the line of text containing the marker data
+    # Static method to create a new ProToolsMarker from a line of text
+    # column_headers: dict  - the column headers for the Pro Tools Marker data
+    # line: str             - the line of text containing the marker data
+    # frame_rate: float     - the frame rate of the Pro Tools session
     ## returns: ProToolsMarker
     @staticmethod
-    def add_new_marker(column_headers: dict, line: str, frame_rate: float) -> 'ProToolsMarker':
+    def create_new_marker(column_headers: dict, line: str, frame_rate: float) -> 'ProToolsMarker':
         # Split the line into marker data
         marker_data = re.split(r"\t", line)
         marker_data = [x.strip() for x in marker_data]

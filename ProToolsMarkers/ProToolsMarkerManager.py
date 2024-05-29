@@ -1,22 +1,12 @@
-"""
-Code to extract Pro Tools Markers
-Author: Dallin Frank
-
-Run test cases:
-py -m unittest TestProToolsMarkerManager
-"""
-
-from ProToolsMarkers.ProToolsMarker import ProToolsMarker, PT_MARKER_ID, PT_LOCATION_ID, PT_TIMEREF_ID, PT_UNITS_ID, PT_NAME_ID, PT_COMMENTS_ID
+from ProToolsMarkers.ProToolsMarker import ProToolsMarker, PT_COLUMN_HEADERS
 import re
 
 # ================================================================================================
 
-# --------------------------------------------------------------------------------
 # Indices for Pro Tools Marker data
-PT_COLUMN_HEADERS = 11
+PT_COLUMN_HEADERS_INDEX = 11
 PT_MARKER_DATA_START = 12
 PT_FRAMERATE_INDEX = 4
-# --------------------------------------------------------------------------------
 
 # ================================================================================================
 
@@ -69,25 +59,21 @@ class ProToolsMarkerManager:
             frame_rate = float(frame_rate)
 
             ## Get column headers
-            header_data = re.split(r"\t", content[PT_COLUMN_HEADERS])
+            header_data = re.split(r"\t", content[PT_COLUMN_HEADERS_INDEX])
             column_headers = {header_data[i].strip() : i for i in range(len(header_data))}
 
             ## Check for required fields
-            assert PT_MARKER_ID in column_headers, f"Error: Pro Tools Marker data is missing a required field: {PT_MARKER_ID}"
-            assert PT_LOCATION_ID in column_headers, f"Error: Pro Tools Marker data is missing a required field: {PT_LOCATION_ID}"
-            assert PT_TIMEREF_ID in column_headers, f"Error: Pro Tools Marker data is missing a required field: {PT_TIMEREF_ID}"
-            assert PT_UNITS_ID in column_headers, f"Error: Pro Tools Marker data is missing a required field: {PT_UNITS_ID}"
-            assert PT_NAME_ID in column_headers, f"Error: Pro Tools Marker data is missing a required field: {PT_NAME_ID}"
-            assert PT_COMMENTS_ID in column_headers, f"Error: Pro Tools Marker data is missing a required field: {PT_COMMENTS_ID}"
+            for field in PT_COLUMN_HEADERS:
+                assert field in column_headers, f"Error: Pro Tools Marker data is missing a required field: {field}"
 
             ## Create head node for linked list
             line = content[PT_MARKER_DATA_START]
-            head_node = ProToolsMarkerManager.MarkerNode(ProToolsMarker.add_new_marker(column_headers, line, frame_rate))
+            head_node = ProToolsMarkerManager.MarkerNode(ProToolsMarker.create_new_marker(column_headers, line, frame_rate))
             current_node = head_node
 
             ## Add markers to linked list
             for line in content[PT_MARKER_DATA_START+1:]:
-                next_marker = ProToolsMarker.add_new_marker(column_headers, line, frame_rate)
+                next_marker = ProToolsMarker.create_new_marker(column_headers, line, frame_rate)
 
                 # If the next marker is the end of a segment, set the current node's end to the next marker
                 # Otherwise, add the next marker to the linked list
@@ -127,7 +113,7 @@ class ProToolsMarkerManager:
 
     # ----------------------------------------------------------------------------
     # Get the current node in the list and move to the next node
-    ## returns: ProToolsMarker
+    ## returns: MarkerNode
     def get_current_node(self) -> MarkerNode:
         if self.current_node == None:
             return None
