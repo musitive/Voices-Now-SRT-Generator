@@ -1,4 +1,6 @@
+from ProToolsData.ProToolsDataManager import ProToolsDataManager
 from ProToolsData.ProToolsMarker import ProToolsMarker, PT_COLUMN_HEADERS
+from ProToolsData.ProToolsLinkedList import MarkerNode
 import re
 
 # ================================================================================================
@@ -10,38 +12,12 @@ PT_FRAMERATE_INDEX = 4
 
 # ================================================================================================
 
-class ProToolsMarkerManager:
-    class MarkerNode:
-        # ------------------------------------------------------------------------
-        # Linked list node for markers
-        # marker: ProToolsMarker   - the marker data
-        # end: ProToolsMarker      - if there is a marker between this and the next marker marking the end of a segment
-        # next: MarkerNode         - the next marker in the list
-        def __init__(self, marker: ProToolsMarker):
-            self.marker : ProToolsMarker = marker
-            self.end : ProToolsMarker = None
-            self.next : ProToolsMarkerManager.MarkerNode = None
-        # ------------------------------------------------------------------------
-
-        # ------------------------------------------------------------------------
-        # Get the end of the segment
-        ## returns: ProToolsMarker
-        def get_end(self) -> ProToolsMarker:
-            # If there is no end marker, return the next marker
-            if self.end == None and self.next != None:
-                return self.next.marker
-            
-            return self.end
-        # ------------------------------------------------------------------------
-
+class ProToolsMarkerManager(ProToolsDataManager):
     # ----------------------------------------------------------------------------
     # Pro Tools Marker Manager
     # filename: str    - the name of the file containing the Pro Tools Marker data
     def __init__(self, head_node: MarkerNode, frame_rate: float):
-            ## Set current node to head node
-            self.head_node = head_node
-            self.current_node = self.head_node
-            self.frame_rate = frame_rate
+        super().__init__(head_node, frame_rate)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
@@ -68,11 +44,14 @@ class ProToolsMarkerManager:
 
             ## Create head node for linked list
             line = content[PT_MARKER_DATA_START]
-            head_node = ProToolsMarkerManager.MarkerNode(ProToolsMarker.create_new_marker(column_headers, line, frame_rate))
+            head_node = MarkerNode(ProToolsMarker.create_new_marker(column_headers, line, frame_rate))
             current_node = head_node
 
             ## Add markers to linked list
             for line in content[PT_MARKER_DATA_START+1:]:
+                if line.strip() == "":
+                    continue
+
                 next_marker = ProToolsMarker.create_new_marker(column_headers, line, frame_rate)
 
                 # If the next marker is the end of a segment, set the current node's end to the next marker
@@ -82,7 +61,7 @@ class ProToolsMarkerManager:
 
                     current_node.end = next_marker
                 else:
-                    current_node.next = ProToolsMarkerManager.MarkerNode(next_marker)
+                    current_node.next = MarkerNode(next_marker)
                     current_node = current_node.next
             
             ## Create ProToolsMarkerManager
@@ -95,7 +74,7 @@ class ProToolsMarkerManager:
     ## returns: ProToolsMarkerManager
     @staticmethod
     def from_script(timecodes: dict) -> 'ProToolsMarkerManager':
-        make_node = lambda key: ProToolsMarkerManager.MarkerNode(ProToolsMarker(key, timecodes[key] + ":00", None, None, key, 24.0))
+        make_node = lambda key: MarkerNode(ProToolsMarker(key, timecodes[key] + ":00", None, None, key, 24.0))
         time_iter = iter(timecodes)
         key = next(time_iter)
         head_node = make_node(key)
@@ -106,22 +85,26 @@ class ProToolsMarkerManager:
             current_node.next = next_node
             current_node = next_node
         
-        current_node.next = ProToolsMarkerManager.MarkerNode(ProToolsMarker(len(timecodes.keys()), str(current_node.marker.timecode + 1), None, None, "END", 24.0))
+        current_node.next = MarkerNode(ProToolsMarker(len(timecodes.keys()), str(current_node.marker.timecode + 1), None, None, "END", 24.0))
 
         return ProToolsMarkerManager(head_node, 24.0)
     # ----------------------------------------------------------------------------
-
+    
     # ----------------------------------------------------------------------------
-    # Get the current node in the list and move to the next node
-    ## returns: MarkerNode
-    def get_current_node(self) -> MarkerNode:
+    # Continue reading the data
+    ## returns: bool
+    def continue_reading(self) -> bool:
         if self.current_node == None:
-            return None
-        
-        node = self.current_node
-        self.current_node = self.current_node.next
+            return False
+            
+        marker = self.current_node.marker
+        end_marker = self.current_node.next.marker
 
-        return node
+        # If no more markers, break
+        if marker == None or end_marker == None:
+            return False
+
+        return self.current_node != None
     # ----------------------------------------------------------------------------
     
 # ================================================================================================

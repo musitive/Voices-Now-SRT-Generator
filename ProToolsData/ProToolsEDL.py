@@ -47,10 +47,10 @@ class ProToolsEDL:
         # Set attributes
         self.channel = channel
         self.event = event
-        self.clip_name = clip_name
-        self.start_time = Timecode(start_time, frame_rate)
-        self.end_time = Timecode(end_time, frame_rate)
-        self.duration = Timecode(duration, frame_rate)
+        self.loop = clip_name
+        self.start_time = Timecode.from_frames(start_time, frame_rate)
+        self.end_time = Timecode.from_frames(end_time, frame_rate)
+        self.duration = Timecode.from_frames(duration, frame_rate)
         self.state = state
 
         # TODO: rewrite this so it knows how to better handle the hours
@@ -92,7 +92,7 @@ class ProToolsEDL:
         if isinstance(other, ProToolsEDL):
             return (self.channel == other.channel and
                     self.event == other.event and
-                    self.clip_name == other.clip_name and
+                    self.loop == other.loop and
                     self.start_time == other.start_time and
                     self.end_time == other.end_time and
                     self.duration == other.duration and

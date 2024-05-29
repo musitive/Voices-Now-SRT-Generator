@@ -85,12 +85,12 @@ class ProToolsMarker:
             location = marker_data[column_headers[PT_LOCATION_ID]]
             time_reference = marker_data[column_headers[PT_TIMEREF_ID]]
             units = marker_data[column_headers[PT_UNITS_ID]]
-            name = marker_data[column_headers[PT_NAME_ID]]
+            loop = marker_data[column_headers[PT_NAME_ID]]
             comments = marker_data[column_headers[PT_COMMENTS_ID]]
         except KeyError as e:
             raise(f"Error: Pro Tools Marker data is missing a required field: {e}")
 
-        return ProToolsMarker(marker_id, location, time_reference, units, name, frame_rate, comments)
+        return ProToolsMarker(marker_id, location, time_reference, units, loop, frame_rate, comments)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------

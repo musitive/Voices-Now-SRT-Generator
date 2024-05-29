@@ -32,7 +32,7 @@ class TimecodeScriptMaker(FileMaker):
             self.script_manager.add_row_to_new_table(marker.timecode, next_marker.timecode)
 
         # Read through markers
-        self.read_through_markers(update_file)
+        self.read_through_data(update_file)
 
         # Final formatting
         self.script_manager.script.prevent_document_break()

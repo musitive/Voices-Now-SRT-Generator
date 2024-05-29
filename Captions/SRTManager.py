@@ -38,21 +38,21 @@ class SRTManager:
     # srt_filename: str   - the filename of the SRT file
     # max_line_len: int   - the maximum number of characters allowed in an SRT caption
     def __init__(self, srt_filename: str, max_line_len: int = MAX_LINE_LEN,
-                 lang: str = "ENG", sentence_d = '', word_d = ''):
+                 lang_code: str = "ENG", sentence_d = '', word_d = ''):
         self.lang_manager = LanguageManager()
 
         self.srt_id = 1
         self.srt_blocks = []
         self.srt_filename = srt_filename
         self.max_line_len = max_line_len
-        self.lang = lang
+        self.lang = lang_code
         self.sentence_d = sentence_d
         self.word_d = word_d
 
-        script_type = self.lang_manager.get_script(lang)
+        script_type = self.lang_manager.get_script(lang_code)
 
-        if lang in LANGUAGE:
-            self.regex = LANGUAGE[lang]
+        if lang_code in LANGUAGE:
+            self.regex = LANGUAGE[lang_code]
         elif script_type in SCRIPT_TYPES:
             self.regex = SCRIPT_TYPES[script_type]
         else:
@@ -91,7 +91,7 @@ class SRTManager:
             return
 
         try:
-            left, right = self.split_text_by_language(text)
+            left, right = self.split_text(text)
         except Exception as e:
             print(f"Error: {e}.")
             self.add_srt(in_time, out_time, text.strip())
@@ -114,7 +114,7 @@ class SRTManager:
     # in_time: Timecode       - the time the caption appears on screen
     # out_time: Timecode      - the time the caption disappears from the screen
     # text: str               - the text to split
-    def split_text_by_language(self, text: str) -> tuple:
+    def split_text(self, text: str) -> tuple:
         split_index = self.find_split_index(text)
         left = text[:split_index]
         right = text[split_index:]
@@ -193,4 +193,5 @@ class SRTManager:
 
         srt_file.close()
     # ----------------------------------------------------------------------------
+    
 # ================================================================================================
