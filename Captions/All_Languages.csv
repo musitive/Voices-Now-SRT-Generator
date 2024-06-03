@@ -23,7 +23,7 @@
 112,bul,Bulgarian,Cyrillic,True
 256,mya,Burmese,Burmese,True
 19,cak,Cakchiquel,Latin,True
-258,khm,Cambodian,Mon,True
+258,khm,Khmer,NA,True
 267,yue,Cantonese,NA,False
 115,cat,Catalan,Latin,True
 853,ceb,Cebuano,Latin,True
@@ -110,7 +110,7 @@
 349,mal,Malayalam,Malayalam,True
 159,mlt,Maltese,Latin,True
 46,mam,Mam,Latin,True
-268,cmn,Mandarin,NA,True
+268,cmn,Mandarin,NA,False
 655,mnk,Mandinka,Arabic,True
 871,mri,Maori,Latin,True
 355,mar,Marathi,Balbodh,True

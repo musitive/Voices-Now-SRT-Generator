@@ -1,8 +1,11 @@
-ROUNDING_RATE = 0.5                                 # Determine whether to round up or down
-TIMECODE_IN_FRAMES = "{0:02d}:{1:02d}:{2:02d}:{3:02d}"   # Timecode in frames
-TIMECODE_IN_MS = "{0:02d}:{1:02d}:{2:02d},{3:03d}"       # Timecode in milliseconds
+ROUNDING_RATE = 0.5                                         # Determine whether to round up or down
+TIMECODE_IN_FRAMES = "{0:02d}:{1:02d}:{2:02d}:{3:02d}"      # Timecode in frames
+TIMECODE_IN_MS = "{0:02d}:{1:02d}:{2:02d},{3:03d}"          # Timecode in milliseconds
+TIMECODE_IN_DROP = "{0:02d}:{1:02d}:{2:02d};{3:02d}"        # Timecode in drop frame
 
 # ================================================================================================
+
+# TODO: check drop frame arithmetic
 
 # --------------------------------------------------------------------------------
 class Timecode:
@@ -13,11 +16,11 @@ class Timecode:
     # seconds: int    - the number of seconds
     # frames: int     - the number of frames
     # frame_rate: float- the number of frames per second
-    def __init__(self, hours: int = 0, minutes: int = 0, seconds: int = 0, frames: int = 0, frame_rate: float = 24.0):
+    def __init__(self, hours: int = 0, minutes: int = 0, seconds: int = 0, frames: int = 0, frame_rate: float = 24.0, drop_frame: bool = False):
         assert 0 <= hours, "Hours must be greater than or equal to 0"
         assert 0 <= minutes < 60, "Minutes must be between 0 and 59"
         assert 0 <= seconds < 60, "Seconds must be between 0 and 59"
-        assert 0 <= frames < frame_rate, "Frames must be between 0 and the frame rate"
+        if not drop_frame: assert 0 <= frames < frame_rate, "Frames must be between 0 and the frame rate"
         assert 0 < frame_rate, "Frame rate must be greater than 0"
         
         self.hours = hours
@@ -25,6 +28,7 @@ class Timecode:
         self.seconds = seconds
         self.frames = frames
         self.frame_rate = frame_rate
+        self.drop_frame = drop_frame
     # ----------------------------------------------------------------------------
 
 
@@ -34,6 +38,8 @@ class Timecode:
     # frame_rate: float    - the number of frames per second
     @classmethod
     def from_frames(cls, x, frame_rate: float = 24.0):
+        drop_frame = False
+
         if type(x) == int:
             assert 0 <= x, "Frames must be greater than or equal to 0"
             frames = int(x % frame_rate)
@@ -44,11 +50,28 @@ class Timecode:
             x //= 60
             hours = int(x % 60)
         elif type(x) == str:
-            assert len(x) == 11 and x[2] == ":" and x[5] == ":" and x[8] == ":", "Invalid timecode format"
-            hours, minutes, seconds, frames = map(int, x.split(":"))
+            assert x[2] == ":" and x[5] == ":", "Invalid timecode format"
+            
+            if x[8] == ";":
+                hours, minutes, seconds_and_frames = map(str, x.split(":"))
+                hours = int(hours)
+                minutes = int(minutes)
+                seconds, frames = map(int, seconds_and_frames.split(";"))
+                drop_frame = True
+            elif x[8] == ":":
+                hours, minutes, seconds, frames = map(int, x.split(":"))
+            elif x[8] == "." or x[8] == ",":
+                delimiter = x[8]
+                hours, minutes, seconds_and_frames = map(str, x.split(":"))
+                hours = int(hours)
+                minutes = int(minutes)
+                seconds, ms = map(int, seconds_and_frames.split(delimiter))
+                frames = int((ms * frame_rate) / 1000 + ROUNDING_RATE)
+            else:
+                raise ValueError("Invalid timecode format")
         else:
             raise TypeError("Invalid arguments for Timecode.from_frames")
-        return cls(hours, minutes, seconds, frames, frame_rate)
+        return cls(hours, minutes, seconds, frames, frame_rate, drop_frame)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------

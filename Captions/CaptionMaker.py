@@ -6,6 +6,7 @@ from Captions.FileMaker import FileMaker
 from Captions.SRTManager import SRTManager
 from ProToolsData.ProToolsLinkedList import DataNode
 from Captions.LanguageSpecificSRTManagers import LANG_SPECIFIC_SRT_INIT
+from ProToolsData.Timecode import Timecode
 
 # ================================================================================================
 
@@ -32,14 +33,17 @@ class CaptionMaker(FileMaker):
 
     # ----------------------------------------------------------------------------
     # Create captions from the script and timecode markers
-    # split:    bool    - split the captions into multiple lines
-    def create_captions(self) -> None:
+    # split:    bool                - split the captions into multiple lines
+    # timecode_offset: Timecode     - the timecode offset
+    # srtID_offset: int             - the SRT ID offset
+    ## returns: int                 - the number of captions created
+    def create_captions(self, timecode_offset: tuple = None, srtID_offset: int = None) -> int:
 
         # Read through markers
         self.read_through_data()
 
         # Write SRTs to file
-        self.caption_manager.write_captions_to_file()
+        return self.caption_manager.write_captions_to_file(timecode_offset, srtID_offset)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------

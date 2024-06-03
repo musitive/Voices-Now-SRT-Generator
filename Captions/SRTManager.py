@@ -184,14 +184,33 @@ class SRTManager:
 
     # ----------------------------------------------------------------------------
     # Write SRT blocks to the file
-    ## returns: None
-    def write_captions_to_file(self) -> None:
+    # timecode_offset: Timecode    - the timecode offset
+    # srtID_offset: int            - the SRT ID offset
+    ## returns: int                - the last SRT ID written
+    def write_captions_to_file(self, timecode_offset: tuple = None, srtID_offset: int = None) -> int:
         srt_file = codecs.open(self.srt_filename, "w+", encoding="utf-8")    # Open SRT file
 
+        last_srt_index = 0
+
         for srt in self.srt_blocks:
+            if timecode_offset is not None:
+                if timecode_offset[0] is "adv":
+                    srt.start_time -= timecode_offset[1]
+                    srt.end_time -= timecode_offset[1]
+                elif timecode_offset[0] is "dly":
+                    srt.start_time += timecode_offset[1]
+                    srt.end_time += timecode_offset[1]
+
+            if srtID_offset is not None:
+                srt.index += srtID_offset
+
+            last_srt_index = srt.index
+            
             srt_file.write(str(srt)+"\n")
 
         srt_file.close()
+
+        return last_srt_index
     # ----------------------------------------------------------------------------
     
 # ================================================================================================

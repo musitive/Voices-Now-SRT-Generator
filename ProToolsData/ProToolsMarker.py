@@ -47,8 +47,7 @@ class ProToolsMarker:
         
         # Validate input
         assert marker_id != "" and int(marker_id) >= 0, f"Invalid ProTools Marker ID: {marker_id}"
-        assert len(location) == 11 and location[2] == ":" and location[5] == ":" and location[8] == ":",\
-              f"Invalid timecode format {location} for ProTools Marker {marker_id}"
+        
         # assert int(time_reference) >= 0, f"Invalid location {time_reference} for ProTools Marker {marker_id}"
         # assert units == "Samples", f"Unit type {units} unsupported at ProTools Marker {marker_id}"
         assert name != "", f"ProTools Marker name cannot be empty at ProTools Marker {marker_id}"

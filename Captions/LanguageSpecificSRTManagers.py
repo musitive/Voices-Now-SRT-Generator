@@ -163,7 +163,7 @@ LANG_SPECIFIC_SRT_INIT = {
     "THA": ThaiSRTManager,
     "KHM": KhmerSRTManager,
     "LAO": LaoSRTManager,
-    "JPN": JapaneseSRTManager,
+    # "JPN": JapaneseSRTManager,
     "TIB": TibetanSRTManager
 }
 

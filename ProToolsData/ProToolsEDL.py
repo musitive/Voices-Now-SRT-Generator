@@ -39,8 +39,7 @@ class ProToolsEDL:
         
         # Validate input
         assert event != "" and int(event) >= 0, f"Invalid ProTools Marker ID: {event}"
-        assert len(start_time) == 11 and start_time[2] == ":" and start_time[5] == ":" and start_time[8] == ":",\
-              f"Invalid timecode format {start_time} for ProTools Marker {event}"
+
         assert clip_name != "", f"ProTools Marker name cannot be empty at ProTools Marker {event}"
         assert 0 < frame_rate, "Frame rate must be greater than 0"
 
