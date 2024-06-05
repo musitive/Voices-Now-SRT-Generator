@@ -52,16 +52,17 @@ class Timecode:
         elif type(x) == str:
             assert x[2] == ":" and x[5] == ":", "Invalid timecode format"
             
-            if x[8] == ";":
+            delimiter = x[8]
+
+            if delimiter == ";":
                 hours, minutes, seconds_and_frames = map(str, x.split(":"))
                 hours = int(hours)
                 minutes = int(minutes)
                 seconds, frames = map(int, seconds_and_frames.split(";"))
                 drop_frame = True
-            elif x[8] == ":":
+            elif delimiter == ":":
                 hours, minutes, seconds, frames = map(int, x.split(":"))
-            elif x[8] == "." or x[8] == ",":
-                delimiter = x[8]
+            elif delimiter == "." or delimiter == ",":
                 hours, minutes, seconds_and_frames = map(str, x.split(":"))
                 hours = int(hours)
                 minutes = int(minutes)

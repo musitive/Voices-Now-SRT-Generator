@@ -23,21 +23,21 @@ class TestTimecode(unittest.TestCase):
         self.assertEqual(self.marker1.timecode, Timecode.from_frames("00:00:39:12", 24.0))
         self.assertEqual(self.marker1.time_reference, "2043360")
         self.assertEqual(self.marker1.units, "Samples")
-        self.assertEqual(self.marker1.name, "1")
+        self.assertEqual(self.marker1.loop_id, "1")
         self.assertEqual(self.marker1.comments, "")
 
         self.assertEqual(self.marker2.marker_id, "2")
         self.assertEqual(self.marker2.timecode, Timecode.from_frames("00:00:48:19", 24.0))
         self.assertEqual(self.marker2.time_reference, "2490480")
         self.assertEqual(self.marker2.units, "Samples")
-        self.assertEqual(self.marker2.name, "2 this one has a weird name")
+        self.assertEqual(self.marker2.loop_id, "2 this one has a weird name")
         self.assertEqual(self.marker2.comments, "")
 
         self.assertEqual(self.marker3.marker_id, "3")
         self.assertEqual(self.marker3.timecode, Timecode.from_frames("00:00:56:22", 24.0))
         self.assertEqual(self.marker3.time_reference, "2879280")
         self.assertEqual(self.marker3.units, "Samples")
-        self.assertEqual(self.marker3.name, "3")
+        self.assertEqual(self.marker3.loop_id, "3")
         self.assertEqual(self.marker3.comments, "fdsa fdsa fdsa fdsa")
 
     def test_init_invalid(self):

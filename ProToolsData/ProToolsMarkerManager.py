@@ -56,8 +56,8 @@ class ProToolsMarkerManager(ProToolsDataManager):
 
                 # If the next marker is the end of a segment, set the current node's end to the next marker
                 # Otherwise, add the next marker to the linked list
-                if next_marker.name in ['x', 'END'] or \
-                   (next_marker.name == 'w' and current_node.end == None):
+                if next_marker.loop_id in ['x', 'END'] or \
+                   (next_marker.loop_id == 'w' and current_node.end == None):
 
                     current_node.end = next_marker
                 else:
@@ -74,7 +74,7 @@ class ProToolsMarkerManager(ProToolsDataManager):
     ## returns: ProToolsMarkerManager
     @staticmethod
     def from_script(timecodes: dict) -> 'ProToolsMarkerManager':
-        make_node = lambda key: MarkerNode(ProToolsMarker(key, timecodes[key] + ":00", None, None, key, 24.0))
+        make_node = lambda key: MarkerNode(ProToolsMarker(key, timecodes[key], None, None, key, 24.0))
         time_iter = iter(timecodes)
         key = next(time_iter)
         head_node = make_node(key)

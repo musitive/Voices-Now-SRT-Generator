@@ -51,7 +51,7 @@ class MarkerNode(DataNode):
     # Get the current loop
     ## returns: str
     def get_loop_id(self) -> str:
-        return self.marker.loop
+        return self.marker.loop_id
     # ------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------

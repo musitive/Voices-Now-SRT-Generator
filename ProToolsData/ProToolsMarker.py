@@ -57,7 +57,7 @@ class ProToolsMarker:
         self.marker_id = marker_id
         self.time_reference = time_reference
         self.units = units
-        self.name = name
+        self.loop_id = name
         self.frame_rate = frame_rate
         self.timecode = Timecode.from_frames(location, frame_rate)
         self.comments = comments
@@ -100,7 +100,7 @@ class ProToolsMarker:
                     self.timecode == other.timecode and
                     self.time_reference == other.time_reference and
                     self.units == other.units and
-                    self.name == other.name and
+                    self.loop_id == other.loop_id and
                     self.comments == other.comments)
         
         return False
