@@ -98,10 +98,10 @@ class ProToolsMarkerManager(ProToolsDataManager):
             return False
             
         marker = self.current_node.marker
-        end_marker = self.current_node.next.marker
+        next_node = self.current_node.next
 
         # If no more markers, break
-        if marker == None or end_marker == None:
+        if marker == None or next_node == None or next_node.marker == None:
             return False
 
         return self.current_node != None

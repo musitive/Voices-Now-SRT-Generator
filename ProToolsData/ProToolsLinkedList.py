@@ -58,7 +58,7 @@ class MarkerNode(DataNode):
     # Get start timecode
     ## returns: Timecode
     def get_start(self) -> Timecode:
-        self.marker.timecode
+        return self.marker.timecode
     # ------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------

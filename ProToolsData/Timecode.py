@@ -20,7 +20,7 @@ class Timecode:
         assert 0 <= hours, "Hours must be greater than or equal to 0"
         assert 0 <= minutes < 60, "Minutes must be between 0 and 59"
         assert 0 <= seconds < 60, "Seconds must be between 0 and 59"
-        if not drop_frame: assert 0 <= frames < frame_rate, "Frames must be between 0 and the frame rate"
+        # if not drop_frame: assert 0 <= frames < frame_rate, "Frames must be between 0 and the frame rate"
         assert 0 < frame_rate, "Frame rate must be greater than 0"
         
         self.hours = hours

@@ -179,7 +179,7 @@ class SRTManager:
         text = text.strip()
         if text != "":
             self.srt_blocks.append(self.SRTInfo(self.srt_id, in_time, out_time, text))
-        self.srt_id += 1
+            self.srt_id += 1
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
@@ -194,10 +194,10 @@ class SRTManager:
 
         for srt in self.srt_blocks:
             if timecode_offset is not None:
-                if timecode_offset[0] is "adv":
+                if timecode_offset[0] == "adv":
                     srt.start_time -= timecode_offset[1]
                     srt.end_time -= timecode_offset[1]
-                elif timecode_offset[0] is "dly":
+                elif timecode_offset[0] == "dly":
                     srt.start_time += timecode_offset[1]
                     srt.end_time += timecode_offset[1]
 
