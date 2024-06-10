@@ -1,200 +1,200 @@
-﻿500,aar,Afar,Latin,True
-501,afr,Afrikaans,Arabic,True
-101,alb,Albanian,Latin,True
-506,amh,Amharic,Etheopic,True
-12,apw,Apache,Latin,True
-102,ara,Arabic,Arabic,True
-201,hye,Armenian,Armenian,True
-104,hyw,Armenian (West),Armenian,True
-10,ase,ASL,NA,False
-14,aym,Aymara,Latin,True
-107,aze,Azerbaijani,Arabic,True
-513,ble,Balante,Latin,True
-514,bam,Bambara,Latin,True
-515,bpd,Banda,Latin,True
-109,eus,Basque,Latin,True
-520,bci,Baule,Latin,True
-114,bel,Belarusian,Arabic,True
-522,bem,Bemba,Latin,True
-242,ben,Bengali,Brahmi,True
-851,bik,Bikolano,Latin,True
-852,bis,Bislama,Latin,True
-200,bfi,British Sign Language,NA,False
-112,bul,Bulgarian,Cyrillic,True
-256,mya,Burmese,Burmese,True
-19,cak,Cakchiquel,Latin,True
-258,khm,Khmer,NA,True
-267,yue,Cantonese,NA,False
-115,cat,Catalan,Latin,True
-853,ceb,Cebuano,Latin,True
-855,cha,Chamorro,Latin,True
-535,nya,Chichewa (Nyanja),Latin,True
-266,zhs,Chinese Simplified,Chinese,False
-265,zho,Chinese Traditional,Chinese,False
-901,chk,Chuukese,Latin,True
-539,swb,Comorian,Arabic,True
-541,kea,"Crioulo, Portuguese Creole",Latin,True
-119,hrv,Croatian,Latin,True
-121,ces,Czech,Latin,True
-110,dan,Danish,Latin,True
-275,div,Divehi,Thaana,True
-120,nld,Dutch,Latin,True
-278,dzo,Dzongkha,Tibetan,True
-553,efi,Efik,Latin,True
-0,eng,English,Latin,True
-124,est,Estonian,Latin,True
-559,ewe,Ewe,Latin,True
-561,fan,Fang,Latin,True
-502,fat,Fante,Latin,True
-858,fij,Fijian,Latin,True
-130,fin,Finnish,Latin,True
-562,fon,Fon,Latin,True
-140,fra,French,Latin,True
-30,gcr,French Antillean,Latin,True
-930,fra-cd,"French, Africa Southeast",Latin,True
-944,fra-ci,"French, Africa West",Latin,True
-563,ful,Fula,Arabic,True
-565,fuf,Futa,Arabic,True
-131,kat,Georgian,Mkhedruli,True
-150,deu,German,Latin,True
-133,ell,Greek,Greek,True
-33,grn,Guarani,Latin,True
-286,guj,Gujarati,Gujarati,True
-36,hat,Haitian,Latin,True
-584,hau,Hausa,Latin,True
-860,haw,Hawaiian,Latin,True
-134,heb,Hebrew,Hebrew,True
-861,hil,Hiligaynon,Latin,True
-294,hin,Hindi,Brahmi,True
-298,hif,"Hindi, FIji",Latin,True
-295,hmn,Hmong,Latin,True
-135,hun,Hungarian,Latin,True
-297,iba,Iban,Latin,True
-190,isl,Icelandic,Latin,True
-593,ibo,Igbo,Latin,True
-864,ilo,Ilokano,Latin,True
-299,ind,Indonesian,Latin,True
-29,ipk,Inupiaq,Latin,True
-160,ita,Italian,Latin,True
-300,jpn,Japanese,Hiragana,False
-448,jsl,Japanese Sign Language,NA,False
-303,jav,Javanese,Latin,True
-604,kam,Kamba,Latin,True
-308,kan,Kannada,Brahmi,True
-309,ksw,Karen,Burmese,True
-145,kaz,Kazakh,Arabic,True
-43,kek,Kekchi,Latin,True
-613,kon,Kikongo,Latin,True
-716,kin,Kinyarwanda,Latin,True
-859,gil,Kiribati,Latin,True
-617,run,Kirundi,Latin,True
-618,guz,Kisii,Latin,True
-916,kjd,Kiwai,Latin,True
-320,kor,Korean,Hangeul,True
-449,kvk,Korean Sign Language,NA,False
-868,kos,Kosraean,Latin,True
-624,kpe,Kpelle,Latin,True
-625,kri,Krio,Latin,True
-44,cuk,Kuna,Latin,True
-210,ckb,"Kurdish, Central (Sorani)",Arabic,True
-146,kir,Kyrgyz,Arabic,True
-331,lao,Lao,Mon,True
-153,lav,Latvian,Latin,True
-639,lin,Lingala,Latin,True
-156,lit,Lithuanian,Cyrillic,True
-644,lug,Luganda,Arabic,True
-158,mkd,Macedonian,Cyrillic,True
-653,vmw,Makua,Latin,True
-654,mlg,Malagasy,Latin,True
-348,msa,Malay,Latin,True
-349,mal,Malayalam,Malayalam,True
-159,mlt,Maltese,Latin,True
-46,mam,Mam,Latin,True
-268,cmn,Mandarin,NA,False
-655,mnk,Mandinka,Arabic,True
-871,mri,Maori,Latin,True
-355,mar,Marathi,Balbodh,True
-874,mah,Marshallese,Latin,True
-669,mfe,Mauritian French Creole,Latin,True
-48,yua,Maya,Latin,True
-673,umb,Mbundu,Latin,True
-676,men,Mende,Latin,True
-55,miq,Miskito,Latin,True
-208,mol,Moldovan,Cyrillic,True
-363,mon,Mongolian,Cyrillic,True
-681,mos,Moore,Latin,True
-876,hmo,Motu,Latin,True
-54,nav,Navajo,Latin,True
-687,nde,Ndebele,Latin,True
-372,nep,Nepali,Brahmi,True
-880,niu,Niuean,Latin,True
-25,cag,Nivaclé,Latin,True
-170,nor,Norwegian,Latin,True
-881,pau,Palauan,Latin,True
-882,pam,Pampango,Latin,True
-883,pag,Pangasinan,Latin,True
-58,pap,Papiamento,Latin,True
-381,pus,Pashto,Arabic,True
-382,pes,Persian (Farsi),Arabic,True
-77,poh,Pocomchi,Latin,True
-885,pon,Pohnpeian,Latin,True
-166,pol,Polish,Latin,True
-59,por,Portuguese,Latin,True
-206,ept,Portuguese-Portugal,Latin,True
-386,pnb,Punjabi,Gurmukhi,True
-60,quh,Quechua-Bolivia,Latin,True
-61,quz,Quechua-Peru,Latin,True
-62,quc,Quiché,Latin,True
-64,qvi,Quichua-Ecuador,Latin,True
-78,acr,Rabinal Achi,Latin,True
-886,rar,Rarotongan,Latin,True
-171,ron,Romanian,Cyrillic,True
-887,rtm,Rotuman,Latin,True
-173,rus,Russian,Cyrillic,True
-890,smo,Samoan,Latin,True
-202,srp,Serbian,Cyrillic,True
-725,crs,Seychellese Creole French,Latin,True
-731,sna,Shona,Latin,True
-408,sin,Sinhala,Brahmi,True
-176,slk,Slovak,Latin,True
-177,slv,Slovenian,Latin,True
-891,pis,Solomonese,Latin,True
-734,som,Somali,Latin,True
-738,nso,"Sotho, Northern",Latin,True
-739,sot,"Sotho, Southern",Latin,True
-2,spa,Spanish,Latin,True
-178,spa-es,Spanish-Spain,Latin,True
-66,srn,Sranan,Latin,True
-743,swa,Swahili,Latin,True
-744,swc,Swahili-Shaba,Latin,True
-745,ssw,Swazi,Latin,True
-180,swe,Swedish,Latin,True
-893,tgl,Tagalog,Latin,True
-895,tah,Tahitian,Latin,True
-181,tgk,Tajiki,Arabic,True
-418,tam,Tamil,Tamil,True
-421,tel,Telugu,Brahmi,True
-425,tha,Thai,Mon,True
-427,bod,Tibetan,Tibetan,True
-878,tpi,Tok Pisin,Latin,True
-900,ton,Tongan,Latin,True
-760,lua,Tshiluba,Latin,True
-763,tsn,Tswana,Latin,True
-186,tur,Turkish,Latin,True
-187,tuk,Turkmen,Latin,True
-902,tvl,Tuvaluan,Latin,True
-503,twi,Twi,Latin,True
-69,tzo,Tzotzil,Latin,True
-70,tzj,Tzutujil,Latin,True
-192,ukr,Ukrainian,Cyrillic,True
-434,urd,Urdu,Arabic,True
-193,uzb,Uzbek,Arabic,True
-435,vie,Vietnamese,Latin,True
-904,war,Waray,Latin,True
-194,cym,Welsh,Latin,True
-773,wol,Wolof,Latin,True
-774,xho,Xhosa,Latin,True
-905,yap,Yapese,Latin,True
-779,yor,Yoruba,Latin,True
-82,esu,Yupik,Latin,True
-783,zul,Zulu,Latin,True
+﻿500,aar,Afar,Latin,True,44
+501,afr,Afrikaans,Arabic,True,44
+101,alb,Albanian,Latin,True,44
+506,amh,Amharic,Etheopic,True,44
+12,apw,Apache,Latin,True,44
+102,ara,Arabic,Arabic,True,44
+201,hye,Armenian,Armenian,True,44
+104,hyw,Armenian (West),Armenian,True,44
+10,ase,ASL,NA,False,44
+14,aym,Aymara,Latin,True,44
+107,aze,Azerbaijani,Arabic,True,44
+513,ble,Balante,Latin,True,44
+514,bam,Bambara,Latin,True,44
+515,bpd,Banda,Latin,True,44
+109,eus,Basque,Latin,True,44
+520,bci,Baule,Latin,True,44
+114,bel,Belarusian,Arabic,True,44
+522,bem,Bemba,Latin,True,44
+242,ben,Bengali,Brahmi,True,44
+851,bik,Bikolano,Latin,True,44
+852,bis,Bislama,Latin,True,44
+200,bfi,British Sign Language,NA,False,44
+112,bul,Bulgarian,Cyrillic,True,44
+256,mya,Burmese,Burmese,True,44
+19,cak,Cakchiquel,Latin,True,44
+258,khm,Khmer,NA,True,44
+267,yue,Cantonese,NA,True,16
+115,cat,Catalan,Latin,True,44
+853,ceb,Cebuano,Latin,True,44
+855,cha,Chamorro,Latin,True,44
+535,nya,Chichewa (Nyanja),Latin,True,44
+266,zhs,Chinese Simplified,Chinese,True,16
+265,zho,Chinese Traditional,Chinese,True,16
+901,chk,Chuukese,Latin,True,44
+539,swb,Comorian,Arabic,True,44
+541,kea,"Crioulo, Portuguese Creole",Latin,True,44
+119,hrv,Croatian,Latin,True,44
+121,ces,Czech,Latin,True,44
+110,dan,Danish,Latin,True,44
+275,div,Divehi,Thaana,True,44
+120,nld,Dutch,Latin,True,44
+278,dzo,Dzongkha,Tibetan,True,44
+553,efi,Efik,Latin,True,44
+0,eng,English,Latin,True,44
+124,est,Estonian,Latin,True,44
+559,ewe,Ewe,Latin,True,44
+561,fan,Fang,Latin,True,44
+502,fat,Fante,Latin,True,44
+858,fij,Fijian,Latin,True,44
+130,fin,Finnish,Latin,True,42
+562,fon,Fon,Latin,True,44
+140,fra,French,Latin,True,44
+30,gcr,French Antillean,Latin,True,44
+930,fra-cd,"French, Africa Southeast",Latin,True,44
+944,fra-ci,"French, Africa West",Latin,True,44
+563,ful,Fula,Arabic,True,44
+565,fuf,Futa,Arabic,True,44
+131,kat,Georgian,Mkhedruli,True,44
+150,deu,German,Latin,True,44
+133,ell,Greek,Greek,True,44
+33,grn,Guarani,Latin,True,44
+286,guj,Gujarati,Gujarati,True,44
+36,hat,Haitian,Latin,True,44
+584,hau,Hausa,Latin,True,44
+860,haw,Hawaiian,Latin,True,44
+134,heb,Hebrew,Hebrew,True,44
+861,hil,Hiligaynon,Latin,True,44
+294,hin,Hindi,Brahmi,True,44
+298,hif,"Hindi, FIji",Latin,True,44
+295,hmn,Hmong,Latin,True,44
+135,hun,Hungarian,Latin,True,44
+297,iba,Iban,Latin,True,44
+190,isl,Icelandic,Latin,True,44
+593,ibo,Igbo,Latin,True,44
+864,ilo,Ilokano,Latin,True,44
+299,ind,Indonesian,Latin,True,44
+29,ipk,Inupiaq,Latin,True,44
+160,ita,Italian,Latin,True,44
+300,jpn,Japanese,Hiragana,True,13
+448,jsl,Japanese Sign Language,NA,False,44
+303,jav,Javanese,Latin,True,44
+604,kam,Kamba,Latin,True,44
+308,kan,Kannada,Brahmi,True,44
+309,ksw,Karen,Burmese,True,44
+145,kaz,Kazakh,Arabic,True,44
+43,kek,Kekchi,Latin,True,44
+613,kon,Kikongo,Latin,True,44
+716,kin,Kinyarwanda,Latin,True,44
+859,gil,Kiribati,Latin,True,44
+617,run,Kirundi,Latin,True,44
+618,guz,Kisii,Latin,True,44
+916,kjd,Kiwai,Latin,True,44
+320,kor,Korean,Hangeul,True,44
+449,kvk,Korean Sign Language,NA,False,44
+868,kos,Kosraean,Latin,True,44
+624,kpe,Kpelle,Latin,True,44
+625,kri,Krio,Latin,True,44
+44,cuk,Kuna,Latin,True,44
+210,ckb,"Kurdish, Central (Sorani)",Arabic,True,44
+146,kir,Kyrgyz,Arabic,True,44
+331,lao,Lao,Mon,True,44
+153,lav,Latvian,Latin,True,44
+639,lin,Lingala,Latin,True,44
+156,lit,Lithuanian,Cyrillic,True,44
+644,lug,Luganda,Arabic,True,44
+158,mkd,Macedonian,Cyrillic,True,44
+653,vmw,Makua,Latin,True,44
+654,mlg,Malagasy,Latin,True,44
+348,msa,Malay,Latin,True,44
+349,mal,Malayalam,Malayalam,True,44
+159,mlt,Maltese,Latin,True,44
+46,mam,Mam,Latin,True,44
+268,cmn,Mandarin,NA,True,16
+655,mnk,Mandinka,Arabic,True,44
+871,mri,Maori,Latin,True,44
+355,mar,Marathi,Balbodh,True,44
+874,mah,Marshallese,Latin,True,44
+669,mfe,Mauritian French Creole,Latin,True,44
+48,yua,Maya,Latin,True,44
+673,umb,Mbundu,Latin,True,44
+676,men,Mende,Latin,True,44
+55,miq,Miskito,Latin,True,44
+208,mol,Moldovan,Cyrillic,True,44
+363,mon,Mongolian,Cyrillic,True,44
+681,mos,Moore,Latin,True,44
+876,hmo,Motu,Latin,True,44
+54,nav,Navajo,Latin,True,44
+687,nde,Ndebele,Latin,True,44
+372,nep,Nepali,Brahmi,True,44
+880,niu,Niuean,Latin,True,44
+25,cag,Nivaclé,Latin,True,44
+170,nor,Norwegian,Latin,True,44
+881,pau,Palauan,Latin,True,44
+882,pam,Pampango,Latin,True,44
+883,pag,Pangasinan,Latin,True,44
+58,pap,Papiamento,Latin,True,44
+381,pus,Pashto,Arabic,True,44
+382,pes,Persian (Farsi),Arabic,True,44
+77,poh,Pocomchi,Latin,True,44
+885,pon,Pohnpeian,Latin,True,44
+166,pol,Polish,Latin,True,44
+59,por,Portuguese,Latin,True,44
+206,ept,Portuguese-Portugal,Latin,True,44
+386,pnb,Punjabi,Gurmukhi,True,44
+60,quh,Quechua-Bolivia,Latin,True,44
+61,quz,Quechua-Peru,Latin,True,44
+62,quc,Quiché,Latin,True,44
+64,qvi,Quichua-Ecuador,Latin,True,44
+78,acr,Rabinal Achi,Latin,True,44
+886,rar,Rarotongan,Latin,True,44
+171,ron,Romanian,Cyrillic,True,44
+887,rtm,Rotuman,Latin,True,44
+173,rus,Russian,Cyrillic,True,44
+890,smo,Samoan,Latin,True,44
+202,srp,Serbian,Cyrillic,True,44
+725,crs,Seychellese Creole French,Latin,True,44
+731,sna,Shona,Latin,True,44
+408,sin,Sinhala,Brahmi,True,44
+176,slk,Slovak,Latin,True,44
+177,slv,Slovenian,Latin,True,44
+891,pis,Solomonese,Latin,True,44
+734,som,Somali,Latin,True,44
+738,nso,"Sotho, Northern",Latin,True,44
+739,sot,"Sotho, Southern",Latin,True,44
+2,spa,Spanish,Latin,True,44
+178,spa-es,Spanish-Spain,Latin,True,44
+66,srn,Sranan,Latin,True,44
+743,swa,Swahili,Latin,True,44
+744,swc,Swahili-Shaba,Latin,True,44
+745,ssw,Swazi,Latin,True,44
+180,swe,Swedish,Latin,True,44
+893,tgl,Tagalog,Latin,True,44
+895,tah,Tahitian,Latin,True,44
+181,tgk,Tajiki,Arabic,True,44
+418,tam,Tamil,Tamil,True,44
+421,tel,Telugu,Brahmi,True,44
+425,tha,Thai,Mon,True,44
+427,bod,Tibetan,Tibetan,True,44
+878,tpi,Tok Pisin,Latin,True,44
+900,ton,Tongan,Latin,True,44
+760,lua,Tshiluba,Latin,True,44
+763,tsn,Tswana,Latin,True,44
+186,tur,Turkish,Latin,True,44
+187,tuk,Turkmen,Latin,True,44
+902,tvl,Tuvaluan,Latin,True,44
+503,twi,Twi,Latin,True,44
+69,tzo,Tzotzil,Latin,True,44
+70,tzj,Tzutujil,Latin,True,44
+192,ukr,Ukrainian,Cyrillic,True,44
+434,urd,Urdu,Arabic,True,44
+193,uzb,Uzbek,Arabic,True,44
+435,vie,Vietnamese,Latin,True,44
+904,war,Waray,Latin,True,44
+194,cym,Welsh,Latin,True,44
+773,wol,Wolof,Latin,True,44
+774,xho,Xhosa,Latin,True,44
+905,yap,Yapese,Latin,True,44
+779,yor,Yoruba,Latin,True,44
+82,esu,Yupik,Latin,True,44
+783,zul,Zulu,Latin,True,44

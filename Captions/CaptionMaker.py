@@ -19,14 +19,17 @@ class CaptionMaker(FileMaker):
     # lang:               str     - the language of the captions
     # srt_filename:       str     - the name of the SRT file
     # split:              bool    - split the captions into multiple lines
-    def __init__(self, script_filename: str, timecode_filename: str, data_type: str, lang_code: str, srt_filename: str,  split: bool = True):
+    def __init__(self, script_filename: str, timecode_filename: str, data_type: str, lang_code: str, srt_filename: str, max_line_len: int,  split: bool = True):
         super().__init__(script_filename, timecode_filename, srt_filename, data_type)
 
         self.split = split
 
         if lang_code in LANG_SPECIFIC_SRT_INIT:
             initializer = LANG_SPECIFIC_SRT_INIT[lang_code]
-            self.caption_manager = initializer(srt_filename)
+            if lang_code in ["ZHS", "ZHO", "CMN", "YUE"]:
+                self.caption_manager = initializer(srt_filename, max_line_len=max_line_len, lang_code=lang_code)
+            else:
+                self.caption_manager = initializer(srt_filename, max_line_len=max_line_len)
         else:
             self.caption_manager = SRTManager(srt_filename, lang_code=lang_code)
     # ----------------------------------------------------------------------------
