@@ -47,9 +47,9 @@ class ProToolsEDL:
         self.channel = channel
         self.event = event
         self.loop = clip_name
-        self.start_time = Timecode.from_frames(start_time, frame_rate)
-        self.end_time = Timecode.from_frames(end_time, frame_rate)
-        self.duration = Timecode.from_frames(duration, frame_rate)
+        self.start_time = Timecode.from_string(start_time, frame_rate)
+        self.end_time = Timecode.from_string(end_time, frame_rate)
+        self.duration = Timecode.from_string(duration, frame_rate)
         self.state = state
 
         # TODO: rewrite this so it knows how to better handle the hours

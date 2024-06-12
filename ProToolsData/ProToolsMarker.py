@@ -59,7 +59,7 @@ class ProToolsMarker:
         self.units = units
         self.loop_id = name
         self.frame_rate = frame_rate
-        self.timecode = Timecode.from_frames(location, frame_rate)
+        self.timecode = Timecode.from_string(location, frame_rate)
         self.comments = comments
 
         # TODO: rewrite this so it knows how to better handle the hours

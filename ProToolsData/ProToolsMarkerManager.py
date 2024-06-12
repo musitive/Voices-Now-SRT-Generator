@@ -39,8 +39,8 @@ class ProToolsMarkerManager(ProToolsDataManager):
             column_headers = {header_data[i].strip() : i for i in range(len(header_data))}
 
             ## Check for required fields
-            for field in PT_COLUMN_HEADERS:
-                assert field in column_headers, f"Error: Pro Tools Marker data is missing a required field: {field}"
+            # for field in PT_COLUMN_HEADERS:
+            #     assert field in column_headers, f"Error: Pro Tools Marker data is missing a required field: {field}"
 
             ## Create head node for linked list
             line = content[PT_MARKER_DATA_START]
@@ -94,15 +94,15 @@ class ProToolsMarkerManager(ProToolsDataManager):
     # Continue reading the data
     ## returns: bool
     def continue_reading(self) -> bool:
-        if self.current_node == None:
-            return False
+        # if self.current_node == None:
+        #     return False
             
-        marker = self.current_node.marker
-        next_node = self.current_node.next
+        # marker = self.current_node.marker
+        # next_node = self.current_node.next
 
-        # If no more markers, break
-        if marker == None or next_node == None or next_node.marker == None:
-            return False
+        # # If no more markers, break
+        # if marker == None or next_node == None or next_node.marker == None:
+        #     return False
 
         return self.current_node != None
     # ----------------------------------------------------------------------------
