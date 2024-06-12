@@ -8,7 +8,7 @@ import khmernltk
 import laonlp
 import botok
 import jieba
-import Mykytea
+# import Mykytea
 
 ### IMPORTANT: If adding a new language specific SRT Manager, make sure to add it to the LANG_SRT_MAP
 ### dictionary at the bottom of this file.
@@ -103,37 +103,37 @@ class LaoSRTManager(LanguageSpecificSRTManager):
     
 # Japanese SRT Manager, using the konoha library.
 # https://github.com/himkt/konoha
-class JapaneseSRTManager(LanguageSpecificSRTManager):
-    # ----------------------------------------------------------------------------
-    # Japanese SRT Manager
-    # srt_filename: str       - the filename of the SRT file
-    def __init__(self, srt_filename: str, max_line_len: int = 13):
-        super().__init__(srt_filename, self.sentence_tokenize, self.word_tokenize, max_line_len, lang_code="JPN")
-        opt = "-model /Users/studiod/Documents/GitHub/Voices-Now-SRT-Generator/Captions/jp-0.4.7-1.mod"
-        self.tokenizer = Mykytea.Mykytea(opt)
-    # ----------------------------------------------------------------------------
+# class JapaneseSRTManager(LanguageSpecificSRTManager):
+#     # ----------------------------------------------------------------------------
+#     # Japanese SRT Manager
+#     # srt_filename: str       - the filename of the SRT file
+#     def __init__(self, srt_filename: str, max_line_len: int = 13):
+#         super().__init__(srt_filename, self.sentence_tokenize, self.word_tokenize, max_line_len, lang_code="JPN")
+#         opt = "-model /Users/studiod/Documents/GitHub/Voices-Now-SRT-Generator/Captions/jp-0.4.7-1.mod"
+#         self.tokenizer = Mykytea.Mykytea(opt)
+#     # ----------------------------------------------------------------------------
 
-    # ----------------------------------------------------------------------------
-    # Wrapper function for the sentence tokenizer in the botok library.
-    # text: str               - the text to tokenize
-    ## returns: list          - the list of tokens
-    def sentence_tokenize(self, text: str) -> list:
-        tokens = []
-        previous = 0
-        for m in re.finditer('[\u3001\u3002\uFF1F\uFF01\uFF0C\uFF1A\—]', text):
-            tokens.append(text[previous:m.start()+1])
-            previous = m.start()+1
-        return tokens
-    # ----------------------------------------------------------------------------
+#     # ----------------------------------------------------------------------------
+#     # Wrapper function for the sentence tokenizer in the botok library.
+#     # text: str               - the text to tokenize
+#     ## returns: list          - the list of tokens
+#     def sentence_tokenize(self, text: str) -> list:
+#         tokens = []
+#         previous = 0
+#         for m in re.finditer('[\u3001\u3002\uFF1F\uFF01\uFF0C\uFF1A\—]', text):
+#             tokens.append(text[previous:m.start()+1])
+#             previous = m.start()+1
+#         return tokens
+#     # ----------------------------------------------------------------------------
     
-    # ----------------------------------------------------------------------------
-    # Wrapper function for the word tokenizer in the botok library.
-    # text: str               - the text to tokenize
-    ## returns: list          - the list of tokens
-    def word_tokenize(self, text: str) -> list:
-        t = self.tokenizer.getWS(text)
-        return t
-    # ----------------------------------------------------------------------------
+#     # ----------------------------------------------------------------------------
+#     # Wrapper function for the word tokenizer in the botok library.
+#     # text: str               - the text to tokenize
+#     ## returns: list          - the list of tokens
+#     def word_tokenize(self, text: str) -> list:
+#         t = self.tokenizer.getWS(text)
+#         return t
+#     # ----------------------------------------------------------------------------
 
 # ================================================================================================
 
@@ -209,7 +209,7 @@ LANG_SPECIFIC_SRT_INIT = {
     "THA": ThaiSRTManager,
     "KHM": KhmerSRTManager,
     "LAO": LaoSRTManager,
-    "JPN": JapaneseSRTManager,
+    # "JPN": JapaneseSRTManager,
     "TIB": TibetanSRTManager,
     "CMN": ChineseSRTManager,
     "YUE": ChineseSRTManager,

@@ -6,7 +6,6 @@ from Captions.FileMaker import FileMaker
 from Captions.SRTManager import SRTManager
 from ProToolsData.ProToolsLinkedList import DataNode
 from Captions.LanguageSpecificSRTManagers import LANG_SPECIFIC_SRT_INIT
-from ProToolsData.Timecode import Timecode
 
 # ================================================================================================
 
