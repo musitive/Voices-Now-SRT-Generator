@@ -1,5 +1,5 @@
-from ProTools.Marker import ProToolsMarker
-from ProTools.ProToolsEDL import ProToolsEDL
+from ProTools.Marker import Marker
+from ProTools.EDL import EDL
 from ProTools.Timecode import Timecode
 
 # ================================================================================================
@@ -41,9 +41,9 @@ class MarkerNode(DataNode):
     # marker: ProToolsMarker   - the marker data
     # end: ProToolsMarker      - if there is a marker between this and the next marker marking the end of a segment
     # next: MarkerNode         - the next marker in the list
-    def __init__(self, marker: ProToolsMarker):
-        self.marker : ProToolsMarker = marker
-        self.end : ProToolsMarker = None
+    def __init__(self, marker: Marker):
+        self.marker : Marker = marker
+        self.end : Marker = None
         self.next : MarkerNode = None
     # ------------------------------------------------------------------------
 
@@ -51,14 +51,14 @@ class MarkerNode(DataNode):
     # Get the current loop
     ## returns: str
     def get_loop_id(self) -> str:
-        return self.marker.loop_id
+        return self.marker.name
     # ------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------
     # Get start timecode
     ## returns: Timecode
     def get_start(self) -> Timecode:
-        return self.marker.timecode
+        return self.marker.location
     # ------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------
@@ -67,9 +67,9 @@ class MarkerNode(DataNode):
     def get_end(self) -> Timecode:
         # If there is no end marker, return the next marker
         if self.end == None and self.next != None:
-            return self.next.marker.timecode
+            return self.next.marker.location
         
-        return self.end.timecode
+        return self.end.location
     # ------------------------------------------------------------------------
 
 # ================================================================================================
@@ -78,8 +78,8 @@ class EDLNode(DataNode):
     # ------------------------------------------------------------------------
     # Linked list node for Pro Tools EDL data
     # edl: ProToolsEDL    - the Pro Tools EDL data
-    def __init__(self, edl: ProToolsEDL):
-        self.edl : ProToolsEDL = edl
+    def __init__(self, edl: EDL):
+        self.edl : EDL = edl
         self.next : EDLNode = None
     # ------------------------------------------------------------------------
 

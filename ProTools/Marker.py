@@ -15,101 +15,117 @@ EXAMPLE PRO TOOLS MARKER 2
 """
 
 import re
-from ProTools.Timecode import Timecode
+from enum import Enum
+from ProTools.Timecode import Timecode, validate_frame_rate
 
-# ================================================================================================
+# TODO: Add functionality for different Pro Tools Versions
 
-PT_MARKER_ID = "#"
-PT_LOCATION_ID = "LOCATION"
-PT_TIMEREF_ID = "TIME REFERENCE"
-PT_UNITS_ID = "UNITS"
-PT_NAME_ID = "NAME"
-PT_TNAME_ID = "TRACK NAME"
-PT_TTYPE_ID = "TRACK TYPE"
-PT_COMMENTS_ID = "COMMENTS"
+# Delimiters
+ROW_DELIMITER = r"\t"
 
-PT_COLUMN_HEADERS = [PT_MARKER_ID, PT_LOCATION_ID, PT_TIMEREF_ID, PT_UNITS_ID, PT_NAME_ID, PT_TNAME_ID, PT_TTYPE_ID, PT_COMMENTS_ID]
+# Starting Values
+# TODO: Change the session start to match what is in Pro Tools
+SESSION_START = Timecode.from_string("00:00:00:00")
 
-# ================================================================================================
+# Error Messages
+INVALID_COLUMN = f"Column {0} does not exist"
 
-class ProToolsMarker:
-    # ----------------------------------------------------------------------------
-    # Pro Tools Marker
-    # marker_id: str         - the ID of the marker
-    # location: str          - the location of the marker
-    # time_reference: str    - the time reference of the marker
-    # units: str             - the units of the marker
-    # name: str              - the name of the marker
-    # frame_rate: float      - the frame rate of the marker
-    # comments: str          - the comments of the marker
-    def __init__(self, marker_id: str, location: str, time_reference: str,
-                 units: str, name: str, frame_rate: float, comments: str = ""):
+# TODO: Add in Marker ID max
+INVALID_ID = "Marker {id}: ID cannot be less than 0"
+INVALID_LOCATION = "Marker {id}: Location cannot be less than the session start time"
+INVALID_NAME = "Marker {id}: Name cannot be empty"
+INVALID_UNITS = "Marker{id}: Unit type {units} does not exist"
+
+# ----------------------------------------------------------------------
+
+# Marker Column Headers
+class ColumnHeaders(Enum):
+    ID = "#"
+    LOCATION = "LOCATION"
+    TIME_REFERENCE = "TIME REFERENCE"
+    UNITS = "UNITS"
+    NAME = "NAME"
+    TRACK_NAME = "TRACK NAME"
+    TRACK_TYPE = "TRACK TYPE"
+    COMMENTS = "COMMENTS"
+
+class Units(Enum):
+    SAMPLES = "Samples"
+
+class Marker:
+    def __init__(self, id: int, location: Timecode, time_reference: str,
+                 units: Units, name: str, comments: str = "",
+                 frame_rate: float = 24.0):
+        """Constructor for the Marker class
         
-        # Validate input
-        assert marker_id != "" and int(marker_id) >= 0, f"Invalid ProTools Marker ID: {marker_id}"
-        
-        # assert int(time_reference) >= 0, f"Invalid location {time_reference} for ProTools Marker {marker_id}"
-        # assert units == "Samples", f"Unit type {units} unsupported at ProTools Marker {marker_id}"
-        assert name != "", f"ProTools Marker name cannot be empty at ProTools Marker {marker_id}"
-        assert 0 < frame_rate, "Frame rate must be greater than 0"
+        Keyword arguments:
+        id: str -- the ID of the marker
+        location: str -- the location of the marker
+        time_reference: str -- the time reference of the marker
+        units: str -- the units of the marker
+        name: str -- the name of the marker
+        comments: str -- the comments of the marker (default "")
+        frame_rate: float -- the frame rate of the marker (default 24.0)
+        """
 
-        # Set attributes
-        self.marker_id = marker_id
+        assert id >= 0, INVALID_ID.format(id=id)
+        assert location >= SESSION_START, INVALID_LOCATION.format(id=id)
+        assert units in Units, INVALID_UNITS.format(id=id, units=units)
+        assert name != None and name != "", INVALID_NAME.format(id=id)
+        validate_frame_rate(frame_rate)
+
+        self.id = id
         self.time_reference = time_reference
         self.units = units
-        self.loop_id = name
+        self.name = name
         self.frame_rate = frame_rate
-        self.timecode = Timecode.from_string(location, frame_rate)
+        self.location = location
         self.comments = comments
 
-        # TODO: rewrite this so it knows how to better handle the hours
-        self.timecode.hours = 0
-    # ----------------------------------------------------------------------------
+    @classmethod
+    def from_row(cls, column_headers: dict, row: str, frame_rate: float):
+        """Create a new Marker object from a line of Pro Tools Marker data
+        
+        Keyword arguments:
+        column_headers: dict
+        row: str -- the line of text containing the marker data
+        frame_rate: float
+        """
 
-    # ----------------------------------------------------------------------------
-    # Static method to create a new ProToolsMarker from a line of text
-    # column_headers: dict  - the column headers for the Pro Tools Marker data
-    # line: str             - the line of text containing the marker data
-    # frame_rate: float     - the frame rate of the Pro Tools session
-    ## returns: ProToolsMarker
-    @staticmethod
-    def create_new_marker(column_headers: dict, line: str, frame_rate: float) -> 'ProToolsMarker':
-        # Split the line into marker data
-        marker_data = re.split(r"\t", line)
-        marker_data = [x.strip() for x in marker_data]
+        for header in column_headers.keys():
+            assert header in ColumnHeaders, INVALID_COLUMN.format(header)
+        validate_frame_rate(frame_rate)
 
-        # Verify that the marker data is complete
-        try:
-            marker_id = marker_data[column_headers[PT_MARKER_ID]]
-            location = marker_data[column_headers[PT_LOCATION_ID]]
-            time_reference = marker_data[column_headers[PT_TIMEREF_ID]]
-            units = marker_data[column_headers[PT_UNITS_ID]]
-            loop = marker_data[column_headers[PT_NAME_ID]]
-            comments = marker_data[column_headers[PT_COMMENTS_ID]]
-        except KeyError as e:
-            raise(f"Error: Pro Tools Marker data is missing a required field: {e}")
+        split_row = re.split(ROW_DELIMITER, row)
+        row_values = [value.strip() for value in split_row] # Remove any leading or trailing whitespace
 
-        return ProToolsMarker(marker_id, location, time_reference, units, loop, frame_rate, comments)
-    # ----------------------------------------------------------------------------
+        get_row_value = lambda header: row_values[column_headers[header]]
 
-    # ----------------------------------------------------------------------------
-    # Compare two ProToolsMarker objects to determine if they are equal
+        id = int(get_row_value(ColumnHeaders.ID))
+        location = Timecode.from_string(get_row_value(ColumnHeaders.LOCATION))
+        time_reference = int(get_row_value(ColumnHeaders.TIME_REFERENCE))
+        units = Units(get_row_value(ColumnHeaders.UNITS))
+        name = get_row_value(ColumnHeaders.NAME)
+        comments = get_row_value(ColumnHeaders.COMMENTS)
+
+        return cls(id, location, time_reference, units, name, frame_rate, comments)
+
+    # OPERATORS
+
     def __eq__(self, other):
-        if isinstance(other, ProToolsMarker):
-            return (self.marker_id == other.marker_id and
-                    self.timecode == other.timecode and
+        """Compare two Marker objects to determine if they are equal"""
+
+        if isinstance(other, Marker):
+            return (self.id == other.id and
+                    self.location == other.location and
                     self.time_reference == other.time_reference and
                     self.units == other.units and
-                    self.loop_id == other.loop_id and
+                    self.name == other.name and
                     self.comments == other.comments)
         
         return False
-    # ----------------------------------------------------------------------------
-    
-    # ----------------------------------------------------------------------------
-    # Compare two ProToolsMarker objects to determine if they are not equal
+
     def __ne__(self, other):
+        """Compare two Marker objects to determine if they are not equal"""
+        
         return not self.__eq__(other)
-    # ----------------------------------------------------------------------------
-    
-# ================================================================================================

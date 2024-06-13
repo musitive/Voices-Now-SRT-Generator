@@ -45,6 +45,8 @@ INVALID_FRAME_FORMAT = "Timecode must be formatted as HH:MM:SS:FF"
 INVALID_DROP_FRAME_FORMAT = "Timecode must be formatted as HH:MM:SS;FF"
 INVALID_MILLISECONDS_FORMAT = "Timecode must be formatted as HH:MM:SS,mmm or HH:MM:SS.mmm"
 
+# ----------------------------------------------------------------------
+
 class OffsetType(Enum):
     NONE = 0
     ADVANCE = 1
@@ -56,6 +58,17 @@ class TimecodeOrder(Enum):
     SECONDS = 2,
     FRAMES = 3,
     MILLISECONDS = 3 # Shared with frames
+
+# ----------------------------------------------------------------------
+
+def validate_frame_rate(frame_rate: float):
+    """Validate the frame rate
+    
+    Keyword arguments:
+    frame_rate: float -- the frame rate to validate
+    """
+
+    assert 0 < frame_rate, INVALID_FRAME_RATE
 
 # TODO: check drop frame arithmetic
 # TODO: consider reworking the class to use a single time component
@@ -81,7 +94,7 @@ class Timecode:
 
         # TODO: fix this assertion
         # if not drop_frame: assert 0 <= frames < frame_rate, "Frames must be between 0 and the frame rate"
-        assert 0 < frame_rate, INVALID_FRAME_RATE
+        validate_frame_rate(frame_rate)
         
         self.hours = hours
         self.minutes = minutes
@@ -135,7 +148,7 @@ class Timecode:
         """
         
         assert type(timecode) == str, INVALID_TYPE.format("a string")
-        assert 0 < frame_rate, INVALID_FRAME_RATE
+        validate_frame_rate(frame_rate)
 
         if re.match(FRAMES_REGEX, timecode):
             hours, minutes, seconds, frames = map(int, timecode.split(STANDARD_TIME_DELIMITER))
@@ -163,8 +176,8 @@ class Timecode:
         """
 
         assert type(timecode) == str, INVALID_TYPE.format("a string")
-        assert 0 < frame_rate, INVALID_FRAME_RATE
         assert re.match(FRAMES_REGEX, timecode), INVALID_FRAME_FORMAT
+        validate_frame_rate(frame_rate)
 
         hours, minutes, seconds, frames = Timecode.split_string(timecode)
 
@@ -184,7 +197,7 @@ class Timecode:
         
         assert type(timecode) == str, INVALID_TYPE.format("a string")
         assert re.match(DROP_FRAME_REGEX, timecode), INVALID_DROP_FRAME_FORMAT
-        assert 0 < frame_rate, INVALID_FRAME_RATE
+        validate_frame_rate(frame_rate)
 
         hours, minutes, seconds, frames = Timecode.split_string(timecode)
 
@@ -204,7 +217,7 @@ class Timecode:
         
         assert type(timecode) == str, INVALID_TYPE.format("a string")
         assert re.match(MILLISECONDS_REGEX, timecode), INVALID_MILLISECONDS_FORMAT
-        assert 0 < frame_rate, INVALID_FRAME_RATE
+        validate_frame_rate(frame_rate)
 
         hours, minutes, seconds, milliseconds = Timecode.split_string(timecode)
 
@@ -220,9 +233,9 @@ class Timecode:
         """
 
         assert type(timecode) == str, INVALID_TYPE.format("a string")
-        assert re.match(FRAMES_REGEX, timecode) or \
-                re.match(MILLISECONDS_REGEX, timecode) or \
-                re.match(DROP_FRAME_REGEX, timecode), NO_MATCH
+        assert (re.match(FRAMES_REGEX, timecode) or
+                re.match(MILLISECONDS_REGEX, timecode) or
+                re.match(DROP_FRAME_REGEX, timecode)), NO_MATCH
 
         delimiter = timecode[DELIMITER_INDEX]
         split_timecode = timecode.split(STANDARD_TIME_DELIMITER)
@@ -255,7 +268,7 @@ class Timecode:
         assert type(milliseconds) == int, INVALID_TYPE.format("an integer")
         assert milliseconds >= 0 and \
             milliseconds < MILLISECONDS_PER_SECOND, INVALID_MILLISECONDS
-        assert 0 < frame_rate, INVALID_FRAME_RATE
+        validate_frame_rate(frame_rate)
 
         seconds_as_decimal = milliseconds / MILLISECONDS_PER_SECOND
         frames = int(seconds_as_decimal * frame_rate + ROUNDING_RATE)
@@ -274,7 +287,7 @@ class Timecode:
         """
 
         assert frames >= 0, INVALID_TOTAL_FRAMES
-        assert 0 < frame_rate, INVALID_FRAME_RATE
+        validate_frame_rate(frame_rate)
 
         seconds_as_decimal = frames / frame_rate
         milliseconds = int(seconds_as_decimal * MILLISECONDS_PER_SECOND + ROUNDING_RATE)

@@ -1,5 +1,5 @@
 from ProTools.ProToolsDataManager import ProToolsDataManager
-from ProTools.Marker import ProToolsMarker, PT_COLUMN_HEADERS
+from ProTools.Marker import Marker, PT_COLUMN_HEADERS
 from ProTools.ProToolsLinkedList import MarkerNode
 import re
 
@@ -44,7 +44,7 @@ class ProToolsMarkerManager(ProToolsDataManager):
 
             ## Create head node for linked list
             line = content[PT_MARKER_DATA_START]
-            head_node = MarkerNode(ProToolsMarker.create_new_marker(column_headers, line, frame_rate))
+            head_node = MarkerNode(Marker.from_row(column_headers, line, frame_rate))
             current_node = head_node
 
             ## Add markers to linked list
@@ -52,12 +52,12 @@ class ProToolsMarkerManager(ProToolsDataManager):
                 if line.strip() == "":
                     continue
 
-                next_marker = ProToolsMarker.create_new_marker(column_headers, line, frame_rate)
+                next_marker = Marker.from_row(column_headers, line, frame_rate)
 
                 # If the next marker is the end of a segment, set the current node's end to the next marker
                 # Otherwise, add the next marker to the linked list
-                if next_marker.loop_id in ['x', 'END'] or \
-                   (next_marker.loop_id == 'w' and current_node.end == None):
+                if next_marker.name in ['x', 'END'] or \
+                   (next_marker.name == 'w' and current_node.end == None):
 
                     current_node.end = next_marker
                 else:
@@ -74,7 +74,7 @@ class ProToolsMarkerManager(ProToolsDataManager):
     ## returns: ProToolsMarkerManager
     @staticmethod
     def from_script(timecodes: dict) -> 'ProToolsMarkerManager':
-        make_node = lambda key: MarkerNode(ProToolsMarker(key, timecodes[key], None, None, key, 24.0))
+        make_node = lambda key: MarkerNode(Marker(key, timecodes[key], None, None, key, 24.0))
         time_iter = iter(timecodes)
         key = next(time_iter)
         head_node = make_node(key)
@@ -85,7 +85,7 @@ class ProToolsMarkerManager(ProToolsDataManager):
             current_node.next = next_node
             current_node = next_node
         
-        current_node.next = MarkerNode(ProToolsMarker(len(timecodes.keys()), str(current_node.marker.timecode + 1), None, None, "END", 24.0))
+        current_node.next = MarkerNode(Marker(len(timecodes.keys()), str(current_node.marker.location + 1), None, None, "END", 24.0))
 
         return ProToolsMarkerManager(head_node, 24.0)
     # ----------------------------------------------------------------------------
