@@ -54,10 +54,10 @@ class TestTimecode(unittest.TestCase):
         self.assertEqual(self.timecode2.get_total_frames(), 89356)
 
     def test_get_timecode_in_frames(self):
-        self.assertEqual(self.timecode2.get_timecode_in_frames(), "01:02:03:04")
+        self.assertEqual(self.timecode2.convert_to_frames_format(), "01:02:03:04")
 
     def test_get_timecode_in_ms(self):
-        self.assertEqual(self.timecode2.get_timecode_in_ms(), "01:02:03,167")
+        self.assertEqual(self.timecode2.convert_to_milliseconds_format(), "01:02:03,167")
 
     def test_comparators(self):
         timecode_cmp = Timecode.from_total_frames(89356, 24.0)
