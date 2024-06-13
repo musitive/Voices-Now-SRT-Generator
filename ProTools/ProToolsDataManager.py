@@ -1,4 +1,4 @@
-from ProToolsData.ProToolsLinkedList import DataNode
+from ProTools.ProToolsLinkedList import DataNode
 
 # ================================================================================================
 

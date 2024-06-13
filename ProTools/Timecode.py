@@ -1,4 +1,5 @@
 import re
+from enum import Enum
 
 # Rates
 ROUNDING_RATE = 0.5
@@ -11,10 +12,25 @@ FRAMES_FORMAT = "{0:02d}:{1:02d}:{2:02d}:{3:02d}"
 MILLISECONDS_FORMAT = "{0:02d}:{1:02d}:{2:02d},{3:03d}"
 DROP_FRAME_FORMAT = "{0:02d}:{1:02d}:{2:02d};{3:02d}"
 
+# Delimiters
+STANDARD_TIME_DELIMITER = ":"
+DROP_FRAME_DELIMITER = ";"
+STANDARD_MILLISECONDS_DELIMITER = ","
+ALTERNATE_MILLISECONDS_DELIMITER = "."
+
 # Validation Regular Expressions
 FRAMES_REGEX = r"^\d{2}:\d{2}:\d{2}:\d{2}$"
 MILLISECONDS_REGEX = r"^\d{2}:\d{2}:\d{2}[,.]\d{3}$"
 DROP_FRAME_REGEX = r"^\d{2}:\d{2}:\d{2};\d{2}$"
+
+# Defaults
+DEFAULT_FRAME_RATE = 24.0
+DEFAULT_DROP_FRAME = False
+
+class OffsetType(Enum):
+    NONE = 0
+    ADVANCE = 1
+    DELAY = 2
 
 # TODO: check drop frame arithmetic
 # TODO: consider reworking the class to use a single time component
@@ -27,8 +43,8 @@ class Timecode:
     # seconds: int    - the number of seconds
     # frames: int     - the number of frames
     # frame_rate: float- the number of frames per second
-    def __init__(self, hours: int = 0, minutes: int = 0, seconds: int = 0, 
-                 frames: int = 0, frame_rate: float = 24.0, drop_frame: bool = False):
+    def __init__(self, hours: int = 0, minutes: int = 0, seconds: int = 0, frames: int = 0,
+                 frame_rate: float = DEFAULT_FRAME_RATE, drop_frame: bool = DEFAULT_DROP_FRAME):
         
         assert 0 <= hours, "Hours must be greater than or equal to 0"
         assert 0 <= minutes < MINUTES_PER_HOUR, "Minutes must be between 0 and 59"
@@ -45,11 +61,12 @@ class Timecode:
         self.frame_rate = frame_rate
         self.drop_frame = drop_frame
 
+
     # Constructor based on total number of frames
     # total_frames: int     - the total number of frames OR a string formatted as HH:MM:SS:FF
     # frame_rate: float     - the number of frames per second
     @classmethod
-    def from_total_frames(cls, total_frames: int, frame_rate: float = 24.0, drop_frame: bool = False):
+    def from_total_frames(cls, total_frames: int, frame_rate: float = DEFAULT_FRAME_RATE, drop_frame: bool = DEFAULT_DROP_FRAME):
         assert type(total_frames) == int, "Timecode must be a string or an integer"
         assert 0 <= total_frames, "Frames must be greater than or equal to 0"
 
@@ -66,17 +83,18 @@ class Timecode:
 
         return cls(hours, minutes, seconds, frames, frame_rate, drop_frame)
 
+
     # Constructor based on a string formatted as HH:MM:SS:FF, HH:MM:SS,mmm or HH:MM:SS;FF
     # timecode: str        - the timecode formatted as HH:MM:SS:FF, HH:MM:SS,mmm or HH:MM:SS;FF
     # frame_rate: float    - the number of frames per second
     ## returns: Timecode
     @classmethod
-    def from_string(cls, timecode: str, frame_rate: float = 24.0):
+    def from_string(cls, timecode: str, frame_rate: float = DEFAULT_FRAME_RATE):
         assert type(timecode) == str, "Timecode must be a string"
         assert 0 < frame_rate, "Frame rate must be greater than 0"
 
         if re.match(FRAMES_REGEX, timecode):
-            hours, minutes, seconds, frames = map(int, timecode.split(":"))
+            hours, minutes, seconds, frames = map(int, timecode.split(STANDARD_TIME_DELIMITER))
             return cls(hours, minutes, seconds, frames, frame_rate)
         
         elif re.match(MILLISECONDS_REGEX, timecode):
@@ -88,47 +106,50 @@ class Timecode:
         else:
             raise ValueError("Invalid timecode format")
 
+
     # Constructor based on a string formatted as HH:MM:SS;FF
     # timecode: str        - the timecode formatted as HH:MM:SS;FF
     # frame_rate: float    - the number of frames per second
     ## returns: Timecode
     @classmethod
-    def from_drop_frame(cls, timecode: str, frame_rate: float = 24.0):
+    def from_drop_frame(cls, timecode: str, frame_rate: float = DEFAULT_FRAME_RATE):
         assert type(timecode) == str, "Timecode must be a string"
         assert re.match(DROP_FRAME_REGEX, timecode), "Timecode must be formatted as HH:MM:SS;FF"
         assert 0 < frame_rate, "Frame rate must be greater than 0"
 
-        hours, minutes, seconds_and_frames = map(str, timecode.split(":"))
+        hours, minutes, seconds_and_frames = map(str, timecode.split(STANDARD_TIME_DELIMITER))
         hours = int(hours)
         minutes = int(minutes)
-        seconds, frames = map(int, seconds_and_frames.split(";"))
+        seconds, frames = map(int, seconds_and_frames.split(DROP_FRAME_DELIMITER))
 
         return cls(hours, minutes, seconds, frames, frame_rate, drop_frame=True)
+
 
     # Constructor based on a string formatted as HH:MM:SS,mmm or HH:MM:SS.mmm
     # timecode: str        - the timecode formatted as HH:MM:SS,mmm or HH:MM:SS.mmm
     # frame_rate: float    - the number of frames per second
     ## returns: Timecode
     @classmethod
-    def from_milliseconds(cls, timecode: str, frame_rate: float = 24.0):
+    def from_milliseconds(cls, timecode: str, frame_rate: float = DEFAULT_FRAME_RATE):
         assert type(timecode) == str, "Timecode must be a string"
         assert re.match(MILLISECONDS_REGEX, timecode), "Timecode must be formatted as HH:MM:SS,mmm or HH:MM:SS.mmm"
         assert 0 < frame_rate, "Frame rate must be greater than 0"
 
-        hours, minutes, seconds_and_ms = map(str, timecode.split(":"))
+        hours, minutes, seconds_and_ms = map(str, timecode.split(STANDARD_TIME_DELIMITER))
         hours = int(hours)
         minutes = int(minutes)
-        seconds, milliseconds = map(int, seconds_and_ms.split(","))
+        seconds, milliseconds = map(int, seconds_and_ms.split(STANDARD_MILLISECONDS_DELIMITER).split(ALTERNATE_MILLISECONDS_DELIMITER))
         frames = int((milliseconds * frame_rate) / MILLISECONDS_PER_SECOND + ROUNDING_RATE)
 
         return cls(hours, minutes, seconds, frames, frame_rate)
+
 
     # Convert milliseconds to frames
     # milliseconds: int     - the number of milliseconds
     # frame_rate: float     - the number of frames per second
     ## returns: int
     @staticmethod
-    def milliseconds_to_frames(milliseconds: int, frame_rate: float = 24.0) -> int:
+    def milliseconds_to_frames(milliseconds: int, frame_rate: float = DEFAULT_FRAME_RATE) -> int:
         assert milliseconds >= 0 and milliseconds < MILLISECONDS_PER_SECOND, "Milliseconds must be between 0 and 999"
         assert 0 < frame_rate, "Frame rate must be greater than 0"
 
@@ -137,12 +158,13 @@ class Timecode:
 
         return frames
 
+
     # Convert frames to milliseconds
     # frames: int           - the number of frames
     # frame_rate: float     - the number of frames per second
     ## returns: int
     @staticmethod
-    def frames_to_milliseconds(frames: int, frame_rate: float = 24.0) -> int:
+    def frames_to_milliseconds(frames: int, frame_rate: float = DEFAULT_FRAME_RATE) -> int:
         assert frames >= 0, "Frames must be greater than or equal to 0"
         assert 0 < frame_rate, "Frame rate must be greater than 0"
 
@@ -150,6 +172,7 @@ class Timecode:
         milliseconds = int(seconds_as_decimal * MILLISECONDS_PER_SECOND + ROUNDING_RATE)
 
         return milliseconds
+
 
     # Convert the timecode to the total number of frames
     ## returns: int
@@ -160,6 +183,7 @@ class Timecode:
 
         return total_frames
 
+
     # Convert the timecode to a string formatted as HH:MM:SS:FF
     ## returns: str
     def get_timecode_in_frames(self) -> str:
@@ -168,16 +192,20 @@ class Timecode:
         else:
             return FRAMES_FORMAT.format(self.hours, self.minutes, self.seconds, self.frames)
 
+
     # Convert the timecode to a string formatted as HH:MM:SS,mmm
     ## returns: str
     def get_timecode_in_ms(self) -> str:
         milliseconds = Timecode.frames_to_milliseconds(self.frames, self.frame_rate)
         return MILLISECONDS_FORMAT.format(self.hours, self.minutes, self.seconds, milliseconds)
 
+
     # To string
     def __str__(self):
         return self.get_timecode_in_frames()
 
+
+    # --------------------------------------------------------------------------------
     # COMPARISON OPERATORS
 
     # Compare two Timecode objects to determine if they are equal
@@ -214,7 +242,7 @@ class Timecode:
     def __ge__(self, other):    
         return not self.__lt__(other)
 
-
+    # --------------------------------------------------------------------------------
     # ARITHMETIC OPERATORS
 
     # Add Timecode object to either another Timecode object or an integer

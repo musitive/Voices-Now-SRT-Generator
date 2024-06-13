@@ -1,6 +1,6 @@
 import re
 import codecs
-from ProToolsData.Timecode import Timecode
+from ProTools.Timecode import Timecode, OffsetType
 from Captions.LanguageSpecificPunctuationPriority import PRIORITY_BY_LANGUAGE as LANGUAGE, PRIORITY_BY_SCRIPT as SCRIPT_TYPES
 from Captions.LanguageManager import LanguageManager
 
@@ -187,19 +187,19 @@ class SRTManager:
     # timecode_offset: Timecode    - the timecode offset
     # srtID_offset: int            - the SRT ID offset
     ## returns: int                - the last SRT ID written
-    def write_captions_to_file(self, timecode_offset: tuple = None, srtID_offset: int = None) -> int:
+    def write_captions_to_file(self, timecode_offset: Timecode, timecode_offset_type: OffsetType, srtID_offset: int = None) -> int:
         srt_file = codecs.open(self.srt_filename, "w+", encoding="utf-8")    # Open SRT file
 
         last_srt_index = 0
 
         for srt in self.srt_blocks:
-            if timecode_offset is not None:
-                if timecode_offset[0] == "adv":
-                    srt.start_time -= timecode_offset[1]
-                    srt.end_time -= timecode_offset[1]
-                elif timecode_offset[0] == "dly":
-                    srt.start_time += timecode_offset[1]
-                    srt.end_time += timecode_offset[1]
+            if timecode_offset is not None and timecode_offset_type is not None:
+                if timecode_offset_type == OffsetType.ADVANCE:
+                    srt.start_time -= timecode_offset
+                    srt.end_time -= timecode_offset
+                elif timecode_offset_type == OffsetType.DELAY:
+                    srt.start_time += timecode_offset
+                    srt.end_time += timecode_offset
 
             if srtID_offset is not None:
                 srt.index += srtID_offset

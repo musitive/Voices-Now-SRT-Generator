@@ -1,6 +1,6 @@
-from ProToolsData.ProToolsMarker import ProToolsMarker
-from ProToolsData.ProToolsEDL import ProToolsEDL
-from ProToolsData.Timecode import Timecode
+from ProTools.Marker import ProToolsMarker
+from ProTools.ProToolsEDL import ProToolsEDL
+from ProTools.Timecode import Timecode
 
 # ================================================================================================
 class DataNode:

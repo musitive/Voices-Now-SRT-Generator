@@ -1,6 +1,6 @@
-from ProToolsData.ProToolsDataManager import ProToolsDataManager
-from ProToolsData.ProToolsMarker import ProToolsMarker, PT_COLUMN_HEADERS
-from ProToolsData.ProToolsLinkedList import MarkerNode
+from ProTools.ProToolsDataManager import ProToolsDataManager
+from ProTools.Marker import ProToolsMarker, PT_COLUMN_HEADERS
+from ProTools.ProToolsLinkedList import MarkerNode
 import re
 
 # ================================================================================================

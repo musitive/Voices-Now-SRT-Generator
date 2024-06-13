@@ -1,6 +1,6 @@
-from ProToolsData.ProToolsDataManager import ProToolsDataManager
-from ProToolsData.ProToolsEDL import ProToolsEDL, PT_COLUMN_HEADERS
-from ProToolsData.ProToolsLinkedList import EDLNode
+from ProTools.ProToolsDataManager import ProToolsDataManager
+from ProTools.ProToolsEDL import ProToolsEDL, PT_COLUMN_HEADERS
+from ProTools.ProToolsLinkedList import EDLNode
 import re
 
 # ================================================================================================

@@ -6,8 +6,8 @@ Build executable:
 py -m PyInstaller -w --onefile "SRT Generator.py"
 """
 
-from ProToolsData.ProToolsMarkerManager import ProToolsMarkerManager
-from ProToolsData.ProToolsEDLManager import ProToolsEDLManager
+from ProTools.ProToolsMarkerManager import ProToolsMarkerManager
+from ProTools.ProToolsEDLManager import ProToolsEDLManager
 from Scripts.ScriptManager import LdsScriptManager
 import logging, sys
 

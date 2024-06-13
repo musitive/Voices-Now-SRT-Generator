@@ -1,5 +1,5 @@
 from Captions.FileMaker import FileMaker
-from ProToolsData.ProToolsMarkerManager import ProToolsMarkerManager
+from ProTools.ProToolsMarkerManager import ProToolsMarkerManager
 from Scripts.ScriptManager import LdsScriptManager
 
 # ================================================================================================

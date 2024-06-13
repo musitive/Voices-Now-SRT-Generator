@@ -7,7 +7,7 @@ CHANNEL 	EVENT   	CLIP NAME                     	START TIME    	END TIME      	D
 """
 
 import re
-from ProToolsData.Timecode import Timecode
+from ProTools.Timecode import Timecode
 
 # ================================================================================================
 
