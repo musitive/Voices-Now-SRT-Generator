@@ -1,5 +1,5 @@
 """
-EXAMPLE PRO TOOLS EDL
+EXAMPLE EDL
 
 CHANNEL 	EVENT   	CLIP NAME                     	START TIME    	END TIME      	DURATION      	STATE
 1       	1       	1            	                01:00:21:17	    01:00:34:07	    00:00:12:14	    Unmuted

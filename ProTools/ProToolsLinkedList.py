@@ -1,5 +1,5 @@
 from ProTools.Marker import Marker
-from ProTools.EDL import EDL
+from ProTools.EDL import Clip
 from ProTools.Timecode import Timecode
 
 # ================================================================================================
@@ -78,8 +78,8 @@ class EDLNode(DataNode):
     # ------------------------------------------------------------------------
     # Linked list node for Pro Tools EDL data
     # edl: ProToolsEDL    - the Pro Tools EDL data
-    def __init__(self, edl: EDL):
-        self.edl : EDL = edl
+    def __init__(self, edl: Clip):
+        self.edl : Clip = edl
         self.next : EDLNode = None
     # ------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 from ProTools.ProToolsDataManager import ProToolsDataManager
-from ProTools.EDL import EDL, PT_COLUMN_HEADERS
+from ProTools.EDL import Clip, PT_COLUMN_HEADERS
 from ProTools.ProToolsLinkedList import EDLNode
 import re
 
@@ -45,14 +45,14 @@ class ProToolsEDLManager(ProToolsDataManager):
 
             ## Create head node for linked list
             line = content[PT_EDL_DATA_START]
-            head_node = EDLNode(EDL.from_row(column_headers, line, frame_rate))
+            head_node = EDLNode(Clip.from_row(column_headers, line, frame_rate))
             current_node = head_node
 
             ## Add EDLs to linked list
             for line in content[PT_EDL_DATA_START+1:]:
                 if line.strip() == "":
                     continue
-                next_EDL = EDL.from_row(column_headers, line, frame_rate)
+                next_EDL = Clip.from_row(column_headers, line, frame_rate)
 
                 current_node.next = EDLNode(next_EDL)
                 current_node = current_node.next
