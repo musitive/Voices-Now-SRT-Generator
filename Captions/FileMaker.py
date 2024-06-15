@@ -13,7 +13,7 @@ sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
 
 from Captions.ProToolsMarkerManager import ProToolsMarkerManager
 from Captions.ProToolsEDLManager import ProToolsEDLManager
-from Scripts.ScriptManager import LdsScriptManager
+from Scripts.Script import Script
 import logging, sys
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -28,7 +28,7 @@ class FileMaker:
     # final_filename: str       - the name of the final file to create
     # data_type: str            - the type of data to create
     def __init__(self, script_filename: str, timecode_filename: str, final_filename: str, data_type: str = "MRK"):
-        self.script_manager = LdsScriptManager(script_filename)
+        self.script_manager = Script(script_filename)
         self.final_filename = final_filename
         self.data_type = data_type
 

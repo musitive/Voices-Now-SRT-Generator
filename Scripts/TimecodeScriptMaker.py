@@ -1,6 +1,6 @@
 from Captions.FileMaker import FileMaker
-from ProTools.ProToolsMarkerManager import ProToolsMarkerManager
-from Scripts.ScriptManager import LdsScriptManager
+from Captions.ProToolsMarkerManager import ProToolsMarkerManager
+from Scripts.Script import Script
 
 # ================================================================================================
 
@@ -14,7 +14,7 @@ class TimecodeScriptMaker(FileMaker):
         self.marker_manager = ProToolsMarkerManager.from_file(timecode_filename)
 
         # Extract script data
-        self.script_manager = LdsScriptManager(script_filename)
+        self.script_manager = Script(script_filename)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------

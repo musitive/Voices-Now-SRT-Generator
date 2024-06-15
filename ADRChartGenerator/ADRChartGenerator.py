@@ -1,6 +1,6 @@
 import csv
 import re
-from Scripts.Script import LdsScript
+from Scripts.Script import Script
 
 # ================================================================================================
 
@@ -10,7 +10,7 @@ WIDTH = 22
 
 class ADRChartGenerator:
     # ----------------------------------------------------------------------------
-    def __init__(self, lds_script: LdsScript):
+    def __init__(self, lds_script: Script):
         self.lds_script = lds_script
         self.character_dict = {}
     # ----------------------------------------------------------------------------
