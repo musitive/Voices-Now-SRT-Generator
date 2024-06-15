@@ -18,7 +18,8 @@ class SRTManager:
         # start_time: Timecode   - the start time of the SRT block
         # end_time: Timecode     - the end time of the SRT block
         # text: str          - the text of the SRT block
-        def __init__(self, index, start_time, end_time, text):
+        def __init__(self, index: int, start_time: Timecode, end_time: Timecode,
+                     text: str):
             self.index = index
             self.start_time = start_time
             self.end_time = end_time
@@ -28,8 +29,8 @@ class SRTManager:
         # ------------------------------------------------------------------------
         # Get the string representation of the SRT block
         def __str__(self):
-            start_time = self.start_time.get_timecode_in_ms()
-            end_time = self.end_time.get_timecode_in_ms()
+            start_time = self.start_time.convert_to_milliseconds_format()
+            end_time = self.end_time.convert_to_milliseconds_format()
             return f"{self.index}\n{start_time} --> {end_time}\n{self.text}\n"
         # ------------------------------------------------------------------------
 

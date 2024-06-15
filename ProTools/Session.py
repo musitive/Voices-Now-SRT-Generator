@@ -1,9 +1,14 @@
 import re
 from enum import Enum
 
-from Marker import Marker, ColumnHeaders as MarkerHeaders
-from ProTools.EDL import Clip
-from Timecode import Timecode
+from ProTools.Marker import Marker, ColumnHeaders as MarkerHeaders
+from ProTools.EDL import EDL, ColumnHeaders as EDLHeaders
+from ProTools.File import File, ColumnHeaders as FileHeaders
+from ProTools.Clip import Clip, ColumnHeaders as ClipHeaders
+from ProTools.Plugin import Plugin, ColumnHeaders as PluginHeaders
+from ProTools.Track import Track
+from ProTools.Timecode import Timecode
+import ProTools.lib as lib
 
 # Delimiters
 ROW_DELIMITER = r"\t"
@@ -39,12 +44,16 @@ class SectionHeaders(Enum):
     TRACK_LISTING = "T R A C K  L I S T I N G"
     MARKERS_LISTING = "M A R K E R S  L I S T I N G"
 
+    @classmethod
+    def header_exists(cls, header: str):
+        return header in cls._value2member_map_ 
+
 class Session:
-    def __init__(self, name: str, sample_rate: float, bit_depth: int, 
+    def __init__(self, name: str, sample_rate: float, bit_depth: BitDepths, 
                  start: Timecode, frame_rate: float, drop_frame: bool,
                  number_of_tracks: int, number_of_clips: int, number_of_files: int,
                  online_files: list, offline_files: list, online_clips: list,
-                 plug_ins: list, tracks: list, markers: list):
+                 plug_ins: list, tracks: list[Track], markers: list):
         """Constructor for the Session class
         
         Keyword arguments:
@@ -92,36 +101,40 @@ class Session:
         with open(filename, 'r') as timecode_file:
             content = timecode_file.readlines()
 
-            global_data = Session.extract_global_data(content)
+            # Parse the global data
+            globals = cls.parse_globals(content[NAME_INDEX:END_GLOBAL_DATA_INDEX])
 
-            name = global_data[NAME_INDEX]
-            sample_rate = global_data[SAMPLE_RATE_INDEX]
-            bit_depth = global_data[BIT_DEPTH_INDEX]
-            start = global_data[SESSION_START_INDEX]
-            timecode_format = global_data[TIMECODE_FORMAT_INDEX]
-            number_of_clips = global_data[NUMBER_OF_CLIPS_INDEX]
-            number_of_files = global_data[NUMBER_OF_FILES_INDEX]
-            number_of_tracks = global_data[NUMBER_OF_TRACKS_INDEX]
+            name = globals[NAME_INDEX]
+            sample_rate = globals[SAMPLE_RATE_INDEX]
+            bit_depth = BitDepths(globals[BIT_DEPTH_INDEX].strip())
+            start = globals[SESSION_START_INDEX]
+            timecode_format = globals[TIMECODE_FORMAT_INDEX]
+            number_of_clips = globals[NUMBER_OF_CLIPS_INDEX]
+            number_of_files = globals[NUMBER_OF_FILES_INDEX]
+            number_of_tracks = globals[NUMBER_OF_TRACKS_INDEX]
 
-            frame_rate, drop_frame = Session.get_frame_rate(timecode_format)
+            frame_rate, drop_frame = cls.get_frame_rate(timecode_format)
 
-            sections_data = Session.extract_sections(content)
+            # Parse the rest of the file
+            sections = cls.split_sections(content[END_GLOBAL_DATA_INDEX:])
+
+            parse = lambda header, parser: parser(sections[header]) if header in sections else []
+
+            online_files = parse(SectionHeaders.ONLINE_FILES, cls.parse_files)
+            offline_files = parse(SectionHeaders.OFFLINE_FILES, cls.parse_files)
+            online_clips = parse(SectionHeaders.ONLINE_CLIPS, cls.parse_clips)
+            plug_ins = parse(SectionHeaders.PLUG_INS_LISTING, cls.parse_plugins)
+            tracks = parse(SectionHeaders.TRACK_LISTING, cls.parse_tracks)
+            markers = parse(SectionHeaders.MARKERS_LISTING, cls.parse_markers)
             
-            online_files = sections_data[SectionHeaders.ONLINE_FILES]
-            offline_files = sections_data[SectionHeaders.OFFLINE_FILES]
-            online_clips = sections_data[SectionHeaders.ONLINE_CLIPS]
-            plug_ins = sections_data[SectionHeaders.PLUG_INS_LISTING]
-            tracks = sections_data[SectionHeaders.TRACK_LISTING]
-            markers = sections_data[SectionHeaders.MARKERS_LISTING]
-
             return cls(name, sample_rate, bit_depth, start, frame_rate, drop_frame,
                        number_of_tracks, number_of_clips, number_of_files,
                        online_files, offline_files, online_clips, plug_ins,
                        tracks, markers)
-                    
+                
 
     @staticmethod
-    def extract_global_data(content: list) -> list:
+    def parse_globals(content: list) -> list:
         """Get the global data from a Pro Tools session file
         
         Keyword arguments:
@@ -131,7 +144,7 @@ class Session:
 
         name = split_global_row(NAME_INDEX)
         sample_rate = float(split_global_row(SAMPLE_RATE_INDEX))
-        bit_depth = int(split_global_row(BIT_DEPTH_INDEX))
+        bit_depth = split_global_row(BIT_DEPTH_INDEX)
         start = Timecode.from_string(split_global_row(SESSION_START_INDEX))
         timecode_format = split_global_row(TIMECODE_FORMAT_INDEX)
         number_of_tracks = int(split_global_row(NUMBER_OF_TRACKS_INDEX))
@@ -155,76 +168,103 @@ class Session:
         return frame_rate, drop_frame
     
     @staticmethod
-    def extract_sections(content: list) -> dict:
-        """Get the sections from a Pro Tools session file
+    def split_sections(content: list) -> dict[SectionHeaders, list]:
+        """Extract the sections from a Pro Tools session file
         
         Keyword arguments:
         content: list -- the content of the Pro Tools session file
         """
-        sections_data = {}
-        section_line_index = END_GLOBAL_DATA_INDEX
+        sections = {}
 
-        def extract_section(header, method):
-            nonlocal section_line_index, sections_data, content
+        for line_index in range(len(content)):
+            line = content[line_index].strip()
+            if SectionHeaders.header_exists(line):
+                section_header = SectionHeaders(line)
+                section_content = []
 
-            while content[section_line_index] != header.value:
-                section_line_index += 1
-            
-            sections_data[header], section_line_index = method(content, section_line_index)
-            
-        
-        extract_section(SectionHeaders.ONLINE_FILES, Session.extract_online_files)
-        extract_section(SectionHeaders.OFFLINE_FILES, Session.extract_offline_files)
-        extract_section(SectionHeaders.ONLINE_CLIPS, Session.extract_online_clips)
-        extract_section(SectionHeaders.PLUG_INS_LISTING, Session.extract_plug_ins)
-        extract_section(SectionHeaders.TRACK_LISTING, Session.extract_tracks)
-        extract_section(SectionHeaders.MARKERS_LISTING, Session.extract_markers)
+                line_index += 1
 
-        return sections_data
-    
-    @staticmethod
-    def extract_online_files(content: list, line_index: int) -> tuple:
-        return [], line_index
-    
-    @staticmethod
-    def extract_offline_files(content: list, line_index: int) -> tuple:
-        return [], line_index
-    
-    @staticmethod
-    def extract_online_clips(content: list, line_index: int) -> tuple:
-        return [], line_index
-    
-    @staticmethod
-    def extract_plug_ins(content: list, line_index: int) -> tuple:
-        return [], line_index
-    
-    @staticmethod
-    def extract_tracks(content: list, line_index: int) -> tuple:
-        return [], line_index
-    
-    @staticmethod
-    def extract_markers(content: list, line_index: int) -> tuple:
-        """Get the markers from a Pro Tools session file
+                while (line_index < len(content) 
+                       and not SectionHeaders.header_exists(content[line_index])):
+                    line = content[line_index].strip()
+
+                    if line != "":
+                        section_content.append(content[line_index])
+
+                    line_index += 1
+
+                sections[section_header] = section_content
+
+        return sections
+
+    @classmethod
+    def parse_section(cls, content: list, HeaderType: Enum, constructor: callable) -> list:
+        """Parse a section of a Pro Tools session file
         
         Keyword arguments:
-        content: list -- the content of the Pro Tools session file
-        line_index: int -- the current index of the line being
+        sections: dict -- the sections of the Pro Tools session file
+        header: SectionHeaders -- the header of the section to parse
+        parse: callable -- the function to parse the section
         """
-        line_index += 1
+        TITLE_INDEX = 0
+        COLUMN_HEADER_INDEX = 1
+        DATA_INDEX = 2
         
-        column_headers = Session.extract_section_column_headers(content[line_index], MarkerHeaders)
-        line_index += 1
+        column_headers = cls.parse_column_headers(content[COLUMN_HEADER_INDEX], HeaderType)
+        section = []
 
-        markers = []
+        for row in content[DATA_INDEX:]:
+            if row != "":
+                section.append(constructor(column_headers, row))
 
-        while content[line_index] != "":
-            markers.append(Marker.from_row(content[line_index], column_headers))
-            line_index += 1
+        return section
+
+    @classmethod
+    def parse_files(cls, content: list) -> list:
+        """Wrapper function to parse the files in a Pro Tools session file"""
+        return cls.parse_section(content, FileHeaders, File.from_row)
+    
+    @classmethod
+    def parse_clips(cls, content: list) -> list:
+        """Wrapper function to parse the clips in a Pro Tools session file"""
+        # TODO: Implement
+        return []
+    
+    @classmethod
+    def parse_plugins(cls, content: list) -> list:
+        """Wrapper function to parse the plugins in a Pro Tools session file"""
+        # TODO: Implement
+        return []
+    
+    @classmethod
+    def parse_tracks(cls, content: list) -> list:
+        """Parse the tracks in a Pro Tools session file"""
+
+        TRACK_HEADER_INDEX = 0
+        COLUMN_HEADER_INDEX = 4
         
-        return markers, line_index
+        track_start_index = TRACK_HEADER_INDEX
+        tracks = []
+
+        column_headers = cls.parse_column_headers(content[COLUMN_HEADER_INDEX], EDLHeaders)
+
+        for line_index in range(TRACK_HEADER_INDEX+1, len(content)):
+            line = lib.split_row(content[line_index])[0]
+            if line == "TRACK NAME:":
+                tracks.append(Track.from_rows(column_headers, content[track_start_index:line_index]))
+                track_start_index = line_index
+        
+        tracks.append(Track.from_rows(column_headers, content[track_start_index:]))
+
+        return tracks
+    
+    @classmethod
+    def parse_markers(cls, content: list) -> list:
+        """Wrapper function to parse the markers in a Pro Tools session file"""
+        return cls.parse_section(content, MarkerHeaders, Marker.from_row)
     
     @staticmethod
-    def extract_section_column_headers(row: str, headers: Enum) -> dict:
+    def parse_column_headers(row: str, SectionHeaders: Enum) -> dict:
         """Extract the column headers from a section of a Pro Tools session file
         
         Keyword arguments:
@@ -232,10 +272,12 @@ class Session:
         headers: Enum -- the column headers
         """
 
-        row_values = re.split(ROW_DELIMITER, row)
+        row_values = lib.split_row(row)
         column_headers = {}
 
         for i in range(len(row_values)):
-            column_headers[headers(i)] = i
+            value = row_values[i]
+            header = SectionHeaders(value)
+            column_headers[header] = i
 
         return column_headers

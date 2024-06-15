@@ -6,8 +6,13 @@ Build executable:
 py -m PyInstaller -w --onefile "SRT Generator.py"
 """
 
-from ProTools.ProToolsMarkerManager import ProToolsMarkerManager
-from ProTools.ProToolsEDLManager import ProToolsEDLManager
+import sys
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/ProTools")
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
+
+from Captions.ProToolsMarkerManager import ProToolsMarkerManager
+from Captions.ProToolsEDLManager import ProToolsEDLManager
 from Scripts.ScriptManager import LdsScriptManager
 import logging, sys
 

@@ -1,8 +1,8 @@
-from ProToolsDataManager import ProToolsDataManager
-from Marker import Marker
-from ProToolsLinkedList import MarkerNode
-from Session import Session
-import re
+from Captions.ProToolsDataManager import ProToolsDataManager
+from ProTools.Marker import Marker
+from Captions.ProToolsLinkedList import MarkerNode
+from ProTools.Session import Session
+
 
 END_MARKER_NAMES = ['x', 'END']
 SKIP_MARKER_NAMES = ['w']
@@ -30,7 +30,7 @@ class ProToolsMarkerManager(ProToolsDataManager):
         head_node = MarkerNode(session.markers[0])
         current_node = head_node
 
-        for marker in session.markers[1:]:
+        for marker in session.markers:
             if marker.name in END_MARKER_NAMES and current_node.end == None:
                 current_node.end = marker
             elif marker.name in SKIP_MARKER_NAMES:

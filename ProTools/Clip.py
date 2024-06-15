@@ -2,7 +2,7 @@
 EXAMPLE CLIP
 
 CLIP NAME                                   	Source File
-Andre_01                                    	Andre_01.wav
+Andre_01                                    	Andre_01.wav    [1]
 """
 
 from enum import Enum

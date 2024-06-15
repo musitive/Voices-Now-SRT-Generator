@@ -1,5 +1,5 @@
 import re
-from enum import Enum
+from enum import Enum, IntEnum
 
 # Rates
 ROUNDING_RATE = 0.5
@@ -52,7 +52,7 @@ class OffsetType(Enum):
     ADVANCE = 1
     DELAY = 2
 
-class TimecodeOrder(Enum):
+class TimecodeOrder(IntEnum):
     HOURS = 0,
     MINUTES = 1,
     SECONDS = 2,

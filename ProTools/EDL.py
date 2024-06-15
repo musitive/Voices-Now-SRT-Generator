@@ -9,6 +9,7 @@ CHANNEL 	EVENT   	CLIP NAME                     	START TIME    	END TIME      	D
 import re
 from enum import Enum
 from ProTools.Timecode import Timecode, validate_frame_rate
+import ProTools.lib as lib
 
 # Delimiters
 ROW_DELIMITER = r"\t"
@@ -77,20 +78,19 @@ class EDL:
             assert header in ColumnHeaders, INVALID_COLUMN.format(header)
         validate_frame_rate(frame_rate)
 
-        split_row = re.split(ROW_DELIMITER, row)
-        row_values = [value.strip() for value in split_row] # Remove any leading or trailing whitespace
+        row_values = lib.split_row(row)
 
         get_row_value = lambda header: row_values[column_headers[header]]
         create_timecode = lambda header: Timecode.from_string(get_row_value(header))
 
-        channel = int(get_row_value(ColumnHeaders.CHANNEL.value))
-        event = int(get_row_value(ColumnHeaders.EVENT.value))
-        clip_name = get_row_value(ColumnHeaders.CLIP_NAME.value)
-        state = States(get_row_value(ColumnHeaders.STATE.value))
+        channel = int(get_row_value(ColumnHeaders.CHANNEL))
+        event = int(get_row_value(ColumnHeaders.EVENT))
+        clip_name = get_row_value(ColumnHeaders.CLIP_NAME)
+        state = States(get_row_value(ColumnHeaders.STATE))
 
-        start_time = create_timecode(ColumnHeaders.START_TIME.value)
-        end_time = create_timecode(ColumnHeaders.END_TIME.value)
-        duration = create_timecode(ColumnHeaders.DURATION.value)
+        start_time = create_timecode(ColumnHeaders.START_TIME)
+        end_time = create_timecode(ColumnHeaders.END_TIME)
+        duration = create_timecode(ColumnHeaders.DURATION)
 
         return cls(channel, event, clip_name, start_time, end_time, duration,
                    state, frame_rate)

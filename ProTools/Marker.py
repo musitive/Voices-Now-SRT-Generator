@@ -14,9 +14,11 @@ EXAMPLE PRO TOOLS MARKER 2
 
 """
 
-import re
+
 from enum import Enum
 from ProTools.Timecode import Timecode, validate_frame_rate
+
+import ProTools.lib as lib
 
 # TODO: Add functionality for different Pro Tools Versions
 
@@ -96,8 +98,7 @@ class Marker:
             assert header in ColumnHeaders, INVALID_COLUMN.format(header)
         validate_frame_rate(frame_rate)
 
-        split_row = re.split(ROW_DELIMITER, row)
-        row_values = [value.strip() for value in split_row] # Remove any leading or trailing whitespace
+        row_values = lib.split_row(row)
 
         get_row_value = lambda header: row_values[column_headers[header]]
 

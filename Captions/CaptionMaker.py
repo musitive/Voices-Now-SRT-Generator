@@ -1,10 +1,11 @@
 import sys
-sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/ProToolsMarkers")
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/ProTools")
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
 
 from Captions.FileMaker import FileMaker
 from Captions.SRTManager import SRTManager
-from ProTools.ProToolsLinkedList import DataNode
+from Captions.ProToolsLinkedList import DataNode
 from Captions.LanguageSpecificSRTManagers import LANG_SPECIFIC_SRT_INIT
 from ProTools.Timecode import Timecode, OffsetType
 
