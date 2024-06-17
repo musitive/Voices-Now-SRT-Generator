@@ -1,13 +1,26 @@
 from Captions.FileMaker import FileMaker
-from ProToolsMarkers.ProToolsMarkerManager import ProToolsMarkerManager
-from Scripts.ScriptManager import LdsScriptManager
+from Captions.ProToolsMarkerManager import ProToolsMarkerManager
+from Scripts.Script import Script
+
+# ================================================================================================
 
 class TimecodeScriptMaker(FileMaker):
+    # ----------------------------------------------------------------------------
+    # Timecode Script Maker
+    # timecode_filename: str    - the name of the file containing the timecode data
+    # script_filename: str      - the name of the file containing the script data
     def __init__(self, timecode_filename: str, script_filename: str):
-        self.marker_manager = ProToolsMarkerManager(timecode_filename)          # Open Pro Tools Marker file
-        self.script_manager = LdsScriptManager(script_filename)                 # Open Word Document
+        # Extract timecode markers
+        self.marker_manager = ProToolsMarkerManager.from_file(timecode_filename)
 
+        # Extract script data
+        self.script_manager = Script(script_filename)
+    # ----------------------------------------------------------------------------
 
+    # ----------------------------------------------------------------------------
+    # Enhance the script with timecode markers
+    # new_filename: str    - the name of the new script file
+    ## returns: None
     def enhance_script(self, new_filename: str) -> None:
         # Initial formatting
         self.script_manager.script.set_styles()
@@ -19,7 +32,7 @@ class TimecodeScriptMaker(FileMaker):
             self.script_manager.add_row_to_new_table(marker.timecode, next_marker.timecode)
 
         # Read through markers
-        self.read_through_markers(update_file)
+        self.read_through_data(update_file)
 
         # Final formatting
         self.script_manager.script.prevent_document_break()
@@ -27,6 +40,6 @@ class TimecodeScriptMaker(FileMaker):
 
         # Save the new file
         self.script_manager.script.save_as_new_script(new_filename)
+    # ----------------------------------------------------------------------------
 
-        return
-        
+# ================================================================================================

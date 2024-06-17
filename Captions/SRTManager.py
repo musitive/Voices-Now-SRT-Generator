@@ -1,14 +1,15 @@
 import re
 import codecs
-from ProToolsMarkers.Timecode import Timecode
-from Captions.CaptionManager import CaptionManager
-from Captions.LanguageSpecificPunctuationPriority import PRIORITY_BY_LANGUAGE as LANGUAGE, PRIORITY_BY_SCRIPT as SCRIPT, generate_script_type
+from ProTools.Timecode import Timecode, OffsetType
+from Captions.LanguageSpecificPunctuationPriority import PRIORITY_BY_LANGUAGE as LANGUAGE, PRIORITY_BY_SCRIPT as SCRIPT_TYPES
+from Captions.LanguageManager import LanguageManager
 
 MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT caption
+DEFAULT_SCRIPT_TYPE = "Latin"  # Default script type
 
 # ================================================================================================
 
-class SRTManager(CaptionManager):
+class SRTManager:
     # Inner class to store SRT information
     class SRTInfo:
         # ------------------------------------------------------------------------
@@ -17,7 +18,8 @@ class SRTManager(CaptionManager):
         # start_time: Timecode   - the start time of the SRT block
         # end_time: Timecode     - the end time of the SRT block
         # text: str          - the text of the SRT block
-        def __init__(self, index, start_time, end_time, text):
+        def __init__(self, index: int, start_time: Timecode, end_time: Timecode,
+                     text: str):
             self.index = index
             self.start_time = start_time
             self.end_time = end_time
@@ -27,8 +29,8 @@ class SRTManager(CaptionManager):
         # ------------------------------------------------------------------------
         # Get the string representation of the SRT block
         def __str__(self):
-            start_time = self.start_time.get_timecode_in_ms()
-            end_time = self.end_time.get_timecode_in_ms()
+            start_time = self.start_time.convert_to_milliseconds_format()
+            end_time = self.end_time.convert_to_milliseconds_format()
             return f"{self.index}\n{start_time} --> {end_time}\n{self.text}\n"
         # ------------------------------------------------------------------------
 
@@ -37,22 +39,25 @@ class SRTManager(CaptionManager):
     # srt_filename: str   - the filename of the SRT file
     # max_line_len: int   - the maximum number of characters allowed in an SRT caption
     def __init__(self, srt_filename: str, max_line_len: int = MAX_LINE_LEN,
-                 lang: str = "ENG", sentence_d = '', word_d = ''):
+                 lang_code: str = "ENG", sentence_d = '', word_d = ''):
+        self.lang_manager = LanguageManager()
+
         self.srt_id = 1
         self.srt_blocks = []
         self.srt_filename = srt_filename
         self.max_line_len = max_line_len
-        self.lang = lang
+        self.lang = lang_code
         self.sentence_d = sentence_d
         self.word_d = word_d
-        scripts = generate_script_type()
 
-        if lang in LANGUAGE:
-            self.regex = LANGUAGE[lang]
-        elif lang in scripts and scripts[lang] in SCRIPT:
-            self.regex = SCRIPT[scripts[lang]]
+        script_type = self.lang_manager.get_script(lang_code)
+
+        if lang_code in LANGUAGE:
+            self.regex = LANGUAGE[lang_code]
+        elif script_type in SCRIPT_TYPES:
+            self.regex = SCRIPT_TYPES[script_type]
         else:
-            self.regex = SCRIPT["Latin"]
+            self.regex = SCRIPT_TYPES[DEFAULT_SCRIPT_TYPE]
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
@@ -87,7 +92,7 @@ class SRTManager(CaptionManager):
             return
 
         try:
-            left, right = self.split_text_by_language(text)
+            left, right = self.split_text(text)
         except Exception as e:
             print(f"Error: {e}.")
             self.add_srt(in_time, out_time, text.strip())
@@ -110,7 +115,7 @@ class SRTManager(CaptionManager):
     # in_time: Timecode       - the time the caption appears on screen
     # out_time: Timecode      - the time the caption disappears from the screen
     # text: str               - the text to split
-    def split_text_by_language(self, text: str) -> tuple:
+    def split_text(self, text: str) -> tuple:
         split_index = self.find_split_index(text)
         left = text[:split_index]
         right = text[split_index:]
@@ -130,7 +135,7 @@ class SRTManager(CaptionManager):
         out_frame = out_time.get_total_frames()
         average_frame = int((in_frame * (n - index) + out_frame * index) / n)
 
-        return Timecode.from_frames(average_frame, in_time.frame_rate)
+        return Timecode.from_total_frames(average_frame, in_time.frame_rate)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
@@ -175,18 +180,38 @@ class SRTManager(CaptionManager):
         text = text.strip()
         if text != "":
             self.srt_blocks.append(self.SRTInfo(self.srt_id, in_time, out_time, text))
-        self.srt_id += 1
+            self.srt_id += 1
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
     # Write SRT blocks to the file
-    ## returns: None
-    def write_captions_to_file(self) -> None:
+    # timecode_offset: Timecode    - the timecode offset
+    # srtID_offset: int            - the SRT ID offset
+    ## returns: int                - the last SRT ID written
+    def write_captions_to_file(self, timecode_offset: Timecode, timecode_offset_type: OffsetType, srtID_offset: int = None) -> int:
         srt_file = codecs.open(self.srt_filename, "w+", encoding="utf-8")    # Open SRT file
 
+        last_srt_index = 0
+
         for srt in self.srt_blocks:
+            if timecode_offset is not None and timecode_offset_type is not None:
+                if timecode_offset_type == OffsetType.ADVANCE:
+                    srt.start_time -= timecode_offset
+                    srt.end_time -= timecode_offset
+                elif timecode_offset_type == OffsetType.DELAY:
+                    srt.start_time += timecode_offset
+                    srt.end_time += timecode_offset
+
+            if srtID_offset is not None:
+                srt.index += srtID_offset
+
+            last_srt_index = srt.index
+            
             srt_file.write(str(srt)+"\n")
 
         srt_file.close()
+
+        return last_srt_index
     # ----------------------------------------------------------------------------
+    
 # ================================================================================================

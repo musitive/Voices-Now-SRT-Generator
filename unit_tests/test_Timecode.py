@@ -2,14 +2,14 @@ import sys
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator")
 
 import unittest
-from ProToolsMarkers.Timecode import Timecode
+from ProTools.Timecode import Timecode
 
 class TestTimecode(unittest.TestCase):
     def setUp(self):
         self.timecode1 = Timecode(1, 0, 3, 23, frame_rate=24.0)
-        self.timecode2 = Timecode.from_frames(89356, 24.0)
-        self.timecode3 = Timecode.from_frames("11:12:13:14", 24.0)
-        self.timecode4 = Timecode.from_frames(89357, 24.0)
+        self.timecode2 = Timecode.from_total_frames(89356, 24.0)
+        self.timecode3 = Timecode.from_total_frames("11:12:13:14", 24.0)
+        self.timecode4 = Timecode.from_total_frames(89357, 24.0)
         return
 
     def test_init_valid(self):
@@ -44,23 +44,23 @@ class TestTimecode(unittest.TestCase):
         self.assertEqual(self.timecode3.frame_rate, 24.0)
 
     def test_from_frames_invalid(self):
-        self.assertRaises(AssertionError, Timecode.from_frames, -1, 24.0)
-        self.assertRaises(AssertionError, Timecode.from_frames, "fdsa", 24.0)
-        self.assertRaises(AssertionError, Timecode.from_frames, "11:12:13:14:15", 24.0)
-        self.assertRaises(AssertionError, Timecode.from_frames, "11;12;13;14", 24.0)
-        self.assertRaises(TypeError, Timecode.from_frames, None, 24.0)
+        self.assertRaises(AssertionError, Timecode.from_total_frames, -1, 24.0)
+        self.assertRaises(AssertionError, Timecode.from_total_frames, "fdsa", 24.0)
+        self.assertRaises(AssertionError, Timecode.from_total_frames, "11:12:13:14:15", 24.0)
+        self.assertRaises(AssertionError, Timecode.from_total_frames, "11;12;13;14", 24.0)
+        self.assertRaises(TypeError, Timecode.from_total_frames, None, 24.0)
 
     def test_get_total_frames(self):
         self.assertEqual(self.timecode2.get_total_frames(), 89356)
 
     def test_get_timecode_in_frames(self):
-        self.assertEqual(self.timecode2.get_timecode_in_frames(), "01:02:03:04")
+        self.assertEqual(self.timecode2.convert_to_frames_format(), "01:02:03:04")
 
     def test_get_timecode_in_ms(self):
-        self.assertEqual(self.timecode2.get_timecode_in_ms(), "01:02:03,167")
+        self.assertEqual(self.timecode2.convert_to_milliseconds_format(), "01:02:03,167")
 
     def test_comparators(self):
-        timecode_cmp = Timecode.from_frames(89356, 24.0)
+        timecode_cmp = Timecode.from_total_frames(89356, 24.0)
 
         self.assertEqual(self.timecode2, timecode_cmp)
         self.assertNotEqual(self.timecode2, self.timecode4)

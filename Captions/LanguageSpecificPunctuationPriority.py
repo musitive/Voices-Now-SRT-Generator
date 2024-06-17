@@ -1,7 +1,3 @@
-import csv
-
-LDS_LANGUAGES_CSV = "/Users/studiod/Documents/GitHub/Voices-Now-SRT-Generator/Captions/All_Languages.csv"
-
 # ================================================================================================
 
 # Dictionary of punctuation marks by alphabet script
@@ -31,7 +27,7 @@ PRIORITY_BY_SCRIPT = {
     # U+FF01 ！ FULLWIDTH EXCLAMATION MARK
     # U+FF0C ， FULLWIDTH COMMA
     # U+FF1A ： FULLWIDTH COLON
-    "Chinese": "(\u3002\s+)|[\uFF1F\uFF01]|[\uFF0C\uFF1A\—]|\s",
+    "Chinese": "(\u3002)|[\uFF1F\uFF01]|[\uFF0C\uFF1A\—]",
     # --------------------------------------------------------------------------------
 
     # --------------------------------------------------------------------------------
@@ -81,6 +77,7 @@ PRIORITY_BY_SCRIPT = {
     # U+1104C 𑁌 BRAHMI PUNCTUATION CRESCENT BAR
     # U+1104D 𑁍 BRAHMI PUNCTUATION LOTUS
     "Brahmi": "(\U0001104D\s+)|(\U0001104C\s+)|(\U0001104B\s+)|(\U0001104A\s+)|(\U00011049\s+)|(\U00011048\s+)|(\U00011047\s+)|\s",
+    # --------------------------------------------------------------------------------
 
     # --------------------------------------------------------------------------------
     # Burmese punctuation marks:
@@ -121,24 +118,3 @@ PRIORITY_BY_LANGUAGE = {
 }
 
 # ================================================================================================
-
-def generate_languages() -> dict:
-    languages = {}
-    with open(LDS_LANGUAGES_CSV, 'r') as file:
-        reader = csv.reader(file)
-        languages = {lang[1].upper(): lang[2] for lang in reader}
-    return languages
-
-def generate_languages2() -> dict:
-    languages = {}
-    with open(LDS_LANGUAGES_CSV, 'r') as file:
-        reader = csv.reader(file)
-        languages = {lang[2]: lang[1].upper() for lang in reader}
-    return languages
-
-def generate_script_type() -> dict:
-    languages = {}
-    with open(LDS_LANGUAGES_CSV, 'r') as file:
-        reader = csv.reader(file)
-        languages = {lang[1].upper(): lang[3] for lang in reader}
-    return languages
