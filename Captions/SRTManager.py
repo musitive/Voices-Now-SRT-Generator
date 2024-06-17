@@ -2,7 +2,7 @@ import re
 import codecs
 from ProTools.Timecode import Timecode, OffsetType
 from Captions.LanguageSpecificPunctuationPriority import PRIORITY_BY_LANGUAGE as LANGUAGE, PRIORITY_BY_SCRIPT as SCRIPT_TYPES
-from Captions.LanguageManager import LanguageManager
+from Captions.LanguageDatabase import LanguageDatabase
 
 MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT caption
 DEFAULT_SCRIPT_TYPE = "Latin"  # Default script type
@@ -40,7 +40,7 @@ class SRTManager:
     # max_line_len: int   - the maximum number of characters allowed in an SRT caption
     def __init__(self, srt_filename: str, max_line_len: int = MAX_LINE_LEN,
                  lang_code: str = "ENG", sentence_d = '', word_d = ''):
-        self.lang_manager = LanguageManager()
+        self.lang_manager = LanguageDatabase()
 
         self.srt_id = 1
         self.srt_blocks = []
@@ -50,7 +50,7 @@ class SRTManager:
         self.sentence_d = sentence_d
         self.word_d = word_d
 
-        script_type = self.lang_manager.get_script(lang_code)
+        script_type = self.lang_manager.get_script_type(lang_code)
 
         if lang_code in LANGUAGE:
             self.regex = LANGUAGE[lang_code]

@@ -1,26 +1,19 @@
-# ================================================================================================
-
 # Dictionary of punctuation marks by alphabet script
 # Punctuation marks are ordered by priority, from highest to lowest.
 PRIORITY_BY_SCRIPT = {
-    # --------------------------------------------------------------------------------
     # Latin script punctuation marks:
     "Latin": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
     "Cyrillic": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
     "Balbodh": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
     "Mkhedruli": "(\.\s+)|[\!\?\;]|[\,\:\—]|\s",
-    # --------------------------------------------------------------------------------
 
-    # --------------------------------------------------------------------------------
     # Arabic punctuation marks:
     # U+06D4 ۔ ARABIC FULL STOP
     # U+061F ؟ ARABIC QUESTION MARK
     # U+061B ؛ ARABIC SEMICOLON
     # U+060C ، ARABIC COMMA
     "Arabic": "(\.\s+)|[\!\u06D4\u061F\u061B]|[\u060C\:\—]|\s",
-    # --------------------------------------------------------------------------------
 
-    # --------------------------------------------------------------------------------
     # Chinese punctuation marks:
     # U+3002 。 IDEOGRAPHIC FULL STOP
     # U+FF1F ？ FULLWIDTH QUESTION MARK
