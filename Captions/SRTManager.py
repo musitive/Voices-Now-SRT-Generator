@@ -1,6 +1,6 @@
 import re
 import codecs
-from ProToolsData.Timecode import Timecode
+from ProTools.Timecode import Timecode, OffsetType
 from Captions.LanguageSpecificPunctuationPriority import PRIORITY_BY_LANGUAGE as LANGUAGE, PRIORITY_BY_SCRIPT as SCRIPT_TYPES
 from Captions.LanguageManager import LanguageManager
 
@@ -18,7 +18,8 @@ class SRTManager:
         # start_time: Timecode   - the start time of the SRT block
         # end_time: Timecode     - the end time of the SRT block
         # text: str          - the text of the SRT block
-        def __init__(self, index, start_time, end_time, text):
+        def __init__(self, index: int, start_time: Timecode, end_time: Timecode,
+                     text: str):
             self.index = index
             self.start_time = start_time
             self.end_time = end_time
@@ -28,8 +29,8 @@ class SRTManager:
         # ------------------------------------------------------------------------
         # Get the string representation of the SRT block
         def __str__(self):
-            start_time = self.start_time.get_timecode_in_ms()
-            end_time = self.end_time.get_timecode_in_ms()
+            start_time = self.start_time.convert_to_milliseconds_format()
+            end_time = self.end_time.convert_to_milliseconds_format()
             return f"{self.index}\n{start_time} --> {end_time}\n{self.text}\n"
         # ------------------------------------------------------------------------
 
@@ -134,7 +135,7 @@ class SRTManager:
         out_frame = out_time.get_total_frames()
         average_frame = int((in_frame * (n - index) + out_frame * index) / n)
 
-        return Timecode.from_frames(average_frame, in_time.frame_rate)
+        return Timecode.from_total_frames(average_frame, in_time.frame_rate)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
@@ -187,19 +188,19 @@ class SRTManager:
     # timecode_offset: Timecode    - the timecode offset
     # srtID_offset: int            - the SRT ID offset
     ## returns: int                - the last SRT ID written
-    def write_captions_to_file(self, timecode_offset: tuple = None, srtID_offset: int = None) -> int:
+    def write_captions_to_file(self, timecode_offset: Timecode, timecode_offset_type: OffsetType, srtID_offset: int = None) -> int:
         srt_file = codecs.open(self.srt_filename, "w+", encoding="utf-8")    # Open SRT file
 
         last_srt_index = 0
 
         for srt in self.srt_blocks:
-            if timecode_offset is not None:
-                if timecode_offset[0] == "adv":
-                    srt.start_time -= timecode_offset[1]
-                    srt.end_time -= timecode_offset[1]
-                elif timecode_offset[0] == "dly":
-                    srt.start_time += timecode_offset[1]
-                    srt.end_time += timecode_offset[1]
+            if timecode_offset is not None and timecode_offset_type is not None:
+                if timecode_offset_type == OffsetType.ADVANCE:
+                    srt.start_time -= timecode_offset
+                    srt.end_time -= timecode_offset
+                elif timecode_offset_type == OffsetType.DELAY:
+                    srt.start_time += timecode_offset
+                    srt.end_time += timecode_offset
 
             if srtID_offset is not None:
                 srt.index += srtID_offset

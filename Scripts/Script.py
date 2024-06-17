@@ -1,48 +1,28 @@
 from docx import Document
 
-# ================================================================================================
+# Column headers
+LOOP = "LOOP"
+TIMECODE = "TIMECODE"
+CHARACTER = "CHARACTER"
+ENGLISH = "ENGLISH"
+TRANSLATION = "TRANSLATION"
+
+def get_text(cells: list, column: int) -> str:
+    return cells[column].text.replace("\n", "").strip()
 
 class Script:
-    pass
-
-# ================================================================================================
-
-LDS_LOOP_ID = "LOOP"
-LDS_TIMECODE_ID = "TIMECODE"
-LDS_CHARACTER_ID = "CHARACTER"
-LDS_DIAL_ID = "ENGLISH"
-LDS_TRANSLATION_ID = "TRANSLATION"
-
-# ================================================================================================
-
-class LdsScript(Script):
-    # ----------------------------------------------------------------------------
-    class ScriptBlock:
-        # ------------------------------------------------------------------------
-        # ScriptBlock
-        # loop: str         - the loop number of the block
-        # character: str    - the character speaking in the block
-        # english: str      - the english text of the block
-        # translation: str  - the translation of the block
-        def __init__(self, loop: str, character: str, english: str, translation: str):
-            self.loop = loop
-            self.character = character
-            self.english = english
-            self.translation = translation
-        # ------------------------------------------------------------------------
-    # ----------------------------------------------------------------------------
-
-    # ----------------------------------------------------------------------------
-    # LdsScript
-    # wordFilename: str    - the name of the file containing the script data
     def __init__(self, wordFilename: str):
+        """Constructor for the Script class
+        
+        Keyword arguments:
+        """
         self.document = Document(wordFilename)
 
         self.headers = {}
 
         # Find the correct table
         for table in self.document.tables:
-            if LDS_CHARACTER_ID in [cell.text.strip().upper() for cell in table.rows[0].cells]:
+            if CHARACTER in [cell.text.strip().upper() for cell in table.rows[0].cells]:
                 self.translation_table = table
                 break
         
@@ -52,56 +32,57 @@ class LdsScript(Script):
             self.headers[header_row.cells[i].text.upper().strip()] = i
 
         # Check for required fields
-        assert LDS_LOOP_ID in self.headers, "Unable to resolve this LDS Script format. LOOP column not found."
-        assert LDS_CHARACTER_ID in self.headers, "Unable to resolve this LDS Script format. TIMECODE column not found."
-        assert LDS_DIAL_ID in self.headers, "Unable to resolve this LDS Script format. TIMECODE column not found."
-        assert LDS_TRANSLATION_ID in self.headers, "Unable to resolve this LDS Script format. TRANSLATION column not found."
-
-        # Inner function to get the text from a row
-        def get_text_from_row(cells: list):
-            # Get the text from the row
-            loop = self.get_text(cells, LDS_LOOP_ID)
-            character = self.get_text(cells, LDS_CHARACTER_ID)
-            dial = self.get_text(cells, LDS_DIAL_ID)
-            translation = self.get_text(cells, LDS_TRANSLATION_ID)
-            
-            script_block = LdsScript.ScriptBlock(loop, character, dial, translation)
-
-            return loop, script_block
+        assert LOOP in self.headers, "Unable to resolve this LDS Script format. LOOP column not found."
+        assert CHARACTER in self.headers, "Unable to resolve this LDS Script format. TIMECODE column not found."
+        assert ENGLISH in self.headers, "Unable to resolve this LDS Script format. TIMECODE column not found."
+        assert TRANSLATION in self.headers, "Unable to resolve this LDS Script format. TRANSLATION column not found."
         
         # Create a dictionary of script blocks
-        self.blocks = dict([get_text_from_row(row.cells) for row in self.translation_table.rows[1:]])
-    # ----------------------------------------------------------------------------
-    
-    # ----------------------------------------------------------------------------
-    # Get the text from a specific cell in a row
-    # cells  - The cells in the row
-    # id     - The ID of the cell to get the text from
-    ## returns: str
-    def get_text(self, cells: list, id: str) -> str:
-        return cells[self.headers[id]].text.replace("\n", "").strip()
-    # ----------------------------------------------------------------------------
+        STARTING_ROW = 1
 
-    # ----------------------------------------------------------------------------
-    # Get the translation of a specific row in the script
-    # translationRow  - The row number of the translation to get
+        rows = self.translation_table.rows[STARTING_ROW:]
+        self.blocks = dict([Script.Loop.from_row(row) for row in rows])
+
+    
+    @classmethod
+    def from_file(cls, wordFilename: str):
+        return cls(wordFilename)
+
+
     def get_translation(self, translationRow: str) -> str:
         return self.blocks[translationRow].translation
-    # ----------------------------------------------------------------------------
 
-    # ----------------------------------------------------------------------------
-    # Check if the script has timecodes
+
     def has_timecodes(self) -> bool:
-        return LDS_TIMECODE_ID in self.headers
-    # ----------------------------------------------------------------------------
+        return TIMECODE in self.headers
 
-    # ----------------------------------------------------------------------------
-    # Get the script timecodes
+
     def get_timecodes(self) -> dict:
         assert self.has_timecodes(), "No timecodes found in script"
 
-        return dict([(self.get_text(row.cells, LDS_LOOP_ID),
-                      self.get_text(row.cells, LDS_TIMECODE_ID)) for row in self.translation_table.rows[1:]])
-    # ----------------------------------------------------------------------------
+        timecodes = {}
 
-# ================================================================================================
+        for row in self.translation_table.rows[1:]:
+            loop = get_text(row.cells, LOOP)
+            timecodes[loop] = get_text(row.cells, TIMECODE)
+
+        return timecodes
+    
+
+    class Loop:
+        def __init__(self, id: str, character: str, english: str, translation: str):
+            self.id = id
+            self.character = character
+            self.english = english
+            self.translation = translation
+        
+        @classmethod
+        def from_row(cls, row: list):
+            cells = row.cells
+
+            loop_id = get_text(cells, LOOP)
+            character = get_text(cells, CHARACTER)
+            dial = get_text(cells, ENGLISH)
+            translation = get_text(cells, TRANSLATION)
+            
+            return cls(loop_id, character, dial, translation)

@@ -1,11 +1,14 @@
 import sys
-sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/ProToolsMarkers")
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/ProTools")
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
+sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
 
 from Captions.FileMaker import FileMaker
 from Captions.SRTManager import SRTManager
-from ProToolsData.ProToolsLinkedList import DataNode
+from Captions.ProToolsLinkedList import DataNode
 from Captions.LanguageSpecificSRTManagers import LANG_SPECIFIC_SRT_INIT
+from ProTools.Timecode import Timecode, OffsetType
+
 
 # ================================================================================================
 
@@ -18,7 +21,8 @@ class CaptionMaker(FileMaker):
     # lang:               str     - the language of the captions
     # srt_filename:       str     - the name of the SRT file
     # split:              bool    - split the captions into multiple lines
-    def __init__(self, script_filename: str, timecode_filename: str, data_type: str, lang_code: str, srt_filename: str, max_line_len: int,  split: bool = True):
+    def __init__(self, script_filename: str, timecode_filename: str, data_type: str, lang_code: str,
+                 srt_filename: str, max_line_len: int,  split: bool = True):
         super().__init__(script_filename, timecode_filename, srt_filename, data_type)
 
         self.split = split
@@ -39,13 +43,13 @@ class CaptionMaker(FileMaker):
     # timecode_offset: Timecode     - the timecode offset
     # srtID_offset: int             - the SRT ID offset
     ## returns: int                 - the number of captions created
-    def create_captions(self, timecode_offset: tuple = None, srtID_offset: int = None) -> int:
+    def create_captions(self, timecode_offset: Timecode = None, timecode_offset_type = OffsetType, srtID_offset: int = None) -> int:
 
         # Read through markers
         self.read_through_data()
 
         # Write SRTs to file
-        return self.caption_manager.write_captions_to_file(timecode_offset, srtID_offset)
+        return self.caption_manager.write_captions_to_file(timecode_offset, timecode_offset_type, srtID_offset)
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------

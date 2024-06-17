@@ -1,4 +1,4 @@
-from ProToolsData.ProToolsLinkedList import DataNode
+from Captions.ProToolsLinkedList import DataNode
 
 # ================================================================================================
 
