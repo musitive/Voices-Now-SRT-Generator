@@ -9,6 +9,7 @@ from Captions.ProToolsLinkedList import DataNode
 from Captions.LanguageSpecificSRTManagers import LANG_SPECIFIC_SRT_INIT
 from ProTools.Timecode import Timecode, OffsetType
 
+
 # ================================================================================================
 
 class CaptionMaker(FileMaker):
