@@ -1,41 +1,54 @@
 from docx import Document
+from enum import Enum
+
+COLUMN_NAMES_ROW = 0
+
+COLUMN_HEADER_NOT_FOUND = "Unable to resolve this LDS Script format. {0} column not found."
+NO_TIMECODE_FOUND = "No timecodes found in script"
 
 # Column headers
-LOOP = "LOOP"
-TIMECODE = "TIMECODE"
-CHARACTER = "CHARACTER"
-ENGLISH = "ENGLISH"
-TRANSLATION = "TRANSLATION"
+class ColumnNames(Enum):
+    ID = "LOOP"
+    TIMECODE = "TIMECODE"
+    CHARACTER = "CHARACTER"
+    ENGLISH = "ENGLISH"
+    TRANSLATION = "TRANSLATION"
 
-def get_text(cells: list, column: int) -> str:
-    return cells[column].text.replace("\n", "").strip()
+REQUIRED_COLUMNS = [ColumnNames.ID, ColumnNames.CHARACTER, ColumnNames.ENGLISH,
+                    ColumnNames.TRANSLATION]
+
+def extract_text_from_cells(row: list, upper: bool = False) -> list:
+    extract = lambda cell: (cell.text.strip().upper() 
+                            if upper else cell.text.strip())
+    
+    split_row = [extract(cell) for cell in row.cells]
+    return split_row
 
 class Script:
-    def __init__(self, wordFilename: str):
+    def __init__(self, filename: str):
         """Constructor for the Script class
         
         Keyword arguments:
+        filename -- The filename of the script to be loaded
         """
-        self.document = Document(wordFilename)
+        self.document = Document(filename)
 
-        self.headers = {}
+        self.header_to_index = {}
 
         # Find the correct table
         for table in self.document.tables:
-            if CHARACTER in [cell.text.strip().upper() for cell in table.rows[0].cells]:
-                self.translation_table = table
-                break
-        
-        # Create a dictionary of column headers
-        header_row = self.translation_table.rows[0]
-        for i in range(len(header_row.cells)):
-            self.headers[header_row.cells[i].text.upper().strip()] = i
+            header_row = table.rows[COLUMN_NAMES_ROW]
 
-        # Check for required fields
-        assert LOOP in self.headers, "Unable to resolve this LDS Script format. LOOP column not found."
-        assert CHARACTER in self.headers, "Unable to resolve this LDS Script format. TIMECODE column not found."
-        assert ENGLISH in self.headers, "Unable to resolve this LDS Script format. TIMECODE column not found."
-        assert TRANSLATION in self.headers, "Unable to resolve this LDS Script format. TRANSLATION column not found."
+            if ColumnNames.CHARACTER in extract_text_from_cells(header_row, True):
+                self.translation_table = table
+
+                for i in range(len(header_row.cells)):
+                    header = header_row.cells[i].text.upper().strip()
+                    self.header_to_index[header] = i
+
+                break     
+
+        self.validate_columns()
         
         # Create a dictionary of script blocks
         STARTING_ROW = 1
@@ -43,7 +56,13 @@ class Script:
         rows = self.translation_table.rows[STARTING_ROW:]
         self.blocks = dict([Script.Loop.from_row(row) for row in rows])
 
+    def does_column_exist(self, column_name: ColumnNames):
+        return column_name in self.header_to_index
     
+    def validate_columns(self):       
+        for column in REQUIRED_COLUMNS:
+            assert self.does_column_exist(column), COLUMN_HEADER_NOT_FOUND.format(column)
+
     @classmethod
     def from_file(cls, wordFilename: str):
         return cls(wordFilename)
@@ -54,20 +73,34 @@ class Script:
 
 
     def has_timecodes(self) -> bool:
-        return TIMECODE in self.headers
+        return ColumnNames.TIMECODE in self.header_to_index
 
 
     def get_timecodes(self) -> dict:
-        assert self.has_timecodes(), "No timecodes found in script"
+
+        assert self.has_timecodes(), NO_TIMECODE_FOUND
 
         timecodes = {}
 
         for row in self.translation_table.rows[1:]:
-            loop = get_text(row.cells, LOOP)
-            timecodes[loop] = get_text(row.cells, TIMECODE)
+            loop = self.get_text_from_row(row, ColumnNames.ID)
+            timecodes[loop] = self.get_text_from_row(row, ColumnNames.TIMECODE)
 
         return timecodes
     
+    def get_text_from_row(self, row: list, column: ColumnNames | int) -> str:
+        if isinstance(column, ColumnNames):
+            column = self.header_to_index[column.value]
+        
+        return row.cells[column].text.strip()
+    
+    def create_loop_from_row(self, row: list):
+        id = self.get_text_from_row(row, ColumnNames.ID)
+        character = self.get_text_from_row(row, ColumnNames.CHARACTER)
+        english = self.get_text_from_row(row, ColumnNames.ENGLISH)
+        translation = self.get_text_from_row(row, ColumnNames.TRANSLATION)
+
+        return Script.Loop(id, character, english, translation)
 
     class Loop:
         def __init__(self, id: str, character: str, english: str, translation: str):
@@ -75,14 +108,3 @@ class Script:
             self.character = character
             self.english = english
             self.translation = translation
-        
-        @classmethod
-        def from_row(cls, row: list):
-            cells = row.cells
-
-            loop_id = get_text(cells, LOOP)
-            character = get_text(cells, CHARACTER)
-            dial = get_text(cells, ENGLISH)
-            translation = get_text(cells, TRANSLATION)
-            
-            return cls(loop_id, character, dial, translation)
