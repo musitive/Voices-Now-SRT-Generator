@@ -14,6 +14,7 @@ STARTING_ROW = 1
 COLUMN_HEADER_NOT_FOUND = "Unable to resolve this LDS Script format. {0} column not found."
 NO_TIMECODE_FOUND = "No timecodes found in script"
 SCRIPT_TABLE_NOT_FOUND = "Unable to resolve this LDS Script format. No script table found."
+INVALID_COLUMN_INDEX = "Invalid column index: {0}"
 
 # Column headers
 class ColumnNames(Enum):
@@ -26,7 +27,7 @@ class ColumnNames(Enum):
 REQUIRED_COLUMNS = [ColumnNames.ID, ColumnNames.CHARACTER, ColumnNames.ENGLISH,
                     ColumnNames.TRANSLATION]
 
-class ScriptParser:
+class Parser:
     def __init__(self):
         self.script: Script = Script()
         self.header_to_index = {}
@@ -109,7 +110,7 @@ class ScriptParser:
         if isinstance(column, ColumnNames):
             column = self.header_to_index[column.value]
         else:
-            assert isinstance(column, int), "Column must be an integer or ColumnNames"
+            assert isinstance(column, int), INVALID_COLUMN_INDEX.format(column)
             
         return self.get_text_from_cell(row.cells[column])
     
@@ -125,9 +126,8 @@ class ScriptParser:
 
     def get_text_from_cell(self, cell, is_upper: bool = False) -> str:
         """Extracts the text from a cell and returns it as a string"""
-        # TODO: validate input
-        text = cell.text.strip()
 
+        text = cell.text.strip()
         if is_upper: text = text.upper()
         
         return text

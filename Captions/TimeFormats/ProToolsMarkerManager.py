@@ -67,7 +67,7 @@ class ProToolsMarkerManager(ProToolsDataManager):
     # ----------------------------------------------------------------------------
     # Continue reading the data
     ## returns: bool
-    def continue_reading(self) -> bool:
+    def should_continue(self) -> bool:
         # if self.current_node == None:
         #     return False
             
