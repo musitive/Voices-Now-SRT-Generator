@@ -59,7 +59,7 @@ class CaptionMaker(FileMaker):
             loop = node.get_loop_id()
 
             # Get translation from Word Doc
-            translation = self.script_manager.get_translation(loop)
+            translation = self.script.get_translation(loop)
 
             # Get timecodes
             start_time = node.get_start()
