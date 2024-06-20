@@ -3,7 +3,7 @@ import sys
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator")
 
 import unittest
-from Captions.CaptionMaker import SRTMaker
+from Captions.CaptionsWriter import SRTMaker
 from Captions.LanguageSpecificPunctuationPriority import generate_languages2
 import os
 

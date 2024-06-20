@@ -1,6 +1,3 @@
-from docx import Document
-from enum import Enum
-
 from Scripts.Loop import Loop
 
 class Script:

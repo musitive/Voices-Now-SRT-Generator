@@ -17,6 +17,7 @@ EXAMPLE PRO TOOLS MARKER 2
 
 from enum import Enum
 from ProTools.Timecode import Timecode, validate_frame_rate
+from Scripts.Loop import Loop
 
 import ProTools.lib as lib
 
@@ -111,11 +112,20 @@ class Marker:
 
         return cls(id, location, time_reference, units, name, frame_rate, comments)
 
+
+    @classmethod
+    def from_id_and_loop(cls, id: int, loop: Loop):
+        location = loop.start_time
+        time_reference = None
+        units = Units.SAMPLES
+        name = loop.id
+        comments = loop.translation
+
+        cls(id, location, time_reference, units, name, comments)
+
+
     # OPERATORS
-
     def __eq__(self, other):
-        """Compare two Marker objects to determine if they are equal"""
-
         if isinstance(other, Marker):
             return (self.id == other.id and
                     self.location == other.location and
@@ -127,6 +137,4 @@ class Marker:
         return False
 
     def __ne__(self, other):
-        """Compare two Marker objects to determine if they are not equal"""
-        
         return not self.__eq__(other)

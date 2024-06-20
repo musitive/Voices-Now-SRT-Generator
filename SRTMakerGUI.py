@@ -8,7 +8,7 @@ py -m PyInstaller -w --onefile "SRT Generator.py"
 
 import re
 import PySimpleGUI as sg
-from Captions.CaptionMaker import CaptionMaker
+from Captions.CaptionsWriter import CaptionMaker
 from Captions.LanguageDatabase import LanguageDatabase
 from ProToolsData.Timecode import Timecode
 

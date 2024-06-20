@@ -3,24 +3,14 @@ sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/ProTools")
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
 
-from Captions.FileMaker import FileMaker
+from Captions.AbstractWriter import AbstractWriter
 from Captions.SRTManager import SRTManager
 from Captions.ProToolsLinkedList import DataNode
 from Captions.LanguageSpecificSRTManagers import LANG_SPECIFIC_SRT_INIT
 from ProTools.Timecode import Timecode, OffsetType
 
 
-# ================================================================================================
-
-class CaptionMaker(FileMaker):
-    # ----------------------------------------------------------------------------
-    # Caption Maker
-    # script_filename:    str     - the name of the script file
-    # timecode_filename:  str     - the name of the timecode file
-    # data_type:          str     - the type of data
-    # lang:               str     - the language of the captions
-    # srt_filename:       str     - the name of the SRT file
-    # split:              bool    - split the captions into multiple lines
+class CaptionMaker(AbstractWriter):
     def __init__(self, script_filename: str, timecode_filename: str, data_type: str, lang_code: str,
                  srt_filename: str, max_line_len: int,  split: bool = True):
         super().__init__(script_filename, timecode_filename, srt_filename, data_type)
@@ -35,14 +25,8 @@ class CaptionMaker(FileMaker):
                 self.caption_manager = initializer(srt_filename, max_line_len=max_line_len)
         else:
             self.caption_manager = SRTManager(srt_filename, lang_code=lang_code)
-    # ----------------------------------------------------------------------------
 
-    # ----------------------------------------------------------------------------
-    # Create captions from the script and timecode markers
-    # split:    bool                - split the captions into multiple lines
-    # timecode_offset: Timecode     - the timecode offset
-    # srtID_offset: int             - the SRT ID offset
-    ## returns: int                 - the number of captions created
+
     def create_captions(self, timecode_offset: Timecode = None, timecode_offset_type = OffsetType, srtID_offset: int = None) -> int:
 
         # Read through markers
@@ -50,10 +34,8 @@ class CaptionMaker(FileMaker):
 
         # Write SRTs to file
         return self.caption_manager.write_captions_to_file(timecode_offset, timecode_offset_type, srtID_offset)
-    # ----------------------------------------------------------------------------
 
-    # ----------------------------------------------------------------------------
-    # Function to update the file
+
     def update_file(self, node: DataNode) -> None:
             # Get loop ID
             loop = node.get_loop_id()
@@ -68,14 +50,7 @@ class CaptionMaker(FileMaker):
             # Generate SRT text
             if not self.skip_caption(translation):
                 self.caption_manager.create_caption(translation.strip(), start_time, end_time, self.split)
-    # ----------------------------------------------------------------------------
 
-    # ----------------------------------------------------------------------------
-    # Logic to skip captions
-    # caption:        Caption text
-    # marker_name:    Marker name
+
     def skip_caption(self, caption: str) -> bool:
         return caption == "(R)" or caption == "DO NOT TRANSLATE"
-    # ----------------------------------------------------------------------------
-
-# ================================================================================================

@@ -7,13 +7,15 @@ py -m PyInstaller -w --onefile "SRT Generator.py"
 """
 
 import sys
+import abc
+
+from Captions.TimeFormats.EDL.EDLLinkedList import EDLLinkedList
+from Captions.TimeFormats.Marker.MarkerLinkedList import MarkerLinkedList
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/ProTools")
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
 
-from Captions.TimeFormats.ProToolsMarkerManager import ProToolsMarkerManager
-from Captions.TimeFormats.LinkedList import LinkedList
-from Scripts.Script import Script
+import Captions.TimeFormats
 from ProTools.Session import Session
 from Scripts.Parser import Parser
 import logging, sys
@@ -24,7 +26,7 @@ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 INVALID_DATA_TYPE = "Error: Invalid data type: {0}"
 NO_TIMECODE_FILE = "Error: No timecode file provided and no timecodes found in script file"
 
-class FileMaker:
+class AbstractWriter:
     def __init__(self, script_filename: str, timecode_filename: str,
                  final_filename: str, data_type: str = "MRK"):
         
@@ -34,32 +36,12 @@ class FileMaker:
         self.final_filename = final_filename
         self.data_type = data_type
 
-        self.generate_timecodes(timecode_filename)
+        self.data_manager = self.create_data_manager(data_type)
 
         
-    def generate_timecodes(self, filename: str) -> None:
-        if filename is not None:
-            self.generate_timecodes_from_file(filename)
-        elif self.script.has_timecodes():
-            self.generate_timecodes_from_script()
-        else:
-            raise Exception(NO_TIMECODE_FILE)
-        
-        
-    def generate_timecodes_from_file(self, filename: str) -> None:
-        session = Session.from_file(filename)
-
-        caption_track = session.tracks[0]
-        caption_channel = caption_track.channels[0]
-        assert data_type in SUPPORTED_DATA_TYPES_INIT, INVALID_DATA_TYPE.format(self.data_type)
-
-        initializer = SUPPORTED_DATA_TYPES_INIT[data_type]
-        self.data_manager = initializer.from_file(filename)
-
-
-    def generate_timecodes_from_script(self) -> None:
-        timecode_dict = self.script_parser.get_timecodes()
-        self.data_manager = ProToolsMarkerManager.from_script(timecode_dict)
+    def create_data_manager(self, data_type: str):
+        if data_type == "MRK":
+            return Captions.TimeFormats.AbstractLinkedList.MarkerManager.from_file(timecode_filename)
 
 
     # TO OVERRIDE: Read through markers and call the function provided by the caller
@@ -77,11 +59,11 @@ class FileMaker:
         return True
 
     # TO OVERRIDE: Function to update the file
-    ## returns: None
+    @abc.abstractmethod
     def update_file(self, node) -> None:
         pass
 
     # TO OVERRIDE: Function to create final file
-    ## returns: bool
+    @abc.abstractmethod
     def create_final_file(self) -> bool:
         pass
