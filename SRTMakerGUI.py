@@ -8,8 +8,8 @@ py -m PyInstaller -w --onefile "SRT Generator.py"
 
 import re
 import PySimpleGUI as sg
-from Captions.CaptionMaker import CaptionMaker
-from Captions.LanguageManager import LanguageManager
+from Captions.CaptionsWriter import CaptionMaker
+from Captions.LanguageDatabase import LanguageDatabase
 from ProToolsData.Timecode import Timecode
 
 # =================================================================================================
@@ -70,8 +70,8 @@ def program_select() -> str:
 # Caption Splitter
 ## returns: None
 def caption_splitter() -> None:
-    lang_manager = LanguageManager()
-    languages = list(lang_manager.lang_to_code.keys())
+    lang_manager = LanguageDatabase()
+    languages = list(lang_manager.name_to_code.keys())
     
     lang_code = "ENG"
     split = True
@@ -95,7 +95,7 @@ def caption_splitter() -> None:
             break
         if event == 'lang':
             lang_code = lang_manager.get_code(values['lang'])
-            split = lang_manager.get_splitter(lang_code)
+            split = lang_manager.language_supports_split(lang_code)
             # TODO: Update the split checkbox
         if event == 'Next':
             break

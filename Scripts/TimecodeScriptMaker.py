@@ -1,10 +1,10 @@
-from Captions.FileMaker import FileMaker
+from Captions.AbstractWriter import AbstractWriter
 from Captions.ProToolsMarkerManager import ProToolsMarkerManager
 from Scripts.Script import Script
 
 # ================================================================================================
 
-class TimecodeScriptMaker(FileMaker):
+class TimecodeScriptMaker(AbstractWriter):
     # ----------------------------------------------------------------------------
     # Timecode Script Maker
     # timecode_filename: str    - the name of the file containing the timecode data

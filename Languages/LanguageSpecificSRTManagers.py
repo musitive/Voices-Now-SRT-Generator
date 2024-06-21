@@ -1,6 +1,6 @@
 from functools import reduce
 from Captions.SRTManager import SRTManager
-from Captions.LanguageSpecificPunctuationPriority import PRIORITY_BY_SCRIPT
+from Languages.LanguageSpecificPunctuationPriority import PRIORITY_BY_SCRIPT
 import re
 
 import thai_segmenter

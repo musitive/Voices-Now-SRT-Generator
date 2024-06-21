@@ -8,7 +8,7 @@ CHANNEL 	EVENT   	CLIP NAME                     	START TIME    	END TIME      	D
 
 import re
 from enum import Enum
-from ProTools.Timecode import Timecode, validate_frame_rate
+from ProTools.Timecode import Timecode
 import ProTools.lib as lib
 
 # Delimiters
@@ -34,9 +34,8 @@ class States(Enum):
     UNMUTED = "Unmuted"
 
 class EDL:
-    def __init__(self, channel: int, event: int, clip_name: str,
-                 start_time: Timecode, end_time: Timecode, duration: Timecode,
-                 state: States, frame_rate: float = 24.0):
+    def __init__(self, channel: int, event: int, clip_name: str, start_time: Timecode,
+                 end_time: Timecode, duration: Timecode, state: States):
         """Constructor for the EDL class
         
         Keyword arguments:
@@ -47,12 +46,10 @@ class EDL:
         end_time: str -- the end time of the Pro Tools Marker
         duration: str -- the duration of the Pro Tools Marker
         state: States -- the state of the Pro Tools Marker
-        frame_rate: float -- the frame rate of the Pro Tools session (default: 24.0)
         """
 
         assert event >= 0, INVALID_EVENT.format(event=event)
         assert clip_name != None and clip_name != "", INVALID_CLIP_NAME.format(event=event)
-        validate_frame_rate(frame_rate)
 
         self.channel = channel
         self.event = event
@@ -64,19 +61,16 @@ class EDL:
 
 
     @classmethod
-    def from_row(cls, column_headers: dict, row: str,
-                       frame_rate: float = 24.0):
+    def from_row(cls, column_headers: dict, row: str):
         """Construct a new EDL object from a row of Pro Tools EDL data
         
         Keyword arguments:
         column_headers: dict -- the column headers of the EDL data
         row: str -- the line of text containing the marker data
-        frame_rate: float -- the frame rate of the Pro Tools session
         """
 
         for header in column_headers.keys():
             assert header in ColumnHeaders, INVALID_COLUMN.format(header)
-        validate_frame_rate(frame_rate)
 
         row_values = lib.split_row(row)
 
@@ -93,7 +87,7 @@ class EDL:
         duration = create_timecode(ColumnHeaders.DURATION)
 
         return cls(channel, event, clip_name, start_time, end_time, duration,
-                   state, frame_rate)
+                   state)
 
 
     def __eq__(self, other):
