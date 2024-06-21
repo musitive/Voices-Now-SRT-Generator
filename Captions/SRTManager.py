@@ -14,10 +14,10 @@ class SRTManager:
     def __init__(self, srt_filename: str, max_line_len: int = MAX_LINE_LEN,
                  lang_code: str = "ENG", sentence_d = '', word_d = '',
                  timecode_offset: Timecode = None, timecode_offset_type: OffsetType = None,
-                 srtID_offset: int = 0):
+                 srtID_offset: int = 1):
         self.lang_manager = LanguageDatabase()
 
-        self.current_srt_id = 1 + srtID_offset
+        self.current_srt_id = srtID_offset
         self.srt_blocks = []
         self.srt_filename = srt_filename
         self.max_line_len = max_line_len
@@ -33,6 +33,9 @@ class SRTManager:
             self.regex = SCRIPT_TYPES[script_type]
         else:
             self.regex = SCRIPT_TYPES[DEFAULT_SCRIPT_TYPE]
+
+        self.timecode_offset = timecode_offset
+        self.timecode_offset_type = timecode_offset_type
 
 
     def create_caption(self, translation: str, in_time: Timecode, out_time: Timecode, split: bool = True) -> None:

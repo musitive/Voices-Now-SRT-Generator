@@ -1,6 +1,5 @@
-import abc
-
-from Captions.TimeFormats.INode import INode
+from Captions.TimeFormats.Nodes.INode import INode
+from Captions.TimeFormats.Nodes.AbstractNodeFactory import initialize_node_factory
 
 STARTING_INDEX = 0
 ENDING_INDEX = -1
@@ -9,18 +8,15 @@ INVALID_INDEX_ERROR = "Index out of bounds"
 INVALID_LENGTH_ERROR = "Length must be greater than or equal to 0"
 INVALD_LOOP_ID_ERROR = "Loop ID not found"
 
-class AbstractLinkedList:
+class LinkedList:
     # Private -----------------------------------------------------------------
-    def __init__(self):
+    def __init__(self, data_type: str):
         self.__head = None
         self.__current = None
         self.__end = None
         self.__length = 0
 
-
-    @abc.abstractmethod
-    def __create_node(self, data) -> INode:
-        pass
+        self.node_factory = initialize_node_factory(data_type)
 
 
     def __validate_index(self, index: int) -> None:
@@ -45,6 +41,11 @@ class AbstractLinkedList:
     def __add_node_to_end(self, node: INode) -> None:
         if self.__is_list_empty():
             self.__add_node_to_empty_list(node)
+        elif self.__length == 1:
+            self.__head._next = node
+            node._previous = self.__head
+            self.__end = node
+            self.__length += 1
         else:
             self.__insert_links_at_end(node)
 
@@ -52,6 +53,11 @@ class AbstractLinkedList:
     def __add_node_to_start(self, node: INode) -> None:
         if self.__is_list_empty():
             self.__add_node_to_empty_list(node)
+        elif self.__length == 1:
+            self.__head = node
+            self.__head._next = self.__end
+            self.__end._previous = self.__head
+            self.__length += 1
         else:
             self.__insert_links_at_start(node)
             
@@ -119,7 +125,7 @@ class AbstractLinkedList:
 
 
     def __get_node_at_index(self, index: int) -> INode:
-        assert index >= 0 and index < self.__length, INVALID_INDEX_ERROR
+        self.__validate_index(index)
 
         current = self.__head
         for _ in range(index):
@@ -129,15 +135,10 @@ class AbstractLinkedList:
 
 
     # Public ------------------------------------------------------------------
-    @classmethod
-    def from_list(cls, data: list) -> 'AbstractLinkedList':
-        instance = cls()
-
+    def append_list_to_end(self, data: list) -> None:
         for item in data:
-            instance.__add_node_to_end(instance.__create_node(item))
-
-        return instance
-    
+            self.create_node_at_end(item)
+            
 
     def should_continue(self) -> bool:
         return self.__current != None
@@ -148,7 +149,7 @@ class AbstractLinkedList:
             return None
         
         current = self.__current
-        self.__current = self.__current.next
+        self.__current = self.__current._next
 
         return current
     
@@ -158,18 +159,18 @@ class AbstractLinkedList:
 
 
     def create_node_at_index(self, data, index: int) -> INode:
-        node = self.__create_node(data)
+        node = self.node_factory.create_node(data)
         self.__add_node_at_index(node, index)
 
     
     def create_node_at_start(self, data) -> INode:
-        node = self.__create_node(data)
+        node = self.node_factory.create_node(data)
         self.__add_node_to_start(node)
 
 
     def create_node_at_end(self, data) -> INode:
-        node = self.__create_node(data)
-        self.__add_node_to_start(node)
+        node = self.node_factory.create_node(data)
+        self.__add_node_to_end(node)
 
 
     def remove_node_at_index(self, index: int) -> None:

@@ -1,4 +1,4 @@
-from Captions.TimeFormats.INode import INode
+from Captions.TimeFormats.Nodes.INode import INode
 from ProTools.Timecode import Timecode
 from ProTools.EDL import EDL
 

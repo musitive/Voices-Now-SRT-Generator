@@ -5,8 +5,8 @@ sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
 
 from Captions.AbstractWriter import AbstractWriter
 from Captions.SRTManager import SRTManager
-from Captions.ProToolsLinkedList import DataNode
-from Captions.LanguageSpecificSRTManagers import LANG_SPECIFIC_SRT_INIT
+from Captions.TimeFormats.Nodes import INode
+from Languages.LanguageSpecificSRTManagers import LANG_SPECIFIC_SRT_INIT
 from ProTools.Timecode import Timecode, OffsetType
 
 
@@ -33,10 +33,10 @@ class CaptionMaker(AbstractWriter):
         self.read_through_data()
 
         # Write SRTs to file
-        return self.caption_manager.write_captions_to_file(timecode_offset, timecode_offset_type, srtID_offset)
+        return self.caption_manager.write_captions_to_file()
 
 
-    def update_file(self, node: DataNode) -> None:
+    def update_file(self, node: INode) -> None:
             # Get loop ID
             loop = node.get_loop_id()
 
@@ -44,8 +44,8 @@ class CaptionMaker(AbstractWriter):
             translation = self.script.get_translation(loop)
 
             # Get timecodes
-            start_time = node.get_start()
-            end_time = node.get_end()
+            start_time = node.get_start_time()
+            end_time = node.get_end_time()
 
             # Generate SRT text
             if not self.skip_caption(translation):

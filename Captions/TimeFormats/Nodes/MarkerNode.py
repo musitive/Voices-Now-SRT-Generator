@@ -1,7 +1,9 @@
-from Captions.TimeFormats.INode import INode
+from Captions.TimeFormats.Nodes.INode import INode
 
 from ProTools.Timecode import Timecode
 from ProTools.Marker import Marker
+
+from Scripts.Loop import Loop
 
 class MarkerNode(INode):
     def __init__(self, marker: Marker):
@@ -26,3 +28,8 @@ class MarkerNode(INode):
             end = self._next.__start_marker.location
         
         return end
+    
+    @classmethod
+    def from_loop(cls, loop: Loop) -> 'MarkerNode':
+        marker = Marker.from_id_and_loop(loop.id, loop)
+        return cls(marker)

@@ -1,5 +1,5 @@
 from functools import reduce
-from Captions.TextFormats.SRTManager import SRTManager
+from Captions.SRTManager import SRTManager
 from Languages.LanguageSpecificPunctuationPriority import PRIORITY_BY_SCRIPT
 import re
 

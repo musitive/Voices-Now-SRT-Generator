@@ -9,13 +9,11 @@ py -m PyInstaller -w --onefile "SRT Generator.py"
 import sys
 import abc
 
-from Captions.TimeFormats.EDL.EDLLinkedList import EDLLinkedList
-from Captions.TimeFormats.Marker.MarkerLinkedList import MarkerLinkedList
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/ProTools")
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Scripts")
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
 
-import Captions.TimeFormats
+from Captions.TimeFormats.LinkedList import LinkedList
 from ProTools.Session import Session
 from Scripts.Parser import Parser
 import logging, sys
@@ -36,12 +34,25 @@ class AbstractWriter:
         self.final_filename = final_filename
         self.data_type = data_type
 
-        self.data_manager = self.create_data_manager(data_type)
+        self.data_manager = self.create_data_manager(data_type, timecode_filename)
 
         
-    def create_data_manager(self, data_type: str):
+    def create_data_manager(self, data_type: str, timecode_filename: str = None):
+        data_manager = LinkedList(data_type)
+        session = None
+
+        if data_type == "SPT":
+            data_manager.append_list_to_end(self.script.loops)
+            return data_manager
+        
+        session = Session.from_file(timecode_filename)
+
         if data_type == "MRK":
-            return Captions.TimeFormats.AbstractLinkedList.MarkerManager.from_file(timecode_filename)
+            data_manager.append_list_to_end(session.markers)
+        elif data_type == "EDL":
+            data_manager.append_list_to_end(session.tracks[0].channels[0])
+
+        return data_manager
 
 
     # TO OVERRIDE: Read through markers and call the function provided by the caller
@@ -49,9 +60,9 @@ class AbstractWriter:
     def read_through_data(self) -> bool:
 
         while self.data_manager.should_continue():
-            node = self.data_manager.get_current_node()
+            node = self.data_manager.iterate_current_node()
 
-            logging.debug(f"{self.data_type}: {node.get_loop_id()}\t\t{str(node.get_start())}")
+            logging.debug(f"{self.data_type}: {node.get_loop_id()}\t\t{str(node.get_start_time())}")
 
             # Call the function overriden by the caller
             self.update_file(node)

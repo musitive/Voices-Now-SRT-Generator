@@ -61,7 +61,7 @@ class Track:
                 line_index += 1
                 continue
             else:
-                current_channel.append(EDL.from_row(column_headers, row, frame_rate))
+                current_channel.append(EDL.from_row(column_headers, row))
         
         channels.append(current_channel)
 
