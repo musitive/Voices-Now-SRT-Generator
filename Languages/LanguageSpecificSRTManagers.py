@@ -217,4 +217,37 @@ LANG_SPECIFIC_SRT_INIT = {
     "ZHO": ChineseSRTManager
 }
 
+CHINESE_LANGUAGE_CODES = ["CMN", "YUE", "ZHS", "ZHO"]
+
 # ================================================================================================
+
+def initialize_caption_manager(srt_filename: str, lang_code: str, max_line_len: int,
+                               timecode_offset, timecode_offset_type, srt_offset) -> SRTManager:
+    
+    caption_manager = None
+
+    if lang_code in LANG_SPECIFIC_SRT_INIT:
+        caption_manager = create_language_specific_srt_manager(lang_code, srt_filename, max_line_len)
+    else:
+        caption_manager = SRTManager(srt_filename, lang_code=lang_code, max_line_len=max_line_len, srtID_offset=srt_offset)
+
+    caption_manager.timecode_offset = timecode_offset
+    caption_manager.timecode_offset_type = timecode_offset_type
+
+    return caption_manager
+
+
+def create_language_specific_srt_manager(lang_code: str, srt_filename: str,
+                                         max_line_len: int = 33) -> SRTManager:
+    
+    initializer = LANG_SPECIFIC_SRT_INIT[lang_code]
+    caption_manager = None
+
+    # TODO: This is a mess, need to refactor
+
+    if lang_code in CHINESE_LANGUAGE_CODES:
+        caption_manager = initializer(srt_filename, max_line_len=max_line_len, lang_code=lang_code)
+    else:
+        caption_manager = initializer(srt_filename, max_line_len=max_line_len)
+        
+    return caption_manager

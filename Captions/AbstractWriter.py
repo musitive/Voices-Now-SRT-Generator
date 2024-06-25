@@ -16,6 +16,7 @@ sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
 from Captions.TimeFormats.LinkedList import LinkedList
 from ProTools.Session import Session
 from Scripts.Parser import Parser
+from ProTools.Timecode import Timecode, OffsetType
 import logging, sys
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -26,7 +27,9 @@ NO_TIMECODE_FILE = "Error: No timecode file provided and no timecodes found in s
 
 class AbstractWriter:
     def __init__(self, script_filename: str, timecode_filename: str,
-                 final_filename: str, data_type: str = "MRK"):
+                 final_filename: str, data_type: str = "MRK",
+                 timecode_offset: Timecode = None,
+                 timecode_offset_type: str = None, srt_offset: int = None):
         
         self.script_parser = Parser()
         self.script = self.script_parser.parse_script(script_filename)
