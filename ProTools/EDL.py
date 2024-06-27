@@ -8,7 +8,7 @@ CHANNEL 	EVENT   	CLIP NAME                     	START TIME    	END TIME      	D
 
 import re
 from enum import Enum
-from ProTools.Timecode import Timecode
+from Timecodes.Timecode import Timecode
 import ProTools.lib as lib
 
 # Delimiters

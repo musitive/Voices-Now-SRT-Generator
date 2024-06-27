@@ -16,7 +16,7 @@ EXAMPLE PRO TOOLS MARKER 2
 
 
 from enum import Enum
-from ProTools.Timecode import Timecode, validate_frame_rate
+from Timecodes.Timecode import Timecode, validate_frame_rate
 from Scripts.Loop import Loop
 
 import ProTools.lib as lib

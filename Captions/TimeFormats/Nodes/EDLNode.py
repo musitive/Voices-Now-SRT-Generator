@@ -1,5 +1,5 @@
 from Captions.TimeFormats.Nodes.INode import INode
-from ProTools.Timecode import Timecode
+from Timecodes.Timecode import Timecode
 from ProTools.EDL import EDL
 
 class EDLNode(INode):

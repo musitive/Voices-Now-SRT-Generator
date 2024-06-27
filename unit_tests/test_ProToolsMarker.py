@@ -1,6 +1,6 @@
 import unittest
 from ProTools.Marker import Marker
-from ProTools.Timecode import Timecode
+from Timecodes.Timecode import Timecode
 
 """
 EXAMPLE PRO TOOLS MARKER 1

@@ -1,4 +1,4 @@
-from ProTools.Timecode import Timecode
+from Timecodes.Timecode import Timecode
 
 STRING_REPRESENTATION = "{id}\n{start_time} --> {end_time}\n{text}\n\n"
 

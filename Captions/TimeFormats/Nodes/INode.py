@@ -1,4 +1,4 @@
-from ProTools.Timecode import Timecode
+from Timecodes.Timecode import Timecode
 
 class INode:
     def get_loop_id(self) -> str:

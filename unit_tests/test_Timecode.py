@@ -2,7 +2,7 @@ import sys
 sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator")
 
 import unittest
-from ProTools.Timecode import Timecode
+from Timecodes.Timecode import Timecode
 
 class TestTimecode(unittest.TestCase):
     def setUp(self):

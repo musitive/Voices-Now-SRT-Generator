@@ -1,9 +1,10 @@
 import re
 import codecs
-from ProTools.Timecode import Timecode, OffsetType
+from Timecodes.Timecode import Timecode, OffsetType
 from Languages.LanguageSpecificPunctuationPriority import PRIORITY_BY_LANGUAGE as LANGUAGE, PRIORITY_BY_SCRIPT as SCRIPT_TYPES
 from Languages.LanguageDatabase import LanguageDatabase
 from Captions.TextFormats.SRT import SRT
+from Projects.SRTProject import SRTProject
 
 MAX_LINE_LEN = 44              # Maximum number of characters allow in an SRT caption
 DEFAULT_SCRIPT_TYPE = "Latin"  # Default script type
@@ -11,31 +12,17 @@ DEFAULT_SCRIPT_TYPE = "Latin"  # Default script type
 
 
 class SRTManager:
-    def __init__(self, srt_filename: str, max_line_len: int = MAX_LINE_LEN,
-                 lang_code: str = "ENG", sentence_d = '', word_d = '',
-                 timecode_offset: Timecode = None, timecode_offset_type: OffsetType = None,
-                 srtID_offset: int = 1):
+    def __init__(self, sentence_d = '', word_d = ''):
         self.lang_manager = LanguageDatabase()
+
+        self.project = SRTProject()
 
         self.current_srt_id = srtID_offset
         self.srt_blocks = []
-        self.srt_filename = srt_filename
-        self.max_line_len = max_line_len
-        self.lang = lang_code
         self.sentence_d = sentence_d
         self.word_d = word_d
 
-        script_type = self.lang_manager.get_script_type(lang_code)
-
-        if lang_code in LANGUAGE:
-            self.regex = LANGUAGE[lang_code]
-        elif script_type in SCRIPT_TYPES:
-            self.regex = SCRIPT_TYPES[script_type]
-        else:
-            self.regex = SCRIPT_TYPES[DEFAULT_SCRIPT_TYPE]
-
-        self.timecode_offset = timecode_offset
-        self.timecode_offset_type = timecode_offset_type
+        self.initialize_regex(self.project.language)
 
 
     def create_caption(self, translation: str, in_time: Timecode, out_time: Timecode, split: bool = True) -> None:
@@ -113,7 +100,7 @@ class SRTManager:
             for regex in self.regex.split("|"):
                 if bool(re.search(regex, text[WIDTH:-WIDTH])):
                     return search_text(regex, text[WIDTH:-WIDTH])
-            
+
         else:
             return search_text(self.regex, text[WIDTH:-WIDTH])
 
@@ -141,3 +128,14 @@ class SRTManager:
             return timecode - self.timecode_offset
         elif self.timecode_offset_type == OffsetType.DELAY:
             return timecode + self.timecode_offset
+
+
+    def initialize_regex(self, language_code: str):
+        script_type = self.lang_manager.get_script_type(language_code)
+
+        if language_code in LANGUAGE:
+            self.regex = LANGUAGE[language_code]
+        elif script_type in SCRIPT_TYPES:
+            self.regex = SCRIPT_TYPES[script_type]
+        else:
+            self.regex = SCRIPT_TYPES[DEFAULT_SCRIPT_TYPE]

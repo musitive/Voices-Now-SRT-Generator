@@ -7,7 +7,7 @@ from ProTools.File import File, ColumnHeaders as FileHeaders
 from ProTools.Clip import Clip, ColumnHeaders as ClipHeaders
 from ProTools.Plugin import Plugin, ColumnHeaders as PluginHeaders
 from ProTools.Track import Track
-from ProTools.Timecode import Timecode
+from Timecodes.Timecode import Timecode
 import ProTools.lib as lib
 
 # Delimiters

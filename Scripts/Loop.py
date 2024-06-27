@@ -1,4 +1,4 @@
-from ProTools.Timecode import Timecode
+from Timecodes.Timecode import Timecode
 
 class Loop:
     def __init__(self, id: str, character: str, english: str, translation: str,

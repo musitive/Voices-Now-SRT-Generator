@@ -1,6 +1,6 @@
 from Captions.TimeFormats.Nodes.INode import INode
 
-from ProTools.Timecode import Timecode
+from Timecodes.Timecode import Timecode
 from ProTools.Marker import Marker
 
 from Scripts.Loop import Loop

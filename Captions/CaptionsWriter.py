@@ -6,22 +6,14 @@ sys.path.append("~/Documents/GitHub/Voices-Now-SRT-Generator/Captions")
 from Captions.AbstractWriter import AbstractWriter
 from Languages.LanguageSpecificSRTManagers import initialize_caption_manager
 from Captions.TimeFormats.Nodes import INode
-from ProTools.Timecode import Timecode, OffsetType
-
 
 class CaptionMaker(AbstractWriter):
-    def __init__(self, script_filename: str, timecode_filename: str,
-                 data_type: str, lang_code: str, srt_filename: str,
-                 max_line_len: int, split: bool = True,
-                 timecode_offset: Timecode = None,
-                 timecode_offset_type: OffsetType = None, srt_offset: int = None):
+    def __init__(self, split: bool = True):
         
-        super().__init__(script_filename, timecode_filename, srt_filename, data_type)
+        super().__init__()
 
         self.split = split
-        self.caption_manager = initialize_caption_manager(srt_filename, lang_code, max_line_len,
-                                                          timecode_offset, timecode_offset_type, srt_offset)
-
+        self.caption_manager = initialize_caption_manager()
 
 
     def create_captions(self) -> int:
@@ -35,7 +27,7 @@ class CaptionMaker(AbstractWriter):
             loop_id = node.get_loop_id()
 
             # Get translation from Word Doc
-            translation = self.script.get_translation(loop_id)
+            translation = self.project.script.get_translation(loop_id)
 
             # Get timecodes
             start_time = node.get_start_time()
