@@ -1,3 +1,5 @@
+from Languages.Language import Language
+
 # Dictionary of punctuation marks by alphabet script
 # Punctuation marks are ordered by priority, from highest to lowest.
 PRIORITY_BY_SCRIPT = {
@@ -90,7 +92,7 @@ PRIORITY_BY_SCRIPT = {
 # Dictionary of punctuation marks by language
 # Differs from PRIORITY_BY_SCRIPT by providing a more specific regex for each language
 # Punctuation marks are ordered by priority, from highest to lowest.
-PRIORITY_BY_LANGUAGE = {
+PRIORITY_BY_CODE = {
     # --------------------------------------------------------------------------------
     # Latin script punctuation marks, removed exclamation mark due to being used in 
     # front and end of sentence
@@ -110,4 +112,14 @@ PRIORITY_BY_LANGUAGE = {
     # --------------------------------------------------------------------------------
 }
 
-# ================================================================================================
+DEFAULT_SCRIPT_TYPE = "Latin"
+
+def get_priority_regex(language: Language) -> str:
+    regex: str = PRIORITY_BY_SCRIPT[DEFAULT_SCRIPT_TYPE]
+
+    if language.code in PRIORITY_BY_CODE:
+        regex = PRIORITY_BY_CODE[language.code]
+    elif language.script_type in PRIORITY_BY_SCRIPT:
+        regex =  PRIORITY_BY_SCRIPT[language.script_type]
+
+    return regex

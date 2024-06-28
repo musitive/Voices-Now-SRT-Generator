@@ -1,4 +1,5 @@
 from Projects.Project import Project
+from Projects.SRTOffset import SRTOffset
 
 SRT_FOLDER_NAME = "Initial SRTs"
 SRT_EXTENSION = "srt"
@@ -12,6 +13,14 @@ class SRTProject(Project):
 
     def set_srt_offset(self, srt_offset):
         self.srt_offset = srt_offset
+
+    def get_srt_offset(self) -> SRTOffset:
+        offset = None
+
+        if hasattr(self, 'srt_offset'):
+            offset = self.srt_offset
+
+        return offset
 
 
     def set_language(self, language):

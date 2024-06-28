@@ -221,8 +221,7 @@ CHINESE_LANGUAGE_CODES = ["CMN", "YUE", "ZHS", "ZHO"]
 
 # ================================================================================================
 
-def initialize_caption_manager(srt_filename: str, lang_code: str, max_line_len: int,
-                               timecode_offset, timecode_offset_type, srt_offset) -> SRTManager:
+def initialize_caption_manager() -> SRTManager:
     
     caption_manager = None
 

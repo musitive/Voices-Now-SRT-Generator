@@ -54,25 +54,6 @@ class Session:
                  number_of_tracks: int, number_of_clips: int, number_of_files: int,
                  online_files: list, offline_files: list, online_clips: list,
                  plug_ins: list, tracks: list[Track], markers: list):
-        """Constructor for the Session class
-        
-        Keyword arguments:
-        name: str -- the name of the session
-        sample_rate: float -- the sample rate of the session
-        bit_depth: int -- the bit depth of the session
-        start: Timecode -- the start time of the session
-        frame_rate: float -- the frame rate of the session
-        drop_frame: bool -- whether the session uses drop frame timecode
-        number_of_tracks: int -- the number of tracks in the session
-        number_of_clips: int -- the number of clips in the session
-        number_of_files: int -- the number of files in the session
-        online_files: list -- the online files in the session
-        offline_files: list -- the offline files in the session
-        online_clips: list -- the online clips in the session
-        plug_ins: list -- the plug-ins in the session
-        tracks: list -- the tracks in the session
-        markers: list -- the markers in the session
-        """
         
         self.name = name
         self.sample_rate = sample_rate

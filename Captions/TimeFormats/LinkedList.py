@@ -1,5 +1,6 @@
 from Captions.TimeFormats.Nodes.INode import INode
 from Captions.TimeFormats.Nodes.AbstractNodeFactory import initialize_node_factory
+from Projects.SRTProject import SRTProject
 
 STARTING_INDEX = 0
 ENDING_INDEX = -1
@@ -17,6 +18,19 @@ class LinkedList:
         self.__length = 0
 
         self.node_factory = initialize_node_factory(data_type)
+        self.__fill_list(data_type)
+
+
+    # Function is kinda gross, figure out how to refactor it
+    def __fill_list(self, data_type: str) -> None:
+        project = SRTProject()
+
+        if data_type == "SPT":
+            self.append_list_to_end(project.script.loops)
+        elif data_type == "MRK":
+            self.append_list_to_end(project.session.markers)
+        elif data_type == "EDL":
+            self.append_list_to_end(project.session.tracks[0].channels[0])
 
 
     def __validate_index(self, index: int) -> None:
